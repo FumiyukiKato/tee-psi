@@ -44,11 +44,8 @@ void WebService::init() {
 
     if (curl) {
         Log("Curl initialized successfully");
-//		curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L );
-        curl_easy_setopt( curl, CURLOPT_SSLCERTTYPE, "PEM");
-        curl_easy_setopt( curl, CURLOPT_SSLCERT, Settings::ias_crt);
-        curl_easy_setopt( curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
-        curl_easy_setopt( curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+		curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L );
+        curl_easy_setopt( curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
         curl_easy_setopt( curl, CURLOPT_NOPROGRESS, 1L);
     } else
         Log("Curl init error", log::error);
@@ -151,6 +148,7 @@ size_t ias_reponse_body_handler( void *ptr, size_t size, size_t nmemb, void *use
 
 
 bool WebService::sendToIAS(string url,
+                           Method method,
                            IAS type,
                            string payload,
                            struct curl_slist *headers,
@@ -162,10 +160,16 @@ bool WebService::sendToIAS(string url,
     curl_easy_setopt( curl, CURLOPT_URL, url.c_str());
     Log("sending url: %s", url.c_str());
 
-    if (headers) {
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    // https://api.trustedservices.intel.com/documents/sgx-attestation-api-spec.pdf
+    string subscription_key_header = "Ocp-Apim-Subscription-Key: ";
+    subscription_key_header.append(Settings::subscription_key);
+    headers = curl_slist_append(headers, subscription_key_header.c_str());
+
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    
+    if (method == POST) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
-    }
+    };
 
     ias_response_container->p_response = (char*) malloc(1);
     ias_response_container->size = 0;
@@ -177,7 +181,6 @@ bool WebService::sendToIAS(string url,
 
     res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
-        Log("Curl cert file: %s", Settings::ias_crt);
         Log("curl_easy_perform() failed: %s", curl_easy_strerror(res));
         return false;
     }
@@ -202,7 +205,7 @@ bool WebService::getSigRL(string gid, string *sigrl) {
 
     string url = Settings::ias_url + "sigrl/" + gid;
 
-    this->sendToIAS(url, IAS::sigrl, "", NULL, &ias_response_container, &response_header);
+    this->sendToIAS(url, GET, IAS::sigrl, "", NULL, &ias_response_container, &response_header);
 
     Log("\tResponse status is: %d" , response_header.response_status);
     Log("\tContent-Length: %d", response_header.content_length);
@@ -232,7 +235,7 @@ bool WebService::verifyQuote(uint8_t *quote, uint8_t *pseManifest, uint8_t *nonc
     string payload = encoded_quote;
 
     string url = Settings::ias_url + "report";
-    this->sendToIAS(url, IAS::report, payload, headers, &ias_response_container, &response_header);
+    this->sendToIAS(url, POST, IAS::report, payload, headers, &ias_response_container, &response_header);
 
 
     if (response_header.response_status == 200) {

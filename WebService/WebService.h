@@ -38,6 +38,11 @@ enum IAS {
     report
 };
 
+enum Method {
+    GET,
+    POST
+};
+
 struct attestation_verification_report_t {
     string report_id;
     string isv_enclave_quote_status;
@@ -73,7 +78,7 @@ public:
 
 private:
     WebService();
-    bool sendToIAS(string url, IAS type, string payload,
+    bool sendToIAS(string url, Method method, IAS type, string payload,
                    struct curl_slist *headers,
                    ias_response_container_t *ias_response_container,
                    ias_response_header_t *response_header);

@@ -367,6 +367,8 @@ string MessageHandler::handleAttestationResult(Messages::AttestationMessage msg)
         SafeFree(p_att_result_msg_full);
         return generateAttestationFailed(context, id);
     } else {
+        // idをセットもしている
+        // 分けた方がよいけど，速度のために一緒に処理している
         ret = verify_secret_data(this->enclave->getID(),
                                  &status,
                                  context,

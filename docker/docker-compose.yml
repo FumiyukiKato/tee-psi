@@ -12,3 +12,4 @@ services:
     tty: true
     env_file: ${TEE_PSI}/.env
     command: /root/sgx/init.sh
+    working_dir: /root/sgx/samplecode/tee-psi

@@ -27,3 +27,5 @@ server.crt
 server.key
 Intel_SGX_Attestaion_RootCA.pem
 
+
+.vscode
