@@ -1,4 +1,6 @@
 #!/bin/bash
 
+echo '+ cd docker'
 cd docker
+echo '+ docker-compose exec app /bin/bash'
 docker-compose exec app /bin/bash

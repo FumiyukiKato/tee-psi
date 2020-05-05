@@ -1,3 +1,5 @@
+syntax = "proto2";
+
 package Messages;
 
 message InitialMessage {
@@ -90,11 +92,12 @@ message MessagePsiHashData {
 }
 
 message MessagePsiHashDataFinished {
-	required uint32 type = 1;
-	required uint32 size = 2;
+	required uint32 type    = 1;
+	required uint32 size    = 2;
 
-	required uint32 context = 3;
-	required uint32 id = 4;
+	required uint32 mode    = 3;
+	required uint32 context = 4;
+	required uint32 id      = 5;
 }
 
 message MessagePsiResult {

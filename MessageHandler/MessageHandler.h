@@ -33,6 +33,11 @@
 //#include "LogBase.h"
 #include "../GeneralSettings.h"
 
+enum ClientMode {
+    P2P,
+    CENTRAL
+};
+
 using namespace std;
 using namespace util;
 

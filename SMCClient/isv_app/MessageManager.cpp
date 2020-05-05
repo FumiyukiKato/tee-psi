@@ -41,7 +41,9 @@ MessageManager* MessageManager::getInstance() {
     return instance;
 }
 
-int MessageManager::init(string path) {
+int MessageManager::init(ClientMode mode, string path) {
+    this->mode = mode;
+
     if (this->sp) {
         delete this->sp;
     }
@@ -150,6 +152,18 @@ string MessageManager::handleHashData(Messages::MessagePsiResult msg, bool* fini
         finish.set_context(msg.context());
         finish.set_id(msg.id());
 
+        switch (mode) {
+            case P2P:
+                finish.set_mode(uint32_t(P2P));
+                break;
+            case CENTRAL:
+                finish.set_mode(uint32_t(CENTRAL));
+                break;
+            default:
+                Log("Error, service provider mode error %d", mode);
+                return "";
+        }
+
         *finished = true;
 
         return nm->serialize(finish);
@@ -233,7 +247,7 @@ vector<string> MessageManager::incomingHandler(string v, int type) {
             }
         }
         break;
-        case RA_PSI_SLAT: {
+        case RA_PSI_SLAT: { // ハッシュ化したデータを送信する
             Messages::MessagePsiSalt att_ok_msg;
             ret = att_ok_msg.ParseFromString(v);
             if (ret) {

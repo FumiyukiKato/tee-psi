@@ -502,53 +502,65 @@ string MessageHandler::handlePsiHashDataFinished(Messages::MessagePsiHashDataFin
     size_t data_size = 0;
     sgx_status_t status;
     sgx_status_t ret;
+    ClientMode mode = (ClientMode)msg.mode();
 
     Log("[PSI] Received hash data finished, %d", id);
 
-    ret = get_result_size(this->enclave->getID(), &status, id, &data_size);
-    if (SGX_SUCCESS != ret) {
-        Log("[PSI] get_result_size failed, %d", ret);
-        return "";
-    }
+    switch (mode) {
+        case P2P: {
+            Log("PSI in P2P mode");
 
-    if (SGX_SUCCESS != status) {
-        if (status == SGX_ERROR_INVALID_STATE) {
-            *again = true;
+            ret = get_result_size(this->enclave->getID(), &status, id, &data_size);
+            if (SGX_SUCCESS != ret) {
+                Log("[PSI] get_result_size failed, %d", ret);
+                return "";
+            }
 
-            Messages::MessagePsiResult result;
-            result.set_type(RA_PSI_RESULT);
-            result.set_size(0);
-            result.set_state(1); //tell sp req result again
-            result.set_context(msg.context());
-            result.set_id(msg.id());
+            if (SGX_SUCCESS != status) {
+                if (status == SGX_ERROR_INVALID_STATE) {
+                    *again = true;
 
-            Log("[PSI] has not calc result success");
+                    Messages::MessagePsiResult result;
+                    result.set_type(RA_PSI_RESULT);
+                    result.set_size(0);
+                    result.set_state(1); //tell sp req result again
+                    result.set_context(msg.context());
+                    result.set_id(msg.id());
 
-            return nm->serialize(result);
-        } else {
-            Log("[PSI] get_result_size failed, %d, %d", ret, status);
-            return "";
+                    Log("[PSI] has not calc result success");
+
+                    return nm->serialize(result);
+                } else {
+                    Log("[PSI] get_result_size failed, %d, %d", ret, status);
+                    return "";
+                }
+            }
+
+            if (data_size > 0) {
+                data = (uint8_t*)malloc(data_size);
+                if (data == NULL) {
+                    Log("[PSI] alloc buffer for intersect data failed!");
+                    return "";
+                }
+
+                ret = get_result(this->enclave->getID(),
+                                &status,
+                                id,
+                                context,
+                                data,
+                                data_size,
+                                mac);
+                if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
+                    Log("[PSI] get_result failed, %d, %d", ret, status);
+                    return "";
+                }
+            }
         }
-    }
-
-    if (data_size > 0) {
-        data = (uint8_t*)malloc(data_size);
-        if (data == NULL) {
-            Log("[PSI] alloc buffer for intersect data failed!");
-            return "";
+        case CENTRAL: {
+            Log("PSI in CENTRAL mode");
+            
         }
 
-        ret = get_result(this->enclave->getID(),
-                        &status,
-                        id,
-                        context,
-                        data,
-                        data_size,
-                        mac);
-        if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
-            Log("[PSI] get_result failed, %d, %d", ret, status);
-            return "";
-        }
     }
 
     Messages::MessagePsiIntersect intersect;

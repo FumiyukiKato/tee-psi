@@ -31,12 +31,17 @@
 
 using namespace std;
 
+enum ClientMode {
+    P2P,
+    CENTRAL
+};
+
 class MessageManager {
 
 public:
     static MessageManager* getInstance();
     virtual ~MessageManager();
-    int init(string path);
+    int init(ClientMode mode, string path);
     vector<string> incomingHandler(string v, int type);
     void start();
 
@@ -57,6 +62,7 @@ private:
     NetworkManagerClient *nm = NULL;
     PSIWorker *sp = NULL;
     WebService *ws = NULL;
+    ClientMode mode;
 };
 
 #endif

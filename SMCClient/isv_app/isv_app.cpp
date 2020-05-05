@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <string.h>
 
 #include "LogBase.h"
 #include "NetworkManager.h"
@@ -25,13 +26,13 @@
 
 using namespace util;
 
-int Main(int argc, char *argv[]) {
+int Main(ClientMode mode, char *filepath) {
     LogBase::Inst();
 
     int ret = 0;
 
     MessageManager *vm = MessageManager::getInstance();
-    vm->init(argv[1]);
+    vm->init(mode, filepath);
     vm->start();
 
     return ret;
@@ -39,8 +40,41 @@ int Main(int argc, char *argv[]) {
 
 
 int main( int argc, char **argv ) {
+
+    int opt;
+    ClientMode mode = P2P;
+    char *filepath = "hash1.txt";
+
+    while ((opt = getopt(argc, argv, "f:m:")) != -1) {
+        switch (opt) {
+            case 'f':
+                if (optarg != NULL && strcmp(optarg, "-m")) {
+                    filepath = optarg;
+                } else {
+                    Log("Usage: %s [-f file path] [-m mode]\n", argv[0]);
+                    return -1;
+                }
+                break;
+
+            case 'm':
+                if (strcmp(optarg, "central") == 0) {
+                    mode = CENTRAL;
+                } else if (strcmp(optarg, "p2p") == 0) {
+                    mode = P2P;
+                } else {
+                    Log("Usage: %s [-f file path] [-m mode]\n", argv[0]);
+                    return -1;
+                }
+                break;
+
+            default:
+                Log("Usage: %s [-f file path] [-m mode]\n", argv[0]);
+                return -1;
+        }
+    }
+    
     try {
-        int ret = Main(argc, argv);
+        int ret = Main(mode, filepath);
         return ret;
     } catch (std::exception & e) {
         Log("exception: %s", e.what());

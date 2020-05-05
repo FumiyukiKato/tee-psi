@@ -1543,17 +1543,24 @@ class MessagePsiHashDataFinished : public ::google::protobuf::Message /* @@proto
   ::google::protobuf::uint32 size() const;
   void set_size(::google::protobuf::uint32 value);
 
-  // required uint32 context = 3;
+  // required uint32 mode = 3;
+  bool has_mode() const;
+  void clear_mode();
+  static const int kModeFieldNumber = 3;
+  ::google::protobuf::uint32 mode() const;
+  void set_mode(::google::protobuf::uint32 value);
+
+  // required uint32 context = 4;
   bool has_context() const;
   void clear_context();
-  static const int kContextFieldNumber = 3;
+  static const int kContextFieldNumber = 4;
   ::google::protobuf::uint32 context() const;
   void set_context(::google::protobuf::uint32 value);
 
-  // required uint32 id = 4;
+  // required uint32 id = 5;
   bool has_id() const;
   void clear_id();
-  static const int kIdFieldNumber = 4;
+  static const int kIdFieldNumber = 5;
   ::google::protobuf::uint32 id() const;
   void set_id(::google::protobuf::uint32 value);
 
@@ -1563,6 +1570,8 @@ class MessagePsiHashDataFinished : public ::google::protobuf::Message /* @@proto
   inline void clear_has_type();
   inline void set_has_size();
   inline void clear_has_size();
+  inline void set_has_mode();
+  inline void clear_has_mode();
   inline void set_has_context();
   inline void clear_has_context();
   inline void set_has_id();
@@ -1576,6 +1585,7 @@ class MessagePsiHashDataFinished : public ::google::protobuf::Message /* @@proto
   mutable int _cached_size_;
   ::google::protobuf::uint32 type_;
   ::google::protobuf::uint32 size_;
+  ::google::protobuf::uint32 mode_;
   ::google::protobuf::uint32 context_;
   ::google::protobuf::uint32 id_;
   friend void  protobuf_AddDesc_Messages_2eproto();
@@ -3601,15 +3611,39 @@ inline void MessagePsiHashDataFinished::set_size(::google::protobuf::uint32 valu
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.size)
 }
 
-// required uint32 context = 3;
-inline bool MessagePsiHashDataFinished::has_context() const {
+// required uint32 mode = 3;
+inline bool MessagePsiHashDataFinished::has_mode() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void MessagePsiHashDataFinished::set_has_context() {
+inline void MessagePsiHashDataFinished::set_has_mode() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void MessagePsiHashDataFinished::clear_has_context() {
+inline void MessagePsiHashDataFinished::clear_has_mode() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void MessagePsiHashDataFinished::clear_mode() {
+  mode_ = 0u;
+  clear_has_mode();
+}
+inline ::google::protobuf::uint32 MessagePsiHashDataFinished::mode() const {
+  // @@protoc_insertion_point(field_get:Messages.MessagePsiHashDataFinished.mode)
+  return mode_;
+}
+inline void MessagePsiHashDataFinished::set_mode(::google::protobuf::uint32 value) {
+  set_has_mode();
+  mode_ = value;
+  // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.mode)
+}
+
+// required uint32 context = 4;
+inline bool MessagePsiHashDataFinished::has_context() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void MessagePsiHashDataFinished::set_has_context() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void MessagePsiHashDataFinished::clear_has_context() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void MessagePsiHashDataFinished::clear_context() {
   context_ = 0u;
@@ -3625,15 +3659,15 @@ inline void MessagePsiHashDataFinished::set_context(::google::protobuf::uint32 v
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.context)
 }
 
-// required uint32 id = 4;
+// required uint32 id = 5;
 inline bool MessagePsiHashDataFinished::has_id() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void MessagePsiHashDataFinished::set_has_id() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void MessagePsiHashDataFinished::clear_has_id() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void MessagePsiHashDataFinished::clear_id() {
   id_ = 0u;

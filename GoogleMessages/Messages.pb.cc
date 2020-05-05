@@ -239,9 +239,10 @@ void protobuf_AssignDesc_Messages_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashData, _internal_metadata_),
       -1);
   MessagePsiHashDataFinished_descriptor_ = file->message_type(8);
-  static const int MessagePsiHashDataFinished_offsets_[4] = {
+  static const int MessagePsiHashDataFinished_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, size_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, mode_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, context_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, id_),
   };
@@ -401,14 +402,15 @@ void protobuf_AddDesc_Messages_2eproto() {
     "\001\022\020\n\004salt\030\007 \003(\rB\002\020\001\"p\n\022MessagePsiHashDat"
     "a\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007context"
     "\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\017\n\003mac\030\005 \003(\rB\002\020\001\022\020\n\004d"
-    "ata\030\006 \003(\rB\002\020\001\"U\n\032MessagePsiHashDataFinis"
-    "hed\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007conte"
-    "xt\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\"Z\n\020MessagePsiResult"
-    "\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007context\030"
-    "\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\r\n\005state\030\005 \002(\r\"q\n\023Mess"
-    "agePsiIntersect\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 "
-    "\002(\r\022\017\n\007context\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\017\n\003mac\030"
-    "\005 \003(\rB\002\020\001\022\020\n\004data\030\006 \003(\rB\002\020\001", 1667);
+    "ata\030\006 \003(\rB\002\020\001\"c\n\032MessagePsiHashDataFinis"
+    "hed\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\014\n\004mode\030"
+    "\003 \002(\r\022\017\n\007context\030\004 \002(\r\022\n\n\002id\030\005 \002(\r\"Z\n\020Me"
+    "ssagePsiResult\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002"
+    "(\r\022\017\n\007context\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\r\n\005state"
+    "\030\005 \002(\r\"q\n\023MessagePsiIntersect\022\014\n\004type\030\001 "
+    "\002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007context\030\003 \002(\r\022\n\n\002id"
+    "\030\004 \002(\r\022\017\n\003mac\030\005 \003(\rB\002\020\001\022\020\n\004data\030\006 \003(\rB\002\020"
+    "\001", 1681);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   InitialMessage::default_instance_ = new InitialMessage();
@@ -7160,6 +7162,7 @@ MessagePsiHashData::mutable_data() {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int MessagePsiHashDataFinished::kTypeFieldNumber;
 const int MessagePsiHashDataFinished::kSizeFieldNumber;
+const int MessagePsiHashDataFinished::kModeFieldNumber;
 const int MessagePsiHashDataFinished::kContextFieldNumber;
 const int MessagePsiHashDataFinished::kIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -7185,6 +7188,7 @@ void MessagePsiHashDataFinished::SharedCtor() {
   _cached_size_ = 0;
   type_ = 0u;
   size_ = 0u;
+  mode_ = 0u;
   context_ = 0u;
   id_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -7243,7 +7247,9 @@ void MessagePsiHashDataFinished::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-  ZR_(type_, id_);
+  if (_has_bits_[0 / 32] & 31u) {
+    ZR_(type_, id_);
+  }
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -7289,13 +7295,28 @@ bool MessagePsiHashDataFinished::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(24)) goto parse_context;
+        if (input->ExpectTag(24)) goto parse_mode;
         break;
       }
 
-      // required uint32 context = 3;
+      // required uint32 mode = 3;
       case 3: {
         if (tag == 24) {
+         parse_mode:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &mode_)));
+          set_has_mode();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(32)) goto parse_context;
+        break;
+      }
+
+      // required uint32 context = 4;
+      case 4: {
+        if (tag == 32) {
          parse_context:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
@@ -7304,13 +7325,13 @@ bool MessagePsiHashDataFinished::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(32)) goto parse_id;
+        if (input->ExpectTag(40)) goto parse_id;
         break;
       }
 
-      // required uint32 id = 4;
-      case 4: {
-        if (tag == 32) {
+      // required uint32 id = 5;
+      case 5: {
+        if (tag == 40) {
          parse_id:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
@@ -7358,14 +7379,19 @@ void MessagePsiHashDataFinished::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->size(), output);
   }
 
-  // required uint32 context = 3;
-  if (has_context()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->context(), output);
+  // required uint32 mode = 3;
+  if (has_mode()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->mode(), output);
   }
 
-  // required uint32 id = 4;
+  // required uint32 context = 4;
+  if (has_context()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->context(), output);
+  }
+
+  // required uint32 id = 5;
   if (has_id()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->id(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->id(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -7388,14 +7414,19 @@ void MessagePsiHashDataFinished::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->size(), target);
   }
 
-  // required uint32 context = 3;
-  if (has_context()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->context(), target);
+  // required uint32 mode = 3;
+  if (has_mode()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->mode(), target);
   }
 
-  // required uint32 id = 4;
+  // required uint32 context = 4;
+  if (has_context()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->context(), target);
+  }
+
+  // required uint32 id = 5;
   if (has_id()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->id(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->id(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -7424,15 +7455,22 @@ int MessagePsiHashDataFinished::RequiredFieldsByteSizeFallback() const {
         this->size());
   }
 
+  if (has_mode()) {
+    // required uint32 mode = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->mode());
+  }
+
   if (has_context()) {
-    // required uint32 context = 3;
+    // required uint32 context = 4;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->context());
   }
 
   if (has_id()) {
-    // required uint32 id = 4;
+    // required uint32 id = 5;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->id());
@@ -7444,7 +7482,7 @@ int MessagePsiHashDataFinished::ByteSize() const {
 // @@protoc_insertion_point(message_byte_size_start:Messages.MessagePsiHashDataFinished)
   int total_size = 0;
 
-  if (((_has_bits_[0] & 0x0000000f) ^ 0x0000000f) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x0000001f) ^ 0x0000001f) == 0) {  // All required fields are present.
     // required uint32 type = 1;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::UInt32Size(
@@ -7455,12 +7493,17 @@ int MessagePsiHashDataFinished::ByteSize() const {
       ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->size());
 
-    // required uint32 context = 3;
+    // required uint32 mode = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->mode());
+
+    // required uint32 context = 4;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->context());
 
-    // required uint32 id = 4;
+    // required uint32 id = 5;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->id());
@@ -7508,6 +7551,9 @@ void MessagePsiHashDataFinished::MergeFrom(const MessagePsiHashDataFinished& fro
     if (from.has_size()) {
       set_size(from.size());
     }
+    if (from.has_mode()) {
+      set_mode(from.mode());
+    }
     if (from.has_context()) {
       set_context(from.context());
     }
@@ -7535,7 +7581,7 @@ void MessagePsiHashDataFinished::CopyFrom(const MessagePsiHashDataFinished& from
 }
 
 bool MessagePsiHashDataFinished::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
 
   return true;
 }
@@ -7547,6 +7593,7 @@ void MessagePsiHashDataFinished::Swap(MessagePsiHashDataFinished* other) {
 void MessagePsiHashDataFinished::InternalSwap(MessagePsiHashDataFinished* other) {
   std::swap(type_, other->type_);
   std::swap(size_, other->size_);
+  std::swap(mode_, other->mode_);
   std::swap(context_, other->context_);
   std::swap(id_, other->id_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
@@ -7613,15 +7660,39 @@ void MessagePsiHashDataFinished::clear_size() {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.size)
 }
 
-// required uint32 context = 3;
-bool MessagePsiHashDataFinished::has_context() const {
+// required uint32 mode = 3;
+bool MessagePsiHashDataFinished::has_mode() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-void MessagePsiHashDataFinished::set_has_context() {
+void MessagePsiHashDataFinished::set_has_mode() {
   _has_bits_[0] |= 0x00000004u;
 }
-void MessagePsiHashDataFinished::clear_has_context() {
+void MessagePsiHashDataFinished::clear_has_mode() {
   _has_bits_[0] &= ~0x00000004u;
+}
+void MessagePsiHashDataFinished::clear_mode() {
+  mode_ = 0u;
+  clear_has_mode();
+}
+ ::google::protobuf::uint32 MessagePsiHashDataFinished::mode() const {
+  // @@protoc_insertion_point(field_get:Messages.MessagePsiHashDataFinished.mode)
+  return mode_;
+}
+ void MessagePsiHashDataFinished::set_mode(::google::protobuf::uint32 value) {
+  set_has_mode();
+  mode_ = value;
+  // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.mode)
+}
+
+// required uint32 context = 4;
+bool MessagePsiHashDataFinished::has_context() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+void MessagePsiHashDataFinished::set_has_context() {
+  _has_bits_[0] |= 0x00000008u;
+}
+void MessagePsiHashDataFinished::clear_has_context() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 void MessagePsiHashDataFinished::clear_context() {
   context_ = 0u;
@@ -7637,15 +7708,15 @@ void MessagePsiHashDataFinished::clear_context() {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.context)
 }
 
-// required uint32 id = 4;
+// required uint32 id = 5;
 bool MessagePsiHashDataFinished::has_id() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 void MessagePsiHashDataFinished::set_has_id() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 void MessagePsiHashDataFinished::clear_has_id() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 void MessagePsiHashDataFinished::clear_id() {
   id_ = 0u;
