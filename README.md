@@ -1,3 +1,5 @@
+https://medium.com/baiduxlab/private-set-intersection-technology-a-hot-topic-in-multi-party-computing-f560cf3bf6cb
+
 # Private Set Intersection sample solution
 
 This example is a concrete solution of private-set-intersection problem. It leverages Intel SGX to achieve confidenaility, 100% accuracy, and the best performance. This code sample is derived from [linux-sgx-remoteattestation](https://github.com/svartkanin/linux-sgx-remoteattestation), and only the enclave is written in Rust.
