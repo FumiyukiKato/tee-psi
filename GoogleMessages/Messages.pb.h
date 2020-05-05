@@ -936,31 +936,38 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::uint32 context() const;
   void set_context(::google::protobuf::uint32 value);
 
-  // optional uint32 epid_group_status = 4;
+  // required uint32 mode = 4;
+  bool has_mode() const;
+  void clear_mode();
+  static const int kModeFieldNumber = 4;
+  ::google::protobuf::uint32 mode() const;
+  void set_mode(::google::protobuf::uint32 value);
+
+  // optional uint32 epid_group_status = 5;
   bool has_epid_group_status() const;
   void clear_epid_group_status();
-  static const int kEpidGroupStatusFieldNumber = 4;
+  static const int kEpidGroupStatusFieldNumber = 5;
   ::google::protobuf::uint32 epid_group_status() const;
   void set_epid_group_status(::google::protobuf::uint32 value);
 
-  // optional uint32 tcb_evaluation_status = 5;
+  // optional uint32 tcb_evaluation_status = 6;
   bool has_tcb_evaluation_status() const;
   void clear_tcb_evaluation_status();
-  static const int kTcbEvaluationStatusFieldNumber = 5;
+  static const int kTcbEvaluationStatusFieldNumber = 6;
   ::google::protobuf::uint32 tcb_evaluation_status() const;
   void set_tcb_evaluation_status(::google::protobuf::uint32 value);
 
-  // optional uint32 pse_evaluation_status = 6;
+  // optional uint32 pse_evaluation_status = 7;
   bool has_pse_evaluation_status() const;
   void clear_pse_evaluation_status();
-  static const int kPseEvaluationStatusFieldNumber = 6;
+  static const int kPseEvaluationStatusFieldNumber = 7;
   ::google::protobuf::uint32 pse_evaluation_status() const;
   void set_pse_evaluation_status(::google::protobuf::uint32 value);
 
-  // repeated uint32 latest_equivalent_tcb_psvn = 7 [packed = true];
+  // repeated uint32 latest_equivalent_tcb_psvn = 8 [packed = true];
   int latest_equivalent_tcb_psvn_size() const;
   void clear_latest_equivalent_tcb_psvn();
-  static const int kLatestEquivalentTcbPsvnFieldNumber = 7;
+  static const int kLatestEquivalentTcbPsvnFieldNumber = 8;
   ::google::protobuf::uint32 latest_equivalent_tcb_psvn(int index) const;
   void set_latest_equivalent_tcb_psvn(int index, ::google::protobuf::uint32 value);
   void add_latest_equivalent_tcb_psvn(::google::protobuf::uint32 value);
@@ -969,10 +976,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_latest_equivalent_tcb_psvn();
 
-  // repeated uint32 latest_pse_isvsvn = 8 [packed = true];
+  // repeated uint32 latest_pse_isvsvn = 9 [packed = true];
   int latest_pse_isvsvn_size() const;
   void clear_latest_pse_isvsvn();
-  static const int kLatestPseIsvsvnFieldNumber = 8;
+  static const int kLatestPseIsvsvnFieldNumber = 9;
   ::google::protobuf::uint32 latest_pse_isvsvn(int index) const;
   void set_latest_pse_isvsvn(int index, ::google::protobuf::uint32 value);
   void add_latest_pse_isvsvn(::google::protobuf::uint32 value);
@@ -981,10 +988,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_latest_pse_isvsvn();
 
-  // repeated uint32 latest_psda_svn = 9 [packed = true];
+  // repeated uint32 latest_psda_svn = 10 [packed = true];
   int latest_psda_svn_size() const;
   void clear_latest_psda_svn();
-  static const int kLatestPsdaSvnFieldNumber = 9;
+  static const int kLatestPsdaSvnFieldNumber = 10;
   ::google::protobuf::uint32 latest_psda_svn(int index) const;
   void set_latest_psda_svn(int index, ::google::protobuf::uint32 value);
   void add_latest_psda_svn(::google::protobuf::uint32 value);
@@ -993,10 +1000,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_latest_psda_svn();
 
-  // repeated uint32 performance_rekey_gid = 10 [packed = true];
+  // repeated uint32 performance_rekey_gid = 11 [packed = true];
   int performance_rekey_gid_size() const;
   void clear_performance_rekey_gid();
-  static const int kPerformanceRekeyGidFieldNumber = 10;
+  static const int kPerformanceRekeyGidFieldNumber = 11;
   ::google::protobuf::uint32 performance_rekey_gid(int index) const;
   void set_performance_rekey_gid(int index, ::google::protobuf::uint32 value);
   void add_performance_rekey_gid(::google::protobuf::uint32 value);
@@ -1005,10 +1012,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_performance_rekey_gid();
 
-  // repeated uint32 ec_sign256_x = 11 [packed = true];
+  // repeated uint32 ec_sign256_x = 12 [packed = true];
   int ec_sign256_x_size() const;
   void clear_ec_sign256_x();
-  static const int kEcSign256XFieldNumber = 11;
+  static const int kEcSign256XFieldNumber = 12;
   ::google::protobuf::uint32 ec_sign256_x(int index) const;
   void set_ec_sign256_x(int index, ::google::protobuf::uint32 value);
   void add_ec_sign256_x(::google::protobuf::uint32 value);
@@ -1017,10 +1024,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_ec_sign256_x();
 
-  // repeated uint32 ec_sign256_y = 12 [packed = true];
+  // repeated uint32 ec_sign256_y = 13 [packed = true];
   int ec_sign256_y_size() const;
   void clear_ec_sign256_y();
-  static const int kEcSign256YFieldNumber = 12;
+  static const int kEcSign256YFieldNumber = 13;
   ::google::protobuf::uint32 ec_sign256_y(int index) const;
   void set_ec_sign256_y(int index, ::google::protobuf::uint32 value);
   void add_ec_sign256_y(::google::protobuf::uint32 value);
@@ -1029,10 +1036,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_ec_sign256_y();
 
-  // repeated uint32 mac_smk = 13 [packed = true];
+  // repeated uint32 mac_smk = 14 [packed = true];
   int mac_smk_size() const;
   void clear_mac_smk();
-  static const int kMacSmkFieldNumber = 13;
+  static const int kMacSmkFieldNumber = 14;
   ::google::protobuf::uint32 mac_smk(int index) const;
   void set_mac_smk(int index, ::google::protobuf::uint32 value);
   void add_mac_smk(::google::protobuf::uint32 value);
@@ -1041,17 +1048,17 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_mac_smk();
 
-  // optional uint32 result_size = 14;
+  // optional uint32 result_size = 15;
   bool has_result_size() const;
   void clear_result_size();
-  static const int kResultSizeFieldNumber = 14;
+  static const int kResultSizeFieldNumber = 15;
   ::google::protobuf::uint32 result_size() const;
   void set_result_size(::google::protobuf::uint32 value);
 
-  // repeated uint32 reserved = 15 [packed = true];
+  // repeated uint32 reserved = 16 [packed = true];
   int reserved_size() const;
   void clear_reserved();
-  static const int kReservedFieldNumber = 15;
+  static const int kReservedFieldNumber = 16;
   ::google::protobuf::uint32 reserved(int index) const;
   void set_reserved(int index, ::google::protobuf::uint32 value);
   void add_reserved(::google::protobuf::uint32 value);
@@ -1060,10 +1067,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_reserved();
 
-  // repeated uint32 payload_tag = 16 [packed = true];
+  // repeated uint32 payload_tag = 17 [packed = true];
   int payload_tag_size() const;
   void clear_payload_tag();
-  static const int kPayloadTagFieldNumber = 16;
+  static const int kPayloadTagFieldNumber = 17;
   ::google::protobuf::uint32 payload_tag(int index) const;
   void set_payload_tag(int index, ::google::protobuf::uint32 value);
   void add_payload_tag(::google::protobuf::uint32 value);
@@ -1072,10 +1079,10 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_payload_tag();
 
-  // repeated uint32 payload = 17 [packed = true];
+  // repeated uint32 payload = 18 [packed = true];
   int payload_size() const;
   void clear_payload();
-  static const int kPayloadFieldNumber = 17;
+  static const int kPayloadFieldNumber = 18;
   ::google::protobuf::uint32 payload(int index) const;
   void set_payload(int index, ::google::protobuf::uint32 value);
   void add_payload(::google::protobuf::uint32 value);
@@ -1092,6 +1099,8 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   inline void clear_has_size();
   inline void set_has_context();
   inline void clear_has_context();
+  inline void set_has_mode();
+  inline void clear_has_mode();
   inline void set_has_epid_group_status();
   inline void clear_has_epid_group_status();
   inline void set_has_tcb_evaluation_status();
@@ -1110,9 +1119,9 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::uint32 type_;
   ::google::protobuf::uint32 size_;
   ::google::protobuf::uint32 context_;
+  ::google::protobuf::uint32 mode_;
   ::google::protobuf::uint32 epid_group_status_;
   ::google::protobuf::uint32 tcb_evaluation_status_;
-  ::google::protobuf::uint32 pse_evaluation_status_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > latest_equivalent_tcb_psvn_;
   mutable int _latest_equivalent_tcb_psvn_cached_byte_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > latest_pse_isvsvn_;
@@ -1121,6 +1130,8 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   mutable int _latest_psda_svn_cached_byte_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > performance_rekey_gid_;
   mutable int _performance_rekey_gid_cached_byte_size_;
+  ::google::protobuf::uint32 pse_evaluation_status_;
+  ::google::protobuf::uint32 result_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > ec_sign256_x_;
   mutable int _ec_sign256_x_cached_byte_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > ec_sign256_y_;
@@ -1133,7 +1144,6 @@ class AttestationMessage : public ::google::protobuf::Message /* @@protoc_insert
   mutable int _payload_tag_cached_byte_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > payload_;
   mutable int _payload_cached_byte_size_;
-  ::google::protobuf::uint32 result_size_;
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
   friend void protobuf_ShutdownFile_Messages_2eproto();
@@ -1389,24 +1399,31 @@ class MessagePsiHashData : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::uint32 size() const;
   void set_size(::google::protobuf::uint32 value);
 
-  // required uint32 context = 3;
+  // required uint32 mode = 3;
+  bool has_mode() const;
+  void clear_mode();
+  static const int kModeFieldNumber = 3;
+  ::google::protobuf::uint32 mode() const;
+  void set_mode(::google::protobuf::uint32 value);
+
+  // required uint32 context = 4;
   bool has_context() const;
   void clear_context();
-  static const int kContextFieldNumber = 3;
+  static const int kContextFieldNumber = 4;
   ::google::protobuf::uint32 context() const;
   void set_context(::google::protobuf::uint32 value);
 
-  // required uint32 id = 4;
+  // required uint32 id = 5;
   bool has_id() const;
   void clear_id();
-  static const int kIdFieldNumber = 4;
+  static const int kIdFieldNumber = 5;
   ::google::protobuf::uint32 id() const;
   void set_id(::google::protobuf::uint32 value);
 
-  // repeated uint32 mac = 5 [packed = true];
+  // repeated uint32 mac = 6 [packed = true];
   int mac_size() const;
   void clear_mac();
-  static const int kMacFieldNumber = 5;
+  static const int kMacFieldNumber = 6;
   ::google::protobuf::uint32 mac(int index) const;
   void set_mac(int index, ::google::protobuf::uint32 value);
   void add_mac(::google::protobuf::uint32 value);
@@ -1415,10 +1432,10 @@ class MessagePsiHashData : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_mac();
 
-  // repeated uint32 data = 6 [packed = true];
+  // repeated uint32 data = 7 [packed = true];
   int data_size() const;
   void clear_data();
-  static const int kDataFieldNumber = 6;
+  static const int kDataFieldNumber = 7;
   ::google::protobuf::uint32 data(int index) const;
   void set_data(int index, ::google::protobuf::uint32 value);
   void add_data(::google::protobuf::uint32 value);
@@ -1433,6 +1450,8 @@ class MessagePsiHashData : public ::google::protobuf::Message /* @@protoc_insert
   inline void clear_has_type();
   inline void set_has_size();
   inline void clear_has_size();
+  inline void set_has_mode();
+  inline void clear_has_mode();
   inline void set_has_context();
   inline void clear_has_context();
   inline void set_has_id();
@@ -1446,12 +1465,13 @@ class MessagePsiHashData : public ::google::protobuf::Message /* @@protoc_insert
   mutable int _cached_size_;
   ::google::protobuf::uint32 type_;
   ::google::protobuf::uint32 size_;
+  ::google::protobuf::uint32 mode_;
   ::google::protobuf::uint32 context_;
-  ::google::protobuf::uint32 id_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > mac_;
   mutable int _mac_cached_byte_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > data_;
   mutable int _data_cached_byte_size_;
+  ::google::protobuf::uint32 id_;
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
   friend void protobuf_ShutdownFile_Messages_2eproto();
@@ -2819,15 +2839,39 @@ inline void AttestationMessage::set_context(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.context)
 }
 
-// optional uint32 epid_group_status = 4;
-inline bool AttestationMessage::has_epid_group_status() const {
+// required uint32 mode = 4;
+inline bool AttestationMessage::has_mode() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void AttestationMessage::set_has_epid_group_status() {
+inline void AttestationMessage::set_has_mode() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void AttestationMessage::clear_has_epid_group_status() {
+inline void AttestationMessage::clear_has_mode() {
   _has_bits_[0] &= ~0x00000008u;
+}
+inline void AttestationMessage::clear_mode() {
+  mode_ = 0u;
+  clear_has_mode();
+}
+inline ::google::protobuf::uint32 AttestationMessage::mode() const {
+  // @@protoc_insertion_point(field_get:Messages.AttestationMessage.mode)
+  return mode_;
+}
+inline void AttestationMessage::set_mode(::google::protobuf::uint32 value) {
+  set_has_mode();
+  mode_ = value;
+  // @@protoc_insertion_point(field_set:Messages.AttestationMessage.mode)
+}
+
+// optional uint32 epid_group_status = 5;
+inline bool AttestationMessage::has_epid_group_status() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void AttestationMessage::set_has_epid_group_status() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void AttestationMessage::clear_has_epid_group_status() {
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void AttestationMessage::clear_epid_group_status() {
   epid_group_status_ = 0u;
@@ -2843,15 +2887,15 @@ inline void AttestationMessage::set_epid_group_status(::google::protobuf::uint32
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.epid_group_status)
 }
 
-// optional uint32 tcb_evaluation_status = 5;
+// optional uint32 tcb_evaluation_status = 6;
 inline bool AttestationMessage::has_tcb_evaluation_status() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void AttestationMessage::set_has_tcb_evaluation_status() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void AttestationMessage::clear_has_tcb_evaluation_status() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void AttestationMessage::clear_tcb_evaluation_status() {
   tcb_evaluation_status_ = 0u;
@@ -2867,15 +2911,15 @@ inline void AttestationMessage::set_tcb_evaluation_status(::google::protobuf::ui
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.tcb_evaluation_status)
 }
 
-// optional uint32 pse_evaluation_status = 6;
+// optional uint32 pse_evaluation_status = 7;
 inline bool AttestationMessage::has_pse_evaluation_status() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void AttestationMessage::set_has_pse_evaluation_status() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void AttestationMessage::clear_has_pse_evaluation_status() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void AttestationMessage::clear_pse_evaluation_status() {
   pse_evaluation_status_ = 0u;
@@ -2891,7 +2935,7 @@ inline void AttestationMessage::set_pse_evaluation_status(::google::protobuf::ui
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.pse_evaluation_status)
 }
 
-// repeated uint32 latest_equivalent_tcb_psvn = 7 [packed = true];
+// repeated uint32 latest_equivalent_tcb_psvn = 8 [packed = true];
 inline int AttestationMessage::latest_equivalent_tcb_psvn_size() const {
   return latest_equivalent_tcb_psvn_.size();
 }
@@ -2921,7 +2965,7 @@ AttestationMessage::mutable_latest_equivalent_tcb_psvn() {
   return &latest_equivalent_tcb_psvn_;
 }
 
-// repeated uint32 latest_pse_isvsvn = 8 [packed = true];
+// repeated uint32 latest_pse_isvsvn = 9 [packed = true];
 inline int AttestationMessage::latest_pse_isvsvn_size() const {
   return latest_pse_isvsvn_.size();
 }
@@ -2951,7 +2995,7 @@ AttestationMessage::mutable_latest_pse_isvsvn() {
   return &latest_pse_isvsvn_;
 }
 
-// repeated uint32 latest_psda_svn = 9 [packed = true];
+// repeated uint32 latest_psda_svn = 10 [packed = true];
 inline int AttestationMessage::latest_psda_svn_size() const {
   return latest_psda_svn_.size();
 }
@@ -2981,7 +3025,7 @@ AttestationMessage::mutable_latest_psda_svn() {
   return &latest_psda_svn_;
 }
 
-// repeated uint32 performance_rekey_gid = 10 [packed = true];
+// repeated uint32 performance_rekey_gid = 11 [packed = true];
 inline int AttestationMessage::performance_rekey_gid_size() const {
   return performance_rekey_gid_.size();
 }
@@ -3011,7 +3055,7 @@ AttestationMessage::mutable_performance_rekey_gid() {
   return &performance_rekey_gid_;
 }
 
-// repeated uint32 ec_sign256_x = 11 [packed = true];
+// repeated uint32 ec_sign256_x = 12 [packed = true];
 inline int AttestationMessage::ec_sign256_x_size() const {
   return ec_sign256_x_.size();
 }
@@ -3041,7 +3085,7 @@ AttestationMessage::mutable_ec_sign256_x() {
   return &ec_sign256_x_;
 }
 
-// repeated uint32 ec_sign256_y = 12 [packed = true];
+// repeated uint32 ec_sign256_y = 13 [packed = true];
 inline int AttestationMessage::ec_sign256_y_size() const {
   return ec_sign256_y_.size();
 }
@@ -3071,7 +3115,7 @@ AttestationMessage::mutable_ec_sign256_y() {
   return &ec_sign256_y_;
 }
 
-// repeated uint32 mac_smk = 13 [packed = true];
+// repeated uint32 mac_smk = 14 [packed = true];
 inline int AttestationMessage::mac_smk_size() const {
   return mac_smk_.size();
 }
@@ -3101,15 +3145,15 @@ AttestationMessage::mutable_mac_smk() {
   return &mac_smk_;
 }
 
-// optional uint32 result_size = 14;
+// optional uint32 result_size = 15;
 inline bool AttestationMessage::has_result_size() const {
-  return (_has_bits_[0] & 0x00002000u) != 0;
+  return (_has_bits_[0] & 0x00004000u) != 0;
 }
 inline void AttestationMessage::set_has_result_size() {
-  _has_bits_[0] |= 0x00002000u;
+  _has_bits_[0] |= 0x00004000u;
 }
 inline void AttestationMessage::clear_has_result_size() {
-  _has_bits_[0] &= ~0x00002000u;
+  _has_bits_[0] &= ~0x00004000u;
 }
 inline void AttestationMessage::clear_result_size() {
   result_size_ = 0u;
@@ -3125,7 +3169,7 @@ inline void AttestationMessage::set_result_size(::google::protobuf::uint32 value
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.result_size)
 }
 
-// repeated uint32 reserved = 15 [packed = true];
+// repeated uint32 reserved = 16 [packed = true];
 inline int AttestationMessage::reserved_size() const {
   return reserved_.size();
 }
@@ -3155,7 +3199,7 @@ AttestationMessage::mutable_reserved() {
   return &reserved_;
 }
 
-// repeated uint32 payload_tag = 16 [packed = true];
+// repeated uint32 payload_tag = 17 [packed = true];
 inline int AttestationMessage::payload_tag_size() const {
   return payload_tag_.size();
 }
@@ -3185,7 +3229,7 @@ AttestationMessage::mutable_payload_tag() {
   return &payload_tag_;
 }
 
-// repeated uint32 payload = 17 [packed = true];
+// repeated uint32 payload = 18 [packed = true];
 inline int AttestationMessage::payload_size() const {
   return payload_.size();
 }
@@ -3451,15 +3495,39 @@ inline void MessagePsiHashData::set_size(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.size)
 }
 
-// required uint32 context = 3;
-inline bool MessagePsiHashData::has_context() const {
+// required uint32 mode = 3;
+inline bool MessagePsiHashData::has_mode() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void MessagePsiHashData::set_has_context() {
+inline void MessagePsiHashData::set_has_mode() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void MessagePsiHashData::clear_has_context() {
+inline void MessagePsiHashData::clear_has_mode() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void MessagePsiHashData::clear_mode() {
+  mode_ = 0u;
+  clear_has_mode();
+}
+inline ::google::protobuf::uint32 MessagePsiHashData::mode() const {
+  // @@protoc_insertion_point(field_get:Messages.MessagePsiHashData.mode)
+  return mode_;
+}
+inline void MessagePsiHashData::set_mode(::google::protobuf::uint32 value) {
+  set_has_mode();
+  mode_ = value;
+  // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.mode)
+}
+
+// required uint32 context = 4;
+inline bool MessagePsiHashData::has_context() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void MessagePsiHashData::set_has_context() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void MessagePsiHashData::clear_has_context() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void MessagePsiHashData::clear_context() {
   context_ = 0u;
@@ -3475,15 +3543,15 @@ inline void MessagePsiHashData::set_context(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.context)
 }
 
-// required uint32 id = 4;
+// required uint32 id = 5;
 inline bool MessagePsiHashData::has_id() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void MessagePsiHashData::set_has_id() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void MessagePsiHashData::clear_has_id() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void MessagePsiHashData::clear_id() {
   id_ = 0u;
@@ -3499,7 +3567,7 @@ inline void MessagePsiHashData::set_id(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.id)
 }
 
-// repeated uint32 mac = 5 [packed = true];
+// repeated uint32 mac = 6 [packed = true];
 inline int MessagePsiHashData::mac_size() const {
   return mac_.size();
 }
@@ -3529,7 +3597,7 @@ MessagePsiHashData::mutable_mac() {
   return &mac_;
 }
 
-// repeated uint32 data = 6 [packed = true];
+// repeated uint32 data = 7 [packed = true];
 inline int MessagePsiHashData::data_size() const {
   return data_.size();
 }

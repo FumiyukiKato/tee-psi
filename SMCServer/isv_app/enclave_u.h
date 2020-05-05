@@ -244,15 +244,17 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, u_dirfd_ocall, (int* error, void* dirp));
 int SGX_UBRIDGE(SGX_NOCONVENTION, u_fstatat64_ocall, (int* error, int dirfd, const char* pathname, struct stat64_t* buf, int flags));
 #endif
 
-sgx_status_t initialize(sgx_enclave_id_t eid, sgx_status_t* retval);
+sgx_status_t initialize(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t salt[32]);
+sgx_status_t uploadCentralData(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* hashdata, size_t hash_size);
 sgx_status_t uninitialize(sgx_enclave_id_t eid);
 sgx_status_t enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_pse, sgx_ra_context_t* p_context);
 sgx_status_t enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context);
 sgx_status_t verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* message, size_t message_size, uint8_t mac[16]);
-sgx_status_t verify_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* secret, uint32_t secret_size, uint8_t gcm_mac[16], uint32_t max_verification_length, uint8_t salt[32], uint8_t salt_mac[16], uint32_t* id);
-sgx_status_t add_hash_data(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, sgx_ra_context_t context, uint8_t* hashdata, size_t hash_size, uint8_t mac[16]);
-sgx_status_t get_result_size(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, size_t* len);
+sgx_status_t verify_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* secret, uint32_t secret_size, uint8_t gcm_mac[16], uint32_t max_verification_length, uint32_t mode, uint8_t salt[32], uint8_t salt_mac[16], uint32_t* id);
+sgx_status_t add_hash_data(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, sgx_ra_context_t context, uint32_t mode, uint8_t* hashdata, size_t hash_size, uint8_t mac[16]);
+sgx_status_t get_result_size(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, uint32_t mode, size_t* len);
 sgx_status_t get_result(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, sgx_ra_context_t context, uint8_t* result, size_t result_size, uint8_t result_mac[16]);
+sgx_status_t get_central_intersection(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, sgx_ra_context_t context, uint8_t* result, size_t result_size, uint8_t result_mac[16]);
 sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
 sgx_status_t sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size);

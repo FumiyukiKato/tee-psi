@@ -43,7 +43,7 @@ namespace Settings {
     // latest 
     // version 6
     // https://api.trustedservices.intel.com/documents/sgx-attestation-api-spec.pdf
-
+    static string data_file_path = "./central_data.txt";
 }
 
 #endif

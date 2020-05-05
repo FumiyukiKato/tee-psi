@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 #include "Enclave.h"
 #include "NetworkManagerServer.h"
@@ -70,12 +71,16 @@ private:
     string handlePsiHashData(Messages::MessagePsiHashData msg);
     string handlePsiHashDataFinished(Messages::MessagePsiHashDataFinished msg, bool* again);
 
+    int loadHashedData(const string file_path, string psi_salt);
+
 protected:
     Enclave *enclave = NULL;
 
 private:
     int busy_retry_time = 4;
     NetworkManagerServer *nm = NULL;
+    std::vector<string> hash_vector;
+    std::map<string, string> data_map;
 
 };
 

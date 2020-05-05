@@ -26,8 +26,13 @@ enclave {
 
     trusted {
 
-        public sgx_status_t initialize();
+        public sgx_status_t initialize([out] uint8_t salt[32]);
+
+        public sgx_status_t uploadCentralData([in, size=hash_size] uint8_t* hashdata,
+											    size_t hash_size);
+
         public void uninitialize();
+
         public sgx_status_t enclave_init_ra(int b_pse, [out] sgx_ra_context_t *p_context);
 
         public sgx_status_t enclave_ra_close(sgx_ra_context_t context);
@@ -42,19 +47,29 @@ enclave {
 											   uint32_t secret_size,
 											   [in] uint8_t gcm_mac[16],
 											   uint32_t max_verification_length,
+                                               uint32_t mode,
 											   [out] uint8_t salt[32],
                                                [out] uint8_t salt_mac[16],
                                                [out] uint32_t *id);
 
         public sgx_status_t add_hash_data(uint32_t id,
                                           sgx_ra_context_t context,
+                                          uint32_t mode,
                                           [in, size=hash_size] uint8_t* hashdata,
                                           size_t hash_size,
                                           [in] uint8_t mac[16]);
 
-        public sgx_status_t get_result_size(uint32_t id, [out] size_t *len);
+        public sgx_status_t get_result_size(uint32_t id,
+                                            uint32_t mode,
+                                            [out] size_t *len);
 
         public sgx_status_t get_result(uint32_t id,
+                                       sgx_ra_context_t context,
+                                       [out, size=result_size] uint8_t* result,
+                                       size_t result_size,
+                                       [out] uint8_t result_mac[16]);
+
+        public sgx_status_t get_central_intersection(uint32_t id,
                                        sgx_ra_context_t context,
                                        [out, size=result_size] uint8_t* result,
                                        size_t result_size,

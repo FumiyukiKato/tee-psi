@@ -17,6 +17,10 @@
 
 #include "MessageHandler.h"
 
+// データのロードのためだけ
+#include "sample_libcrypto.h"
+#include "sha256.h"
+
 using namespace util;
 
 MessageHandler::MessageHandler(int port) {
@@ -44,9 +48,38 @@ void MessageHandler::start() {
     }
 
     sgx_status_t status;
-    ret = initialize(this->enclave->getID(), &status);
+    uint8_t salt[SALT_SIZE];
+    ret = initialize(this->enclave->getID(), &status, salt);
+    
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
         Log("Error, call generate_salt fail", log::error);
+        return;
+    }
+    
+    // saltでハッシュ化してenclave内にロードする
+    const string data_file_path = Settings::data_file_path;
+    string psi_salt = ByteArrayToString(salt, SALT_SIZE);
+    int data_size = loadHashedData(data_file_path, psi_salt);
+    if (data_size < 0) {
+        Log("Error, loading central data from file failed");
+        return;
+    }
+    
+    int hash_data_size = data_size * SAMPLE_SHA256_HASH_SIZE;
+    uint8_t hash_array[hash_data_size];
+    for (int i = 0; i < data_size; i++) {
+        uint8_t * arr = NULL;
+        int size = HexStringToByteArray(this->hash_vector[i], &arr);
+        if (size != sizeof(sgx_sha256_hash_t)) {
+            Log("[PSI] Get hash vector , something error: %d, %d, %s", size, sizeof(sgx_sha256_hash_t), this->hash_vector[i]);
+            return;
+        }
+        memcpy(hash_array + i*sizeof(sgx_sha256_hash_t), arr, size);
+    }
+    
+    ret = uploadCentralData(this->enclave->getID(), &status, hash_array, hash_data_size);
+    if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
+        Log("Error, loading central data into sgx fail", log::error);
         return;
     }
 
@@ -54,6 +87,50 @@ void MessageHandler::start() {
     this->nm->startService();
 }
 
+int MessageHandler::loadHashedData(
+    const string file_path,
+    string psi_salt
+) {
+    //read file
+    uint8_t * file_data = NULL;
+    int file_size = 0;
+    Log("file_data 0");
+    file_size = ReadFileToBuffer(file_path, &file_data);
+    if (file_size <= 0) {
+        return -1;
+    }
+    
+    char * p = (char*)file_data;
+    const char * s = p;
+    char* n = (char*)p;
+    for( ; p - s < file_size; p = n + 1) {
+        n = strchr(p, '\n');
+        if (n == NULL) {
+            //only one line or last line
+            n = p + strlen(p);
+        } else {
+            n[0] = '\0';
+        }
+        if (strlen(p) <= 0) {//ignore null line
+            continue;
+        }
+
+        sgx_sha256_hash_t report_data = {0};
+        Sha256 sha256;
+        sha256.update((uint8_t*)p, strlen(p));
+        sha256.update((uint8_t*)psi_salt.c_str(), psi_salt.size());
+        sha256.hash((sgx_sha256_hash_t * )&report_data);
+
+        string hash = ByteArrayToString(report_data, sizeof(sgx_sha256_hash_t));
+
+        this->hash_vector.push_back(hash);
+        this->data_map[hash] = p;
+    }
+    Log("[PSI] complete load and hash central data, size: %d", this->hash_vector.size());
+    
+    std::sort(this->hash_vector.begin(), this->hash_vector.end());
+    return this->hash_vector.size();
+}
 
 sgx_status_t MessageHandler::initEnclave() {
     this->enclave = Enclave::getInstance();
@@ -344,6 +421,7 @@ string MessageHandler::handleAttestationResult(Messages::AttestationMessage msg)
     sgx_status_t status;
     sgx_status_t ret;
     sgx_ra_context_t context = msg.context();
+    ClientMode mode = (ClientMode)msg.mode();
     uint32_t id = 0;
     uint8_t salt[SALT_SIZE];
     uint8_t mac[SGX_MAC_SIZE];
@@ -367,8 +445,6 @@ string MessageHandler::handleAttestationResult(Messages::AttestationMessage msg)
         SafeFree(p_att_result_msg_full);
         return generateAttestationFailed(context, id);
     } else {
-        // idをセットもしている
-        // 分けた方がよいけど，速度のために一緒に処理している
         ret = verify_secret_data(this->enclave->getID(),
                                  &status,
                                  context,
@@ -376,6 +452,7 @@ string MessageHandler::handleAttestationResult(Messages::AttestationMessage msg)
                                  p_att_result_msg_body->secret.payload_size,
                                  p_att_result_msg_body->secret.payload_tag,
                                  MAX_VERIFICATION_RESULT,
+                                 (uint32_t)mode,
                                  salt,
                                  mac,
                                  &id);
@@ -455,6 +532,7 @@ string MessageHandler::handlePsiHashData(Messages::MessagePsiHashData msg) {
 
     uint8_t mac[SGX_MAC_SIZE] = {0};
     sgx_ra_context_t context = msg.context();
+    ClientMode mode = (ClientMode)msg.mode();
     uint32_t id = msg.id();
     int data_size = msg.data_size();
     uint8_t* data = (uint8_t*)malloc(data_size);
@@ -472,6 +550,7 @@ string MessageHandler::handlePsiHashData(Messages::MessagePsiHashData msg) {
                                     &status,
                                     id,
                                     context,
+                                    (uint32_t)mode,
                                     data,
                                     data_size,
                                     mac);
@@ -496,25 +575,29 @@ string MessageHandler::handlePsiHashData(Messages::MessagePsiHashData msg) {
 string MessageHandler::handlePsiHashDataFinished(Messages::MessagePsiHashDataFinished msg, bool* again) {
 
     sgx_ra_context_t context = msg.context();
+    ClientMode mode = (ClientMode)msg.mode();
     uint32_t id = msg.id();
     uint8_t mac[SGX_MAC_SIZE] = {0};
     uint8_t * data = NULL;
     size_t data_size = 0;
     sgx_status_t status;
     sgx_status_t ret;
-    ClientMode mode = (ClientMode)msg.mode();
 
     Log("[PSI] Received hash data finished, %d", id);
 
+    // TODO; result_sizeを隠す必要はあるのでは？[out]のバッファをクライアントの入力サイズくらい取れば実現できそう
+    // そもそもget_resultはいらない説があるのでそれなら問題なし
+    // https://stackoverflow.com/questions/49769792/how-to-return-a-pointer-of-unknown-size-in-an-sgx-ecall
+    ret = get_result_size(this->enclave->getID(), &status, id, (uint32_t)mode, &data_size);
+    if (SGX_SUCCESS != ret) {
+        Log("[PSI] get_result_size failed, %d", ret);
+        return "";
+    }
+    
+    // TODO; modeの条件分岐がいろんなところに漏れているけどとりあえず気にしない
     switch (mode) {
         case P2P: {
             Log("PSI in P2P mode");
-
-            ret = get_result_size(this->enclave->getID(), &status, id, &data_size);
-            if (SGX_SUCCESS != ret) {
-                Log("[PSI] get_result_size failed, %d", ret);
-                return "";
-            }
 
             if (SGX_SUCCESS != status) {
                 if (status == SGX_ERROR_INVALID_STATE) {
@@ -555,12 +638,35 @@ string MessageHandler::handlePsiHashDataFinished(Messages::MessagePsiHashDataFin
                     return "";
                 }
             }
+            break;
         }
         case CENTRAL: {
             Log("PSI in CENTRAL mode");
-            
-        }
+            if (SGX_SUCCESS != status) {
+                Log("[PSI] get_result_size failed, %d, %d", ret, status);
+                return "";
+            }
 
+            data = (uint8_t*)malloc(data_size);
+
+            if (data == NULL) {
+                Log("[PSI] alloc buffer for intersect data failed!");
+                return "";
+            }
+            
+            ret = get_central_intersection(this->enclave->getID(),
+                            &status,
+                            id,
+                            context,
+                            data,
+                            data_size,
+                            mac);
+            if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
+                Log("[PSI] get_result failed, %d, %d", ret, status);
+                return "";
+            }
+            break;
+        }
     }
 
     Messages::MessagePsiIntersect intersect;

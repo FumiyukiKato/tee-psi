@@ -100,6 +100,7 @@ string MessageManager::handleMSG3(Messages::MessageMSG3 msg) {
     Messages::AttestationMessage att_msg;
     att_msg.set_type(RA_ATT_RESULT);
     att_msg.set_context(msg.context());
+    att_msg.set_mode(uint32_t(this->mode));
 
     int ret = this->sp->sp_ra_proc_msg3_req(msg, &att_msg);
 
@@ -128,6 +129,7 @@ string MessageManager::handleAppAttOk(Messages::MessagePsiSalt msg) {
     hash_data.set_type(RA_PSI_HASHDATA);
     hash_data.set_context(msg.context());
     hash_data.set_id(msg.id());
+    hash_data.set_mode(uint32_t(this->mode));
 
     int ret = this->sp->sp_psi_get_data_hash(&hash_data);
 
@@ -151,18 +153,7 @@ string MessageManager::handleHashData(Messages::MessagePsiResult msg, bool* fini
         finish.set_size(sizeof(uint32_t));
         finish.set_context(msg.context());
         finish.set_id(msg.id());
-
-        switch (mode) {
-            case P2P:
-                finish.set_mode(uint32_t(P2P));
-                break;
-            case CENTRAL:
-                finish.set_mode(uint32_t(CENTRAL));
-                break;
-            default:
-                Log("Error, service provider mode error %d", mode);
-                return "";
-        }
+        finish.set_mode(uint32_t(this->mode));
 
         *finished = true;
 
@@ -173,6 +164,7 @@ string MessageManager::handleHashData(Messages::MessagePsiResult msg, bool* fini
         hash_data.set_type(RA_PSI_HASHDATA);
         hash_data.set_context(msg.context());
         hash_data.set_id(msg.id());
+        hash_data.set_mode(uint32_t(this->mode));
 
         int ret = this->sp->sp_psi_get_data_hash(&hash_data);
 

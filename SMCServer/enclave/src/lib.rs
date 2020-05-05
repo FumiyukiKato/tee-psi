@@ -61,6 +61,13 @@ const CLIENT_MAX_NUMBER: usize = 2;
 const HASH_DATA_FINISH: u32 = 1;
 const RESULT_FINISH: u32 = 2;
 
+const P2P_MODE: u32 = 0;
+const CENTRAL_MODE: u32 = 1;
+
+const CLIENT_ID: u32 = 1;
+const CLIENT_IDX: usize = 0;
+const CENTRAL_IDX: usize = 1;
+
 #[derive(Clone, Default)]
 struct SetIntersection {
     salt: [u8; SGX_SALT_SIZE],
@@ -81,11 +88,24 @@ impl SetIntersection {
     }
 }
 
-static GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+// for PSP PSI
+static P2P_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+// for Central PSI
+static CENTRAL_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 
 fn get_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
 {
-    let ptr = GLOBAL_HASH_BUFFER.load(Ordering::SeqCst) as * mut RefCell<SetIntersection>;
+    let ptr = P2P_GLOBAL_HASH_BUFFER.load(Ordering::SeqCst) as * mut RefCell<SetIntersection>;
+    if ptr.is_null() {
+        None
+    } else {
+        Some(unsafe { &* ptr })
+    }
+}
+
+fn get_central_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
+{
+    let ptr = CENTRAL_GLOBAL_HASH_BUFFER.load(Ordering::SeqCst) as * mut RefCell<SetIntersection>;
     if ptr.is_null() {
         None
     } else {
@@ -94,10 +114,12 @@ fn get_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
 }
 
 
+// TODO; 初期化と解放の関数をモードで分ける
 #[no_mangle]
 pub extern "C"
-fn initialize() -> sgx_status_t {
+fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
 
+    // for P2P
     let mut data = SetIntersection::new();
     let mut rand = match StdRng::new() {
         Ok(rng) => rng,
@@ -107,7 +129,17 @@ fn initialize() -> sgx_status_t {
 
     let data_box = Box::new(RefCell::<SetIntersection>::new(data));
     let ptr = Box::into_raw(data_box);
-    GLOBAL_HASH_BUFFER.store(ptr as *mut (), Ordering::SeqCst);
+    P2P_GLOBAL_HASH_BUFFER.store(ptr as *mut (), Ordering::SeqCst);
+    
+    // for Central
+    // id = 2つまり，data[1]がサーバーのデータとして扱う
+    let mut central_data = SetIntersection::new();
+    rand.fill_bytes(&mut central_data.salt);
+    *salt = central_data.salt;
+    
+    let central_data_box = Box::new(RefCell::<SetIntersection>::new(central_data));
+    let central_ptr = Box::into_raw(central_data_box);
+    CENTRAL_GLOBAL_HASH_BUFFER.store(central_ptr as *mut (), Ordering::SeqCst);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -116,18 +148,52 @@ fn initialize() -> sgx_status_t {
 pub extern "C"
 fn uninitialize() {
 
-    let ptr = GLOBAL_HASH_BUFFER.swap(0 as * mut (), Ordering::SeqCst) as * mut RefCell<SetIntersection>;
+    let ptr = P2P_GLOBAL_HASH_BUFFER.swap(0 as * mut (), Ordering::SeqCst) as * mut RefCell<SetIntersection>;
     if ptr.is_null() {
        return;
     }
     let _ = unsafe { Box::from_raw(ptr) };
+
+    let central_ptr = CENTRAL_GLOBAL_HASH_BUFFER.swap(0 as * mut (), Ordering::SeqCst) as * mut RefCell<SetIntersection>;
+    if central_ptr.is_null() {
+        return;
+    }
+    let _ = unsafe { Box::from_raw(central_ptr) };
 }
 
+#[no_mangle]
+pub extern "C"
+fn uploadCentralData(
+    hashdata: * const u8,
+    hash_size: usize,
+) -> sgx_status_t {
+
+    let hash_slice = unsafe {
+        slice::from_raw_parts(hashdata, hash_size as usize)
+    };
+
+    if hash_slice.len() != hash_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
+    intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
+
+    let buffer = &mut intersection.data[CENTRAL_IDX].hashdata;
+    
+    for i in 0_usize..(hash_size/SGX_HASH_SIZE) {
+        let mut hash = [0_u8; SGX_HASH_SIZE];
+        hash.copy_from_slice(&hash_slice[i*SGX_HASH_SIZE..(i + 1)*SGX_HASH_SIZE]);
+        buffer.push(hash);
+    }
+
+    sgx_status_t::SGX_SUCCESS
+}
 
 #[no_mangle]
 pub extern "C"
 fn enclave_init_ra(b_pse: i32, p_context: &mut sgx_ra_context_t) -> sgx_status_t {
-    let mut ret: sgx_status_t = sgx_status_t::SGX_SUCCESS;
+    let ret: sgx_status_t;
     match rsgx_ra_init(&G_SP_PUB_KEY, b_pse) {
         Ok(p) => {
             *p_context = p;
@@ -192,12 +258,23 @@ fn verify_secret_data(context: sgx_ra_context_t,
                       sec_size: u32,
                       gcm_mac: &[u8; SGX_MAC_SIZE],
                       max_vlen: u32,
+                      mode: u32,
                       salt: &mut [u8; SGX_SALT_SIZE],
                       salt_mac: &mut [u8; SGX_MAC_SIZE],
                       id: &mut u32) -> sgx_status_t {
 
-    let mut data = get_ref_hash_buffer().unwrap().borrow_mut();
-    if data.number < CLIENT_MAX_NUMBER as u32 {
+    let mut data = match mode {
+        P2P_MODE     => get_ref_hash_buffer().unwrap().borrow_mut(),
+        CENTRAL_MODE => get_central_ref_hash_buffer().unwrap().borrow_mut(),
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
+    };
+
+    let is_ok: bool = match mode { 
+        P2P_MODE => { data.number < CLIENT_MAX_NUMBER as u32 },
+        CENTRAL_MODE => { data.number == 0 },
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
+    };
+    if is_ok {
         data.number +=1;
     } else {
         return sgx_status_t::SGX_ERROR_UNEXPECTED;
@@ -241,7 +318,7 @@ fn verify_secret_data(context: sgx_ra_context_t,
                                                       salt_mac);
                 match ret {
                     Ok(()) => {
-                        *id = data.number;
+                        *id = data.number; // When CENTRAL_MODE, data.number is always 1
                         return sgx_status_t::SGX_SUCCESS;
                     },
                     Err(_) => { return sgx_status_t::SGX_ERROR_UNEXPECTED; },
@@ -259,13 +336,20 @@ fn verify_secret_data(context: sgx_ra_context_t,
 pub extern "C"
 fn add_hash_data(id: u32,
                  context: sgx_ra_context_t,
+                 mode: u32,
                  hashdata: * const u8,
                  hash_size: usize,
                  mac: &[u8; SGX_MAC_SIZE]) -> sgx_status_t {
-
-    if (id == 0) || (id > CLIENT_MAX_NUMBER as u32) {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-    }
+    
+    match mode {
+        P2P_MODE => if (id == 0) || (id > CLIENT_MAX_NUMBER as u32) {
+            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+        },
+        CENTRAL_MODE => if id != CLIENT_ID {
+            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+        },
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
+    };
 
     let sk_key: sgx_ec_key_128bit_t = match rsgx_ra_get_keys(context, sgx_ra_key_type_t::SGX_RA_KEY_SK) {
         Ok(key) => key,
@@ -296,7 +380,11 @@ fn add_hash_data(id: u32,
         Err(x) => return x,
     };
 
-    let mut intersection = get_ref_hash_buffer().unwrap().borrow_mut();
+    let mut intersection = match mode {
+        P2P_MODE     => get_ref_hash_buffer().unwrap().borrow_mut(),
+        CENTRAL_MODE => get_central_ref_hash_buffer().unwrap().borrow_mut(),
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
+    };
     let buffer = &mut intersection.data[id as usize - 1].hashdata;
 
     for i in 0_usize..(hash_size/SGX_HASH_SIZE) {
@@ -310,20 +398,37 @@ fn add_hash_data(id: u32,
 
 #[no_mangle]
 pub extern "C"
-fn get_result_size(id: u32, len: &mut usize) -> sgx_status_t {
+fn get_result_size(id:   u32,
+                   mode: u32,
+                   len:  &mut usize) -> sgx_status_t {
 
-    if (id == 0) || (id > CLIENT_MAX_NUMBER as u32) {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-    }
-
-    let cid: usize = id as usize - 1;
-    let other = if cid == 0 {
-        CLIENT_MAX_NUMBER - 1
-    } else {
-        0
+    match mode {
+        P2P_MODE => if (id == 0) || (id > CLIENT_MAX_NUMBER as u32) {
+            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+        },
+        CENTRAL_MODE => if id != CLIENT_ID {
+            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+        },
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
     };
 
-    let mut intersection = get_ref_hash_buffer().unwrap().borrow_mut();
+    let cid: usize = match mode {
+        P2P_MODE     => id as usize - 1,
+        CENTRAL_MODE => CLIENT_IDX,
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
+    };
+
+    let other = match mode {
+        P2P_MODE     => if cid == 0 { CLIENT_MAX_NUMBER - 1 } else { 0 },
+        CENTRAL_MODE => CENTRAL_IDX,
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
+    };
+
+    let mut intersection = match mode {
+        P2P_MODE     => get_ref_hash_buffer().unwrap().borrow_mut(),
+        CENTRAL_MODE => get_central_ref_hash_buffer().unwrap().borrow_mut(),
+        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
+    };
 
     if intersection.data[cid].state == 0 {
         intersection.data[cid].state = HASH_DATA_FINISH;
@@ -423,6 +528,68 @@ fn get_result(id: u32,
             intersection.data[i].state = 0;
         }
     }
+
+    sgx_status_t::SGX_SUCCESS
+}
+
+// TODO; 上のメソッドと統合しても全然よい
+#[no_mangle]
+pub extern "C"
+fn get_central_intersection(id: u32,
+              context: sgx_ra_context_t,
+              result: * mut u8,
+              result_size: usize,
+              result_mac: &mut [u8; SGX_MAC_SIZE]) -> sgx_status_t {
+
+    if id != CLIENT_ID {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let sk_key: sgx_ec_key_128bit_t = match rsgx_ra_get_keys(context, sgx_ra_key_type_t::SGX_RA_KEY_SK) {
+        Ok(key) => key,
+        Err(x) => return x,
+    };
+    
+    let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
+
+    // TODO; 状態管理する必要ない?クライアントが複数いれば必要あるかもしれないので残す 
+    // Rust側が勝手にロックしてくれるの？
+    let state1 = intersection.data[CLIENT_IDX].state;
+    let state2 = intersection.data[CLIENT_IDX].state;
+    if (state1 != RESULT_FINISH) && (state2 != RESULT_FINISH) {
+        return sgx_status_t::SGX_ERROR_INVALID_STATE;
+    }
+
+    let len = intersection.data[CLIENT_IDX].result.len();
+    if len > 0 {
+        if result_size != len {
+            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+        }
+
+        let result_slice = unsafe {
+            slice::from_raw_parts_mut(result, result_size)
+        };
+
+        let iv = [0; SGX_AESGCM_IV_SIZE];
+        let aad:[u8; 0] = [0; 0];
+        let ret = rsgx_rijndael128GCM_encrypt(&sk_key,
+                                              intersection.data[CLIENT_IDX].result.as_slice(),
+                                              &iv,
+                                              &aad,
+                                              result_slice,
+                                              result_mac);
+        match ret {
+            Ok(()) => {},
+            Err(x) => return x,
+        };
+    }
+
+    intersection.number = 0;
+    intersection.data[CLIENT_IDX].hashdata = Vec::new();
+    intersection.data[CLIENT_IDX].result = Vec::new();
+    intersection.data[CLIENT_IDX].state = 0;
+    
+    intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
 
     sgx_status_t::SGX_SUCCESS
 }
