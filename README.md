@@ -1,12 +1,15 @@
 # tee-psi
 
-- original repository
+TEE-based Private Set Intersection
+
+### Materials
+
+#### original repository
   - https://github.com/apache/incubator-teaclave-sgx-sdk/tree/31b323366cbab3b359fd4a3a9bc827ff37654059/samplecode/psi
   - dependencies are [here](https://github.com/apache/incubator-teaclave-sgx-sdk/blob/e60e5adfadcbe4b34913d1c82cd5f7ac021fc3cf/samplecode/psi/README.md#setup)
 
-- material
+#### high level architecture
   - https://medium.com/baiduxlab/private-set-intersection-technology-a-hot-topic-in-multi-party-computing-f560cf3bf6cb
-  - high level architecture and phirosophy of PSI on P2P
 
 ### Setup
 
