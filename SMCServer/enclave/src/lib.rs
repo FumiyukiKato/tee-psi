@@ -134,6 +134,7 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
     // for Central
     // id = 2つまり，data[1]がサーバーのデータとして扱う
     let mut central_data = SetIntersection::new();
+    central_data.data[CENTRAL_IDX].hashdata = Vec::with_capacity(22000);
     rand.fill_bytes(&mut central_data.salt);
     *salt = central_data.salt;
     
@@ -177,16 +178,16 @@ fn uploadCentralData(
     }
 
     let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
-    intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
-
-    let buffer = &mut intersection.data[CENTRAL_IDX].hashdata;
     
     for i in 0_usize..(hash_size/SGX_HASH_SIZE) {
         let mut hash = [0_u8; SGX_HASH_SIZE];
         hash.copy_from_slice(&hash_slice[i*SGX_HASH_SIZE..(i + 1)*SGX_HASH_SIZE]);
-        buffer.push(hash);
+        intersection.data[CENTRAL_IDX].hashdata.push(hash);
     }
-
+    // maxまで確保してここでshrinkする
+    intersection.data[CENTRAL_IDX].hashdata.shrink_to_fit();
+    intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
+    
     sgx_status_t::SGX_SUCCESS
 }
 

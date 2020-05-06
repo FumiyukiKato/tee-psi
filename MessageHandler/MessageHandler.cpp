@@ -87,8 +87,11 @@ void MessageHandler::start() {
     
     clocker = Clocker("Uploading to enclave");
     clocker.start();
+    
+    Log("hash_array byte size: %d", sizeof(hash_array));
     ret = uploadCentralData(this->enclave->getID(), &status, hash_array, hash_data_size);
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
+        Log("[Error] uploadCentralData failed, %d, %d", ret, status);
         Log("Error, loading central data into sgx fail", log::error);
         return;
     }
