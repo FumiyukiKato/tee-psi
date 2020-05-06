@@ -2,6 +2,9 @@
 
 TEE-based Private Set Intersection
 
+![TEE-PSI 001](https://user-images.githubusercontent.com/27177602/81140452-57e11a00-8fa4-11ea-870e-c1b1d4e932f5.jpeg)
+
+
 ### Materials
 
 #### original repository
