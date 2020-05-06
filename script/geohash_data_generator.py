@@ -51,7 +51,8 @@ def main():
             usage(o, arg)
             sys.exit(2)
     
-    with open('data/generated-%d-%d.txt' % (mode, numData), 'w') as f:
+    tmpFileName = 'data/tmp-geohash-data'
+    with open(tmpFileName, 'w') as f:
         geohashes = []
         if mode == RAND:
             for _ in range(numData):
@@ -62,6 +63,11 @@ def main():
             
         f.write('\n'.join(geohashes))
         f.write('\n')
+    
+    byte_size = os.path.getsize(tmpFileName)
+    os.rename(tmpFileName, 'data/generated-%d-%s-%d-bytes.txt' % 
+                    (numData, { RAND: 'random', ORDER: 'order' }[mode], byte_size))
+
         
 
 if __name__ == "__main__":
