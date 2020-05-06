@@ -36,6 +36,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <chrono>
 
 #include "LogBase.h"
 #include "sgx_urts.h"
@@ -78,6 +79,20 @@ string Base64decode(const string val);
 string Base64encodeUint8(uint8_t *val, uint32_t len);
 
 void printf_array(string tag, const uint8_t * arr, int size);
+
+
+// 時間分解能がけっこう低い
+class Clocker {
+public:
+    Clocker(){};
+    Clocker(string name);
+    virtual ~Clocker();
+    void start();
+    void stop();
+private:
+    string name;
+    chrono::system_clock::time_point start_clock;
+};
 
 #endif
 

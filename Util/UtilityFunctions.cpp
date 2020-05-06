@@ -313,3 +313,19 @@ void printf_array(string tag, const uint8_t * arr, int size) {
     }
     printf("%s: %s\n", tag.c_str(), s.str().c_str());
 }
+
+Clocker::Clocker(string name) {
+    this->name = name;
+}
+
+Clocker::~Clocker() {}
+
+void Clocker::start() {
+    this->start_clock = chrono::system_clock::now();
+}
+
+void Clocker::stop() {
+    chrono::system_clock::time_point end = chrono::system_clock::now();
+    auto elapsed = chrono::duration_cast< chrono::milliseconds >(end - this->start_clock).count();
+    printf("[Clocker] %s: time %ld[ms]\n", this->name.c_str(), elapsed);
+}

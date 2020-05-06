@@ -17,13 +17,15 @@
 
 #include "MessageHandler.h"
 
-// データのロードのためだけ
+// just only data load 
 #include "sample_libcrypto.h"
 #include "sha256.h"
 
 using namespace util;
 
 MessageHandler::MessageHandler(int port) {
+    Clocker clocker = Clocker("Total Request clocker");
+    this->clocker = clocker;
     this->nm = NetworkManagerServer::getInstance(port);
 }
 
@@ -58,6 +60,9 @@ void MessageHandler::start() {
         return;
     }
     
+    Clocker clocker = Clocker("Loading central data");
+    clocker.start();
+
     // saltでハッシュ化してenclave内にロードする
     const string data_file_path = this->data_path;
     string psi_salt = ByteArrayToString(salt, SALT_SIZE);
@@ -78,13 +83,16 @@ void MessageHandler::start() {
         }
         memcpy(hash_array + i*sizeof(sgx_sha256_hash_t), arr, size);
     }
+    clocker.stop();
     
+    clocker = Clocker("Uploading to enclave");
+    clocker.start();
     ret = uploadCentralData(this->enclave->getID(), &status, hash_array, hash_data_size);
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
         Log("Error, loading central data into sgx fail", log::error);
         return;
     }
-
+    clocker.stop();
     Log("Call initEnclave success");
     this->nm->startService();
 }
@@ -520,6 +528,7 @@ string MessageHandler::handleMSG0(Messages::MessageMsg0 msg) {
 
 string MessageHandler::handleVerification() {
     Log("Verification request received");
+    this->clocker.start(); // total time
     return this->generateMSG0();
 }
 
@@ -588,7 +597,8 @@ string MessageHandler::handlePsiHashDataFinished(Messages::MessagePsiHashDataFin
     sgx_status_t ret;
 
     Log("[PSI] Received hash data finished, %d", id);
-
+    Clocker clocker = Clocker("TEE PSI execution clocker");
+    clocker.start();
     // TODO; result_sizeを隠す必要はあるのでは？[out]のバッファをクライアントの入力サイズくらい取れば実現できそう
     // そもそもget_resultはいらない説があるのでそれなら問題なし
     // https://stackoverflow.com/questions/49769792/how-to-return-a-pointer-of-unknown-size-in-an-sgx-ecall
@@ -672,6 +682,7 @@ string MessageHandler::handlePsiHashDataFinished(Messages::MessagePsiHashDataFin
             break;
         }
     }
+    clocker.stop();
 
     Messages::MessagePsiIntersect intersect;
     intersect.set_type(RA_PSI_INTERSECT);
@@ -760,6 +771,7 @@ vector<string> MessageHandler::incomingHandler(string v, int type) {
                 res.push_back(to_string(RA_PSI_RESULT));
             } else {
                 res.push_back(to_string(RA_PSI_INTERSECT));
+                this->clocker.stop();
             }
         }
     }

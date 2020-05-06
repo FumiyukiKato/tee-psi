@@ -82,6 +82,7 @@ private:
     string data_path;
     std::vector<string> hash_vector;
     std::map<string, string> data_map;
+    Clocker clocker;
 
 };
 
