@@ -32,7 +32,9 @@ MessageHandler::~MessageHandler() {
 }
 
 
-int MessageHandler::init() {
+int MessageHandler::init(string path) {
+    this->data_path = path;
+
     this->nm->Init();
     this->nm->connectCallbackHandler([this](string v, int type) {
         return this->incomingHandler(v, type);
@@ -57,7 +59,7 @@ void MessageHandler::start() {
     }
     
     // saltでハッシュ化してenclave内にロードする
-    const string data_file_path = Settings::data_file_path;
+    const string data_file_path = this->data_path;
     string psi_salt = ByteArrayToString(salt, SALT_SIZE);
     int data_size = loadHashedData(data_file_path, psi_salt);
     if (data_size < 0) {
@@ -94,7 +96,9 @@ int MessageHandler::loadHashedData(
     //read file
     uint8_t * file_data = NULL;
     int file_size = 0;
-    Log("file_data 0");
+    
+    Log("[PSI] load central data from : %s", this->data_path);
+
     file_size = ReadFileToBuffer(file_path, &file_data);
     if (file_size <= 0) {
         return -1;
@@ -690,7 +694,7 @@ string MessageHandler::handlePsiHashDataFinished(Messages::MessagePsiHashDataFin
 
     enclave_ra_close(this->enclave->getID(), &status, context);
 
-    Log("[PSI] get result success, %d", data_size/SGX_HASH_SIZE);
+    Log("[PSI] get result success");
 
     return nm->serialize(intersect);
 }

@@ -49,7 +49,7 @@ public:
     virtual ~MessageHandler();
 
     sgx_ra_msg3_t* getMSG3();
-    int init();
+    int init(string path);
     void start();
     vector<string> incomingHandler(string v, int type);
 
@@ -79,6 +79,7 @@ protected:
 private:
     int busy_retry_time = 4;
     NetworkManagerServer *nm = NULL;
+    string data_path;
     std::vector<string> hash_vector;
     std::map<string, string> data_map;
 

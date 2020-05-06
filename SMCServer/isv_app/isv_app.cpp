@@ -23,13 +23,13 @@
 
 using namespace util;
 
-int Main(int argc, char* argv[]) {
+int Main(char *filepath) {
     LogBase::Inst();
 
     int ret = 0;
 
     MessageHandler msg;
-    msg.init();
+    msg.init(filepath);
     msg.start();
 
     return ret;
@@ -37,8 +37,34 @@ int Main(int argc, char* argv[]) {
 
 
 int main( int argc, char **argv ) {
+    
+    int opt;
+    char *filepath = NULL;
+
+    while ((opt = getopt(argc, argv, "f:")) != -1) {
+        switch (opt) {
+            case 'f':
+                if (optarg != NULL) {
+                    filepath = optarg;
+                } else {
+                    Log("Usage: %s [-f central data file path] \n", argv[0]);
+                    return -1;
+                }
+                break;
+                                
+            default:
+                Log("Usage: %s [-f central data file path] \n", argv[0]);
+                return -1;
+        }
+    }
+    
+    if (filepath == NULL) {
+        Log("Usage: %s [-f central data file path] \n", argv[0]);
+        return -1;
+    }
+
     try {
-        return Main(argc, argv);
+        return Main(filepath);
     } catch (std::exception& e) {
         Log("exception: %s", e.what());
     } catch (...) {
