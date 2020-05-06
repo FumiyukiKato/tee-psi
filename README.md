@@ -9,6 +9,12 @@
   - high level architecture and phirosophy of PSI on P2P
 
 ### Setup
+
+Clone rust sgx sdk and set environment variables
+```
+$ git clone git@github.com:apache/incubator-teaclave-sgx-sdk.git
+```
+
 #### Enviroment variables hints
 `.env`
 ```
