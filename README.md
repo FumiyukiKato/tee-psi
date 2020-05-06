@@ -65,3 +65,10 @@ $ bin/in
 $ cd SMCClient
 $ ./app [-f file path] [-m mode]
 ```
+
+### Other
+
+#### geohash data generator
+```
+$ python script/geohash_data_generator.py [ --num data_size ] [ --mode (random|order) ]
+```
