@@ -30,3 +30,6 @@ Intel_SGX_Attestaion_RootCA.pem
 
 .vscode
 generated-*
+
+# これはビルドできないので載せておく
+!libsample_libcrypto.so
