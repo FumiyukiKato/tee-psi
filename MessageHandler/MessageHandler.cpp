@@ -73,7 +73,7 @@ void MessageHandler::start() {
     }
     
     int hash_data_size = data_size * SAMPLE_SHA256_HASH_SIZE;
-    uint8_t hash_array[hash_data_size];
+    uint8_t *hash_array = new uint8_t[hash_data_size];
     for (int i = 0; i < data_size; i++) {
         uint8_t * arr = NULL;
         int size = HexStringToByteArray(this->hash_vector[i], &arr);
@@ -84,12 +84,13 @@ void MessageHandler::start() {
         memcpy(hash_array + i*sizeof(sgx_sha256_hash_t), arr, size);
     }
     clocker.stop();
+    Log("end");
     
     clocker = Clocker("Uploading to enclave");
-    clocker.start();
+    clocker.start();    
     
-    Log("hash_array byte size: %d", sizeof(hash_array));
     ret = uploadCentralData(this->enclave->getID(), &status, hash_array, hash_data_size);
+    delete[] hash_array;
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
         Log("[Error] uploadCentralData failed, %d, %d", ret, status);
         Log("Error, loading central data into sgx fail", log::error);
