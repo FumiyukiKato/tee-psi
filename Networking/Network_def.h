@@ -59,7 +59,7 @@ typedef struct _ra_samp_response_header_t {
 } ra_samp_response_header_t;
 
 #define SALT_SIZE 32
-#define PSI_HASH_DATA_COUNT 100
+#define PSI_HASH_DATA_COUNT 1000
 
 #pragma pack()
 
