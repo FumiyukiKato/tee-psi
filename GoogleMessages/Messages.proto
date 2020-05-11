@@ -2,6 +2,32 @@ syntax = "proto2";
 
 package Messages;
 
+service ContactTracer {
+	rpc JudgeContact(stream JudgeContactRequest) returns (stream MessageMsg0);
+}
+
+message JudgeContactRequest {
+	oneof action {
+		InitialMessage initialMessage = 1;
+		MessageMsg0 msg0 = 2;
+		MessageMSG2 msg2 = 3;
+		AttestationMessage attestationMessage = 4;
+		MessagePsiHashData messagePsiHashData = 5;
+		MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+	}
+}
+
+message JudgeContactResponse {
+	oneof action {
+		MessageMsg0 msg0 = 1;
+		MessageMSG1 msg1 = 2;
+		MessageMSG3 msg3 = 3;
+		MessagePsiSalt messagePsiSalt = 4;
+		MessagePsiResult messagePsiResult = 5;
+		MessagePsiIntersect messagePsiIntersect = 6;
+	}
+}
+
 message InitialMessage {
 	required uint32 type = 1;
 	optional uint32 size = 2;

@@ -38,6 +38,8 @@ void protobuf_ShutdownFile_Messages_2eproto();
 
 class AttestationMessage;
 class InitialMessage;
+class JudgeContactRequest;
+class JudgeContactResponse;
 class MessageMSG1;
 class MessageMSG2;
 class MessageMSG3;
@@ -49,6 +51,344 @@ class MessagePsiResult;
 class MessagePsiSalt;
 
 // ===================================================================
+
+class JudgeContactRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Messages.JudgeContactRequest) */ {
+ public:
+  JudgeContactRequest();
+  virtual ~JudgeContactRequest();
+
+  JudgeContactRequest(const JudgeContactRequest& from);
+
+  inline JudgeContactRequest& operator=(const JudgeContactRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const JudgeContactRequest& default_instance();
+
+  enum ActionCase {
+    kInitialMessage = 1,
+    kMsg0 = 2,
+    kMsg2 = 3,
+    kAttestationMessage = 4,
+    kMessagePsiHashData = 5,
+    kMessagePsiHashDataFinished = 6,
+    ACTION_NOT_SET = 0,
+  };
+
+  void Swap(JudgeContactRequest* other);
+
+  // implements Message ----------------------------------------------
+
+  inline JudgeContactRequest* New() const { return New(NULL); }
+
+  JudgeContactRequest* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const JudgeContactRequest& from);
+  void MergeFrom(const JudgeContactRequest& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(JudgeContactRequest* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional .Messages.InitialMessage initialMessage = 1;
+  bool has_initialmessage() const;
+  void clear_initialmessage();
+  static const int kInitialMessageFieldNumber = 1;
+  const ::Messages::InitialMessage& initialmessage() const;
+  ::Messages::InitialMessage* mutable_initialmessage();
+  ::Messages::InitialMessage* release_initialmessage();
+  void set_allocated_initialmessage(::Messages::InitialMessage* initialmessage);
+
+  // optional .Messages.MessageMsg0 msg0 = 2;
+  bool has_msg0() const;
+  void clear_msg0();
+  static const int kMsg0FieldNumber = 2;
+  const ::Messages::MessageMsg0& msg0() const;
+  ::Messages::MessageMsg0* mutable_msg0();
+  ::Messages::MessageMsg0* release_msg0();
+  void set_allocated_msg0(::Messages::MessageMsg0* msg0);
+
+  // optional .Messages.MessageMSG2 msg2 = 3;
+  bool has_msg2() const;
+  void clear_msg2();
+  static const int kMsg2FieldNumber = 3;
+  const ::Messages::MessageMSG2& msg2() const;
+  ::Messages::MessageMSG2* mutable_msg2();
+  ::Messages::MessageMSG2* release_msg2();
+  void set_allocated_msg2(::Messages::MessageMSG2* msg2);
+
+  // optional .Messages.AttestationMessage attestationMessage = 4;
+  bool has_attestationmessage() const;
+  void clear_attestationmessage();
+  static const int kAttestationMessageFieldNumber = 4;
+  const ::Messages::AttestationMessage& attestationmessage() const;
+  ::Messages::AttestationMessage* mutable_attestationmessage();
+  ::Messages::AttestationMessage* release_attestationmessage();
+  void set_allocated_attestationmessage(::Messages::AttestationMessage* attestationmessage);
+
+  // optional .Messages.MessagePsiHashData messagePsiHashData = 5;
+  bool has_messagepsihashdata() const;
+  void clear_messagepsihashdata();
+  static const int kMessagePsiHashDataFieldNumber = 5;
+  const ::Messages::MessagePsiHashData& messagepsihashdata() const;
+  ::Messages::MessagePsiHashData* mutable_messagepsihashdata();
+  ::Messages::MessagePsiHashData* release_messagepsihashdata();
+  void set_allocated_messagepsihashdata(::Messages::MessagePsiHashData* messagepsihashdata);
+
+  // optional .Messages.MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+  bool has_messagepsihashdatafinished() const;
+  void clear_messagepsihashdatafinished();
+  static const int kMessagePsiHashDataFinishedFieldNumber = 6;
+  const ::Messages::MessagePsiHashDataFinished& messagepsihashdatafinished() const;
+  ::Messages::MessagePsiHashDataFinished* mutable_messagepsihashdatafinished();
+  ::Messages::MessagePsiHashDataFinished* release_messagepsihashdatafinished();
+  void set_allocated_messagepsihashdatafinished(::Messages::MessagePsiHashDataFinished* messagepsihashdatafinished);
+
+  ActionCase action_case() const;
+  // @@protoc_insertion_point(class_scope:Messages.JudgeContactRequest)
+ private:
+  inline void set_has_initialmessage();
+  inline void set_has_msg0();
+  inline void set_has_msg2();
+  inline void set_has_attestationmessage();
+  inline void set_has_messagepsihashdata();
+  inline void set_has_messagepsihashdatafinished();
+
+  inline bool has_action() const;
+  void clear_action();
+  inline void clear_has_action();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  union ActionUnion {
+    ActionUnion() {}
+    ::Messages::InitialMessage* initialmessage_;
+    ::Messages::MessageMsg0* msg0_;
+    ::Messages::MessageMSG2* msg2_;
+    ::Messages::AttestationMessage* attestationmessage_;
+    ::Messages::MessagePsiHashData* messagepsihashdata_;
+    ::Messages::MessagePsiHashDataFinished* messagepsihashdatafinished_;
+  } action_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_AddDesc_Messages_2eproto();
+  friend void protobuf_AssignDesc_Messages_2eproto();
+  friend void protobuf_ShutdownFile_Messages_2eproto();
+
+  void InitAsDefaultInstance();
+  static JudgeContactRequest* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class JudgeContactResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Messages.JudgeContactResponse) */ {
+ public:
+  JudgeContactResponse();
+  virtual ~JudgeContactResponse();
+
+  JudgeContactResponse(const JudgeContactResponse& from);
+
+  inline JudgeContactResponse& operator=(const JudgeContactResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const JudgeContactResponse& default_instance();
+
+  enum ActionCase {
+    kMsg0 = 1,
+    kMsg1 = 2,
+    kMsg3 = 3,
+    kMessagePsiSalt = 4,
+    kMessagePsiResult = 5,
+    kMessagePsiIntersect = 6,
+    ACTION_NOT_SET = 0,
+  };
+
+  void Swap(JudgeContactResponse* other);
+
+  // implements Message ----------------------------------------------
+
+  inline JudgeContactResponse* New() const { return New(NULL); }
+
+  JudgeContactResponse* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const JudgeContactResponse& from);
+  void MergeFrom(const JudgeContactResponse& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(JudgeContactResponse* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional .Messages.MessageMsg0 msg0 = 1;
+  bool has_msg0() const;
+  void clear_msg0();
+  static const int kMsg0FieldNumber = 1;
+  const ::Messages::MessageMsg0& msg0() const;
+  ::Messages::MessageMsg0* mutable_msg0();
+  ::Messages::MessageMsg0* release_msg0();
+  void set_allocated_msg0(::Messages::MessageMsg0* msg0);
+
+  // optional .Messages.MessageMSG1 msg1 = 2;
+  bool has_msg1() const;
+  void clear_msg1();
+  static const int kMsg1FieldNumber = 2;
+  const ::Messages::MessageMSG1& msg1() const;
+  ::Messages::MessageMSG1* mutable_msg1();
+  ::Messages::MessageMSG1* release_msg1();
+  void set_allocated_msg1(::Messages::MessageMSG1* msg1);
+
+  // optional .Messages.MessageMSG3 msg3 = 3;
+  bool has_msg3() const;
+  void clear_msg3();
+  static const int kMsg3FieldNumber = 3;
+  const ::Messages::MessageMSG3& msg3() const;
+  ::Messages::MessageMSG3* mutable_msg3();
+  ::Messages::MessageMSG3* release_msg3();
+  void set_allocated_msg3(::Messages::MessageMSG3* msg3);
+
+  // optional .Messages.MessagePsiSalt messagePsiSalt = 4;
+  bool has_messagepsisalt() const;
+  void clear_messagepsisalt();
+  static const int kMessagePsiSaltFieldNumber = 4;
+  const ::Messages::MessagePsiSalt& messagepsisalt() const;
+  ::Messages::MessagePsiSalt* mutable_messagepsisalt();
+  ::Messages::MessagePsiSalt* release_messagepsisalt();
+  void set_allocated_messagepsisalt(::Messages::MessagePsiSalt* messagepsisalt);
+
+  // optional .Messages.MessagePsiResult messagePsiResult = 5;
+  bool has_messagepsiresult() const;
+  void clear_messagepsiresult();
+  static const int kMessagePsiResultFieldNumber = 5;
+  const ::Messages::MessagePsiResult& messagepsiresult() const;
+  ::Messages::MessagePsiResult* mutable_messagepsiresult();
+  ::Messages::MessagePsiResult* release_messagepsiresult();
+  void set_allocated_messagepsiresult(::Messages::MessagePsiResult* messagepsiresult);
+
+  // optional .Messages.MessagePsiIntersect messagePsiIntersect = 6;
+  bool has_messagepsiintersect() const;
+  void clear_messagepsiintersect();
+  static const int kMessagePsiIntersectFieldNumber = 6;
+  const ::Messages::MessagePsiIntersect& messagepsiintersect() const;
+  ::Messages::MessagePsiIntersect* mutable_messagepsiintersect();
+  ::Messages::MessagePsiIntersect* release_messagepsiintersect();
+  void set_allocated_messagepsiintersect(::Messages::MessagePsiIntersect* messagepsiintersect);
+
+  ActionCase action_case() const;
+  // @@protoc_insertion_point(class_scope:Messages.JudgeContactResponse)
+ private:
+  inline void set_has_msg0();
+  inline void set_has_msg1();
+  inline void set_has_msg3();
+  inline void set_has_messagepsisalt();
+  inline void set_has_messagepsiresult();
+  inline void set_has_messagepsiintersect();
+
+  inline bool has_action() const;
+  void clear_action();
+  inline void clear_has_action();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  union ActionUnion {
+    ActionUnion() {}
+    ::Messages::MessageMsg0* msg0_;
+    ::Messages::MessageMSG1* msg1_;
+    ::Messages::MessageMSG3* msg3_;
+    ::Messages::MessagePsiSalt* messagepsisalt_;
+    ::Messages::MessagePsiResult* messagepsiresult_;
+    ::Messages::MessagePsiIntersect* messagepsiintersect_;
+  } action_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_AddDesc_Messages_2eproto();
+  friend void protobuf_AssignDesc_Messages_2eproto();
+  friend void protobuf_ShutdownFile_Messages_2eproto();
+
+  void InitAsDefaultInstance();
+  static JudgeContactResponse* default_instance_;
+};
+// -------------------------------------------------------------------
 
 class InitialMessage : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Messages.InitialMessage) */ {
  public:
@@ -1911,6 +2251,608 @@ class MessagePsiIntersect : public ::google::protobuf::Message /* @@protoc_inser
 // ===================================================================
 
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
+// JudgeContactRequest
+
+// optional .Messages.InitialMessage initialMessage = 1;
+inline bool JudgeContactRequest::has_initialmessage() const {
+  return action_case() == kInitialMessage;
+}
+inline void JudgeContactRequest::set_has_initialmessage() {
+  _oneof_case_[0] = kInitialMessage;
+}
+inline void JudgeContactRequest::clear_initialmessage() {
+  if (has_initialmessage()) {
+    delete action_.initialmessage_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::InitialMessage& JudgeContactRequest::initialmessage() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.initialMessage)
+  return has_initialmessage()
+      ? *action_.initialmessage_
+      : ::Messages::InitialMessage::default_instance();
+}
+inline ::Messages::InitialMessage* JudgeContactRequest::mutable_initialmessage() {
+  if (!has_initialmessage()) {
+    clear_action();
+    set_has_initialmessage();
+    action_.initialmessage_ = new ::Messages::InitialMessage;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.initialMessage)
+  return action_.initialmessage_;
+}
+inline ::Messages::InitialMessage* JudgeContactRequest::release_initialmessage() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.initialMessage)
+  if (has_initialmessage()) {
+    clear_has_action();
+    ::Messages::InitialMessage* temp = action_.initialmessage_;
+    action_.initialmessage_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactRequest::set_allocated_initialmessage(::Messages::InitialMessage* initialmessage) {
+  clear_action();
+  if (initialmessage) {
+    set_has_initialmessage();
+    action_.initialmessage_ = initialmessage;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.initialMessage)
+}
+
+// optional .Messages.MessageMsg0 msg0 = 2;
+inline bool JudgeContactRequest::has_msg0() const {
+  return action_case() == kMsg0;
+}
+inline void JudgeContactRequest::set_has_msg0() {
+  _oneof_case_[0] = kMsg0;
+}
+inline void JudgeContactRequest::clear_msg0() {
+  if (has_msg0()) {
+    delete action_.msg0_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessageMsg0& JudgeContactRequest::msg0() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.msg0)
+  return has_msg0()
+      ? *action_.msg0_
+      : ::Messages::MessageMsg0::default_instance();
+}
+inline ::Messages::MessageMsg0* JudgeContactRequest::mutable_msg0() {
+  if (!has_msg0()) {
+    clear_action();
+    set_has_msg0();
+    action_.msg0_ = new ::Messages::MessageMsg0;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.msg0)
+  return action_.msg0_;
+}
+inline ::Messages::MessageMsg0* JudgeContactRequest::release_msg0() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.msg0)
+  if (has_msg0()) {
+    clear_has_action();
+    ::Messages::MessageMsg0* temp = action_.msg0_;
+    action_.msg0_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactRequest::set_allocated_msg0(::Messages::MessageMsg0* msg0) {
+  clear_action();
+  if (msg0) {
+    set_has_msg0();
+    action_.msg0_ = msg0;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.msg0)
+}
+
+// optional .Messages.MessageMSG2 msg2 = 3;
+inline bool JudgeContactRequest::has_msg2() const {
+  return action_case() == kMsg2;
+}
+inline void JudgeContactRequest::set_has_msg2() {
+  _oneof_case_[0] = kMsg2;
+}
+inline void JudgeContactRequest::clear_msg2() {
+  if (has_msg2()) {
+    delete action_.msg2_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessageMSG2& JudgeContactRequest::msg2() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.msg2)
+  return has_msg2()
+      ? *action_.msg2_
+      : ::Messages::MessageMSG2::default_instance();
+}
+inline ::Messages::MessageMSG2* JudgeContactRequest::mutable_msg2() {
+  if (!has_msg2()) {
+    clear_action();
+    set_has_msg2();
+    action_.msg2_ = new ::Messages::MessageMSG2;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.msg2)
+  return action_.msg2_;
+}
+inline ::Messages::MessageMSG2* JudgeContactRequest::release_msg2() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.msg2)
+  if (has_msg2()) {
+    clear_has_action();
+    ::Messages::MessageMSG2* temp = action_.msg2_;
+    action_.msg2_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactRequest::set_allocated_msg2(::Messages::MessageMSG2* msg2) {
+  clear_action();
+  if (msg2) {
+    set_has_msg2();
+    action_.msg2_ = msg2;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.msg2)
+}
+
+// optional .Messages.AttestationMessage attestationMessage = 4;
+inline bool JudgeContactRequest::has_attestationmessage() const {
+  return action_case() == kAttestationMessage;
+}
+inline void JudgeContactRequest::set_has_attestationmessage() {
+  _oneof_case_[0] = kAttestationMessage;
+}
+inline void JudgeContactRequest::clear_attestationmessage() {
+  if (has_attestationmessage()) {
+    delete action_.attestationmessage_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::AttestationMessage& JudgeContactRequest::attestationmessage() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.attestationMessage)
+  return has_attestationmessage()
+      ? *action_.attestationmessage_
+      : ::Messages::AttestationMessage::default_instance();
+}
+inline ::Messages::AttestationMessage* JudgeContactRequest::mutable_attestationmessage() {
+  if (!has_attestationmessage()) {
+    clear_action();
+    set_has_attestationmessage();
+    action_.attestationmessage_ = new ::Messages::AttestationMessage;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.attestationMessage)
+  return action_.attestationmessage_;
+}
+inline ::Messages::AttestationMessage* JudgeContactRequest::release_attestationmessage() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.attestationMessage)
+  if (has_attestationmessage()) {
+    clear_has_action();
+    ::Messages::AttestationMessage* temp = action_.attestationmessage_;
+    action_.attestationmessage_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactRequest::set_allocated_attestationmessage(::Messages::AttestationMessage* attestationmessage) {
+  clear_action();
+  if (attestationmessage) {
+    set_has_attestationmessage();
+    action_.attestationmessage_ = attestationmessage;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.attestationMessage)
+}
+
+// optional .Messages.MessagePsiHashData messagePsiHashData = 5;
+inline bool JudgeContactRequest::has_messagepsihashdata() const {
+  return action_case() == kMessagePsiHashData;
+}
+inline void JudgeContactRequest::set_has_messagepsihashdata() {
+  _oneof_case_[0] = kMessagePsiHashData;
+}
+inline void JudgeContactRequest::clear_messagepsihashdata() {
+  if (has_messagepsihashdata()) {
+    delete action_.messagepsihashdata_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessagePsiHashData& JudgeContactRequest::messagepsihashdata() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.messagePsiHashData)
+  return has_messagepsihashdata()
+      ? *action_.messagepsihashdata_
+      : ::Messages::MessagePsiHashData::default_instance();
+}
+inline ::Messages::MessagePsiHashData* JudgeContactRequest::mutable_messagepsihashdata() {
+  if (!has_messagepsihashdata()) {
+    clear_action();
+    set_has_messagepsihashdata();
+    action_.messagepsihashdata_ = new ::Messages::MessagePsiHashData;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.messagePsiHashData)
+  return action_.messagepsihashdata_;
+}
+inline ::Messages::MessagePsiHashData* JudgeContactRequest::release_messagepsihashdata() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.messagePsiHashData)
+  if (has_messagepsihashdata()) {
+    clear_has_action();
+    ::Messages::MessagePsiHashData* temp = action_.messagepsihashdata_;
+    action_.messagepsihashdata_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactRequest::set_allocated_messagepsihashdata(::Messages::MessagePsiHashData* messagepsihashdata) {
+  clear_action();
+  if (messagepsihashdata) {
+    set_has_messagepsihashdata();
+    action_.messagepsihashdata_ = messagepsihashdata;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.messagePsiHashData)
+}
+
+// optional .Messages.MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+inline bool JudgeContactRequest::has_messagepsihashdatafinished() const {
+  return action_case() == kMessagePsiHashDataFinished;
+}
+inline void JudgeContactRequest::set_has_messagepsihashdatafinished() {
+  _oneof_case_[0] = kMessagePsiHashDataFinished;
+}
+inline void JudgeContactRequest::clear_messagepsihashdatafinished() {
+  if (has_messagepsihashdatafinished()) {
+    delete action_.messagepsihashdatafinished_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessagePsiHashDataFinished& JudgeContactRequest::messagepsihashdatafinished() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+  return has_messagepsihashdatafinished()
+      ? *action_.messagepsihashdatafinished_
+      : ::Messages::MessagePsiHashDataFinished::default_instance();
+}
+inline ::Messages::MessagePsiHashDataFinished* JudgeContactRequest::mutable_messagepsihashdatafinished() {
+  if (!has_messagepsihashdatafinished()) {
+    clear_action();
+    set_has_messagepsihashdatafinished();
+    action_.messagepsihashdatafinished_ = new ::Messages::MessagePsiHashDataFinished;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+  return action_.messagepsihashdatafinished_;
+}
+inline ::Messages::MessagePsiHashDataFinished* JudgeContactRequest::release_messagepsihashdatafinished() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+  if (has_messagepsihashdatafinished()) {
+    clear_has_action();
+    ::Messages::MessagePsiHashDataFinished* temp = action_.messagepsihashdatafinished_;
+    action_.messagepsihashdatafinished_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactRequest::set_allocated_messagepsihashdatafinished(::Messages::MessagePsiHashDataFinished* messagepsihashdatafinished) {
+  clear_action();
+  if (messagepsihashdatafinished) {
+    set_has_messagepsihashdatafinished();
+    action_.messagepsihashdatafinished_ = messagepsihashdatafinished;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+}
+
+inline bool JudgeContactRequest::has_action() const {
+  return action_case() != ACTION_NOT_SET;
+}
+inline void JudgeContactRequest::clear_has_action() {
+  _oneof_case_[0] = ACTION_NOT_SET;
+}
+inline JudgeContactRequest::ActionCase JudgeContactRequest::action_case() const {
+  return JudgeContactRequest::ActionCase(_oneof_case_[0]);
+}
+// -------------------------------------------------------------------
+
+// JudgeContactResponse
+
+// optional .Messages.MessageMsg0 msg0 = 1;
+inline bool JudgeContactResponse::has_msg0() const {
+  return action_case() == kMsg0;
+}
+inline void JudgeContactResponse::set_has_msg0() {
+  _oneof_case_[0] = kMsg0;
+}
+inline void JudgeContactResponse::clear_msg0() {
+  if (has_msg0()) {
+    delete action_.msg0_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessageMsg0& JudgeContactResponse::msg0() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.msg0)
+  return has_msg0()
+      ? *action_.msg0_
+      : ::Messages::MessageMsg0::default_instance();
+}
+inline ::Messages::MessageMsg0* JudgeContactResponse::mutable_msg0() {
+  if (!has_msg0()) {
+    clear_action();
+    set_has_msg0();
+    action_.msg0_ = new ::Messages::MessageMsg0;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.msg0)
+  return action_.msg0_;
+}
+inline ::Messages::MessageMsg0* JudgeContactResponse::release_msg0() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.msg0)
+  if (has_msg0()) {
+    clear_has_action();
+    ::Messages::MessageMsg0* temp = action_.msg0_;
+    action_.msg0_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactResponse::set_allocated_msg0(::Messages::MessageMsg0* msg0) {
+  clear_action();
+  if (msg0) {
+    set_has_msg0();
+    action_.msg0_ = msg0;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.msg0)
+}
+
+// optional .Messages.MessageMSG1 msg1 = 2;
+inline bool JudgeContactResponse::has_msg1() const {
+  return action_case() == kMsg1;
+}
+inline void JudgeContactResponse::set_has_msg1() {
+  _oneof_case_[0] = kMsg1;
+}
+inline void JudgeContactResponse::clear_msg1() {
+  if (has_msg1()) {
+    delete action_.msg1_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessageMSG1& JudgeContactResponse::msg1() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.msg1)
+  return has_msg1()
+      ? *action_.msg1_
+      : ::Messages::MessageMSG1::default_instance();
+}
+inline ::Messages::MessageMSG1* JudgeContactResponse::mutable_msg1() {
+  if (!has_msg1()) {
+    clear_action();
+    set_has_msg1();
+    action_.msg1_ = new ::Messages::MessageMSG1;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.msg1)
+  return action_.msg1_;
+}
+inline ::Messages::MessageMSG1* JudgeContactResponse::release_msg1() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.msg1)
+  if (has_msg1()) {
+    clear_has_action();
+    ::Messages::MessageMSG1* temp = action_.msg1_;
+    action_.msg1_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactResponse::set_allocated_msg1(::Messages::MessageMSG1* msg1) {
+  clear_action();
+  if (msg1) {
+    set_has_msg1();
+    action_.msg1_ = msg1;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.msg1)
+}
+
+// optional .Messages.MessageMSG3 msg3 = 3;
+inline bool JudgeContactResponse::has_msg3() const {
+  return action_case() == kMsg3;
+}
+inline void JudgeContactResponse::set_has_msg3() {
+  _oneof_case_[0] = kMsg3;
+}
+inline void JudgeContactResponse::clear_msg3() {
+  if (has_msg3()) {
+    delete action_.msg3_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessageMSG3& JudgeContactResponse::msg3() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.msg3)
+  return has_msg3()
+      ? *action_.msg3_
+      : ::Messages::MessageMSG3::default_instance();
+}
+inline ::Messages::MessageMSG3* JudgeContactResponse::mutable_msg3() {
+  if (!has_msg3()) {
+    clear_action();
+    set_has_msg3();
+    action_.msg3_ = new ::Messages::MessageMSG3;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.msg3)
+  return action_.msg3_;
+}
+inline ::Messages::MessageMSG3* JudgeContactResponse::release_msg3() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.msg3)
+  if (has_msg3()) {
+    clear_has_action();
+    ::Messages::MessageMSG3* temp = action_.msg3_;
+    action_.msg3_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactResponse::set_allocated_msg3(::Messages::MessageMSG3* msg3) {
+  clear_action();
+  if (msg3) {
+    set_has_msg3();
+    action_.msg3_ = msg3;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.msg3)
+}
+
+// optional .Messages.MessagePsiSalt messagePsiSalt = 4;
+inline bool JudgeContactResponse::has_messagepsisalt() const {
+  return action_case() == kMessagePsiSalt;
+}
+inline void JudgeContactResponse::set_has_messagepsisalt() {
+  _oneof_case_[0] = kMessagePsiSalt;
+}
+inline void JudgeContactResponse::clear_messagepsisalt() {
+  if (has_messagepsisalt()) {
+    delete action_.messagepsisalt_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessagePsiSalt& JudgeContactResponse::messagepsisalt() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.messagePsiSalt)
+  return has_messagepsisalt()
+      ? *action_.messagepsisalt_
+      : ::Messages::MessagePsiSalt::default_instance();
+}
+inline ::Messages::MessagePsiSalt* JudgeContactResponse::mutable_messagepsisalt() {
+  if (!has_messagepsisalt()) {
+    clear_action();
+    set_has_messagepsisalt();
+    action_.messagepsisalt_ = new ::Messages::MessagePsiSalt;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.messagePsiSalt)
+  return action_.messagepsisalt_;
+}
+inline ::Messages::MessagePsiSalt* JudgeContactResponse::release_messagepsisalt() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.messagePsiSalt)
+  if (has_messagepsisalt()) {
+    clear_has_action();
+    ::Messages::MessagePsiSalt* temp = action_.messagepsisalt_;
+    action_.messagepsisalt_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactResponse::set_allocated_messagepsisalt(::Messages::MessagePsiSalt* messagepsisalt) {
+  clear_action();
+  if (messagepsisalt) {
+    set_has_messagepsisalt();
+    action_.messagepsisalt_ = messagepsisalt;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.messagePsiSalt)
+}
+
+// optional .Messages.MessagePsiResult messagePsiResult = 5;
+inline bool JudgeContactResponse::has_messagepsiresult() const {
+  return action_case() == kMessagePsiResult;
+}
+inline void JudgeContactResponse::set_has_messagepsiresult() {
+  _oneof_case_[0] = kMessagePsiResult;
+}
+inline void JudgeContactResponse::clear_messagepsiresult() {
+  if (has_messagepsiresult()) {
+    delete action_.messagepsiresult_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessagePsiResult& JudgeContactResponse::messagepsiresult() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.messagePsiResult)
+  return has_messagepsiresult()
+      ? *action_.messagepsiresult_
+      : ::Messages::MessagePsiResult::default_instance();
+}
+inline ::Messages::MessagePsiResult* JudgeContactResponse::mutable_messagepsiresult() {
+  if (!has_messagepsiresult()) {
+    clear_action();
+    set_has_messagepsiresult();
+    action_.messagepsiresult_ = new ::Messages::MessagePsiResult;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.messagePsiResult)
+  return action_.messagepsiresult_;
+}
+inline ::Messages::MessagePsiResult* JudgeContactResponse::release_messagepsiresult() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.messagePsiResult)
+  if (has_messagepsiresult()) {
+    clear_has_action();
+    ::Messages::MessagePsiResult* temp = action_.messagepsiresult_;
+    action_.messagepsiresult_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactResponse::set_allocated_messagepsiresult(::Messages::MessagePsiResult* messagepsiresult) {
+  clear_action();
+  if (messagepsiresult) {
+    set_has_messagepsiresult();
+    action_.messagepsiresult_ = messagepsiresult;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.messagePsiResult)
+}
+
+// optional .Messages.MessagePsiIntersect messagePsiIntersect = 6;
+inline bool JudgeContactResponse::has_messagepsiintersect() const {
+  return action_case() == kMessagePsiIntersect;
+}
+inline void JudgeContactResponse::set_has_messagepsiintersect() {
+  _oneof_case_[0] = kMessagePsiIntersect;
+}
+inline void JudgeContactResponse::clear_messagepsiintersect() {
+  if (has_messagepsiintersect()) {
+    delete action_.messagepsiintersect_;
+    clear_has_action();
+  }
+}
+inline  const ::Messages::MessagePsiIntersect& JudgeContactResponse::messagepsiintersect() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.messagePsiIntersect)
+  return has_messagepsiintersect()
+      ? *action_.messagepsiintersect_
+      : ::Messages::MessagePsiIntersect::default_instance();
+}
+inline ::Messages::MessagePsiIntersect* JudgeContactResponse::mutable_messagepsiintersect() {
+  if (!has_messagepsiintersect()) {
+    clear_action();
+    set_has_messagepsiintersect();
+    action_.messagepsiintersect_ = new ::Messages::MessagePsiIntersect;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.messagePsiIntersect)
+  return action_.messagepsiintersect_;
+}
+inline ::Messages::MessagePsiIntersect* JudgeContactResponse::release_messagepsiintersect() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.messagePsiIntersect)
+  if (has_messagepsiintersect()) {
+    clear_has_action();
+    ::Messages::MessagePsiIntersect* temp = action_.messagepsiintersect_;
+    action_.messagepsiintersect_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void JudgeContactResponse::set_allocated_messagepsiintersect(::Messages::MessagePsiIntersect* messagepsiintersect) {
+  clear_action();
+  if (messagepsiintersect) {
+    set_has_messagepsiintersect();
+    action_.messagepsiintersect_ = messagepsiintersect;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.messagePsiIntersect)
+}
+
+inline bool JudgeContactResponse::has_action() const {
+  return action_case() != ACTION_NOT_SET;
+}
+inline void JudgeContactResponse::clear_has_action() {
+  _oneof_case_[0] = ACTION_NOT_SET;
+}
+inline JudgeContactResponse::ActionCase JudgeContactResponse::action_case() const {
+  return JudgeContactResponse::ActionCase(_oneof_case_[0]);
+}
+// -------------------------------------------------------------------
+
 // InitialMessage
 
 // required uint32 type = 1;
@@ -4036,6 +4978,10 @@ MessagePsiIntersect::mutable_data() {
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

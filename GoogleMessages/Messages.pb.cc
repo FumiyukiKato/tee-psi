@@ -21,6 +21,28 @@ namespace Messages {
 
 namespace {
 
+const ::google::protobuf::Descriptor* JudgeContactRequest_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  JudgeContactRequest_reflection_ = NULL;
+struct JudgeContactRequestOneofInstance {
+  const ::Messages::InitialMessage* initialmessage_;
+  const ::Messages::MessageMsg0* msg0_;
+  const ::Messages::MessageMSG2* msg2_;
+  const ::Messages::AttestationMessage* attestationmessage_;
+  const ::Messages::MessagePsiHashData* messagepsihashdata_;
+  const ::Messages::MessagePsiHashDataFinished* messagepsihashdatafinished_;
+}* JudgeContactRequest_default_oneof_instance_ = NULL;
+const ::google::protobuf::Descriptor* JudgeContactResponse_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  JudgeContactResponse_reflection_ = NULL;
+struct JudgeContactResponseOneofInstance {
+  const ::Messages::MessageMsg0* msg0_;
+  const ::Messages::MessageMSG1* msg1_;
+  const ::Messages::MessageMSG3* msg3_;
+  const ::Messages::MessagePsiSalt* messagepsisalt_;
+  const ::Messages::MessagePsiResult* messagepsiresult_;
+  const ::Messages::MessagePsiIntersect* messagepsiintersect_;
+}* JudgeContactResponse_default_oneof_instance_ = NULL;
 const ::google::protobuf::Descriptor* InitialMessage_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   InitialMessage_reflection_ = NULL;
@@ -65,7 +87,53 @@ void protobuf_AssignDesc_Messages_2eproto() {
     ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
       "Messages.proto");
   GOOGLE_CHECK(file != NULL);
-  InitialMessage_descriptor_ = file->message_type(0);
+  JudgeContactRequest_descriptor_ = file->message_type(0);
+  static const int JudgeContactRequest_offsets_[7] = {
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactRequest_default_oneof_instance_, initialmessage_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactRequest_default_oneof_instance_, msg0_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactRequest_default_oneof_instance_, msg2_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactRequest_default_oneof_instance_, attestationmessage_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactRequest_default_oneof_instance_, messagepsihashdata_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactRequest_default_oneof_instance_, messagepsihashdatafinished_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactRequest, action_),
+  };
+  JudgeContactRequest_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      JudgeContactRequest_descriptor_,
+      JudgeContactRequest::default_instance_,
+      JudgeContactRequest_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactRequest, _has_bits_[0]),
+      -1,
+      -1,
+      JudgeContactRequest_default_oneof_instance_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactRequest, _oneof_case_[0]),
+      sizeof(JudgeContactRequest),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactRequest, _internal_metadata_),
+      -1);
+  JudgeContactResponse_descriptor_ = file->message_type(1);
+  static const int JudgeContactResponse_offsets_[7] = {
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactResponse_default_oneof_instance_, msg0_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactResponse_default_oneof_instance_, msg1_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactResponse_default_oneof_instance_, msg3_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactResponse_default_oneof_instance_, messagepsisalt_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactResponse_default_oneof_instance_, messagepsiresult_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(JudgeContactResponse_default_oneof_instance_, messagepsiintersect_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactResponse, action_),
+  };
+  JudgeContactResponse_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      JudgeContactResponse_descriptor_,
+      JudgeContactResponse::default_instance_,
+      JudgeContactResponse_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactResponse, _has_bits_[0]),
+      -1,
+      -1,
+      JudgeContactResponse_default_oneof_instance_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactResponse, _oneof_case_[0]),
+      sizeof(JudgeContactResponse),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JudgeContactResponse, _internal_metadata_),
+      -1);
+  InitialMessage_descriptor_ = file->message_type(2);
   static const int InitialMessage_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InitialMessage, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InitialMessage, size_),
@@ -81,7 +149,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(InitialMessage),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InitialMessage, _internal_metadata_),
       -1);
-  MessageMsg0_descriptor_ = file->message_type(1);
+  MessageMsg0_descriptor_ = file->message_type(3);
   static const int MessageMsg0_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMsg0, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMsg0, epid_),
@@ -98,7 +166,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessageMsg0),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMsg0, _internal_metadata_),
       -1);
-  MessageMSG1_descriptor_ = file->message_type(2);
+  MessageMSG1_descriptor_ = file->message_type(4);
   static const int MessageMSG1_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG1, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG1, context_),
@@ -117,7 +185,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessageMSG1),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG1, _internal_metadata_),
       -1);
-  MessageMSG2_descriptor_ = file->message_type(3);
+  MessageMSG2_descriptor_ = file->message_type(5);
   static const int MessageMSG2_offsets_[13] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG2, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG2, size_),
@@ -144,7 +212,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessageMSG2),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG2, _internal_metadata_),
       -1);
-  MessageMSG3_descriptor_ = file->message_type(4);
+  MessageMSG3_descriptor_ = file->message_type(6);
   static const int MessageMSG3_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG3, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG3, size_),
@@ -166,7 +234,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessageMSG3),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessageMSG3, _internal_metadata_),
       -1);
-  AttestationMessage_descriptor_ = file->message_type(5);
+  AttestationMessage_descriptor_ = file->message_type(7);
   static const int AttestationMessage_offsets_[18] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AttestationMessage, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AttestationMessage, size_),
@@ -198,7 +266,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(AttestationMessage),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AttestationMessage, _internal_metadata_),
       -1);
-  MessagePsiSalt_descriptor_ = file->message_type(6);
+  MessagePsiSalt_descriptor_ = file->message_type(8);
   static const int MessagePsiSalt_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiSalt, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiSalt, size_),
@@ -219,7 +287,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessagePsiSalt),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiSalt, _internal_metadata_),
       -1);
-  MessagePsiHashData_descriptor_ = file->message_type(7);
+  MessagePsiHashData_descriptor_ = file->message_type(9);
   static const int MessagePsiHashData_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashData, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashData, size_),
@@ -240,7 +308,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessagePsiHashData),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashData, _internal_metadata_),
       -1);
-  MessagePsiHashDataFinished_descriptor_ = file->message_type(8);
+  MessagePsiHashDataFinished_descriptor_ = file->message_type(10);
   static const int MessagePsiHashDataFinished_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, size_),
@@ -259,7 +327,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessagePsiHashDataFinished),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiHashDataFinished, _internal_metadata_),
       -1);
-  MessagePsiResult_descriptor_ = file->message_type(9);
+  MessagePsiResult_descriptor_ = file->message_type(11);
   static const int MessagePsiResult_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiResult, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiResult, size_),
@@ -278,7 +346,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       sizeof(MessagePsiResult),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiResult, _internal_metadata_),
       -1);
-  MessagePsiIntersect_descriptor_ = file->message_type(10);
+  MessagePsiIntersect_descriptor_ = file->message_type(12);
   static const int MessagePsiIntersect_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiIntersect, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MessagePsiIntersect, size_),
@@ -312,6 +380,10 @@ void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      JudgeContactRequest_descriptor_, &JudgeContactRequest::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      JudgeContactResponse_descriptor_, &JudgeContactResponse::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       InitialMessage_descriptor_, &InitialMessage::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       MessageMsg0_descriptor_, &MessageMsg0::default_instance());
@@ -338,6 +410,12 @@ void protobuf_RegisterTypes(const ::std::string&) {
 }  // namespace
 
 void protobuf_ShutdownFile_Messages_2eproto() {
+  delete JudgeContactRequest::default_instance_;
+  delete JudgeContactRequest_default_oneof_instance_;
+  delete JudgeContactRequest_reflection_;
+  delete JudgeContactResponse::default_instance_;
+  delete JudgeContactResponse_default_oneof_instance_;
+  delete JudgeContactResponse_reflection_;
   delete InitialMessage::default_instance_;
   delete InitialMessage_reflection_;
   delete MessageMsg0::default_instance_;
@@ -370,51 +448,75 @@ void protobuf_AddDesc_Messages_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\016Messages.proto\022\010Messages\",\n\016InitialMes"
-    "sage\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \001(\r\"9\n\013Mess"
-    "ageMsg0\022\014\n\004type\030\001 \002(\r\022\014\n\004epid\030\002 \002(\r\022\016\n\006s"
-    "tatus\030\003 \001(\r\"_\n\013MessageMSG1\022\014\n\004type\030\001 \002(\r"
-    "\022\017\n\007context\030\002 \002(\r\022\017\n\003GaX\030\003 \003(\rB\002\020\001\022\017\n\003Ga"
-    "Y\030\004 \003(\rB\002\020\001\022\017\n\003GID\030\005 \003(\rB\002\020\001\"\226\002\n\013Message"
-    "MSG2\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \001(\r\022\017\n\007cont"
-    "ext\030\003 \002(\r\022\031\n\rpublic_key_gx\030\004 \003(\rB\002\020\001\022\031\n\r"
-    "public_key_gy\030\005 \003(\rB\002\020\001\022\022\n\nquote_type\030\006 "
-    "\001(\r\022\020\n\004spid\030\007 \003(\rB\002\020\001\022\023\n\013cmac_kdf_id\030\010 \001"
-    "(\r\022\027\n\013signature_x\030\t \003(\rB\002\020\001\022\027\n\013signature"
-    "_y\030\n \003(\rB\002\020\001\022\020\n\004smac\030\013 \003(\rB\002\020\001\022\022\n\nsize_s"
-    "igrl\030\014 \001(\r\022\021\n\005sigrl\030\r \003(\rB\002\020\001\"\250\001\n\013Messag"
-    "eMSG3\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \001(\r\022\017\n\007con"
-    "text\030\003 \002(\r\022\023\n\007sgx_mac\030\004 \003(\rB\002\020\001\022\024\n\010gax_m"
-    "sg3\030\005 \003(\rB\002\020\001\022\024\n\010gay_msg3\030\006 \003(\rB\002\020\001\022\030\n\014s"
-    "ec_property\030\007 \003(\rB\002\020\001\022\021\n\005quote\030\010 \003(\rB\002\020\001"
-    "\"\321\003\n\022AttestationMessage\022\014\n\004type\030\001 \002(\r\022\014\n"
-    "\004size\030\002 \002(\r\022\017\n\007context\030\003 \002(\r\022\014\n\004mode\030\004 \002"
-    "(\r\022\031\n\021epid_group_status\030\005 \001(\r\022\035\n\025tcb_eva"
-    "luation_status\030\006 \001(\r\022\035\n\025pse_evaluation_s"
-    "tatus\030\007 \001(\r\022&\n\032latest_equivalent_tcb_psv"
-    "n\030\010 \003(\rB\002\020\001\022\035\n\021latest_pse_isvsvn\030\t \003(\rB\002"
-    "\020\001\022\033\n\017latest_psda_svn\030\n \003(\rB\002\020\001\022!\n\025perfo"
-    "rmance_rekey_gid\030\013 \003(\rB\002\020\001\022\030\n\014ec_sign256"
-    "_x\030\014 \003(\rB\002\020\001\022\030\n\014ec_sign256_y\030\r \003(\rB\002\020\001\022\023"
-    "\n\007mac_smk\030\016 \003(\rB\002\020\001\022\023\n\013result_size\030\017 \001(\r"
-    "\022\024\n\010reserved\030\020 \003(\rB\002\020\001\022\027\n\013payload_tag\030\021 "
-    "\003(\rB\002\020\001\022\023\n\007payload\030\022 \003(\rB\002\020\001\"{\n\016MessageP"
-    "siSalt\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007co"
-    "ntext\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\r\n\005state\030\005 \002(\r\022\017"
-    "\n\003mac\030\006 \003(\rB\002\020\001\022\020\n\004salt\030\007 \003(\rB\002\020\001\"~\n\022Mes"
-    "sagePsiHashData\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 "
-    "\002(\r\022\014\n\004mode\030\003 \002(\r\022\017\n\007context\030\004 \002(\r\022\n\n\002id"
-    "\030\005 \002(\r\022\017\n\003mac\030\006 \003(\rB\002\020\001\022\020\n\004data\030\007 \003(\rB\002\020"
-    "\001\"c\n\032MessagePsiHashDataFinished\022\014\n\004type\030"
-    "\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\014\n\004mode\030\003 \002(\r\022\017\n\007con"
-    "text\030\004 \002(\r\022\n\n\002id\030\005 \002(\r\"Z\n\020MessagePsiResu"
-    "lt\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007contex"
-    "t\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\r\n\005state\030\005 \002(\r\"q\n\023Me"
-    "ssagePsiIntersect\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030"
-    "\002 \002(\r\022\017\n\007context\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\017\n\003ma"
-    "c\030\005 \003(\rB\002\020\001\022\020\n\004data\030\006 \003(\rB\002\020\001", 1709);
+    "\n\016Messages.proto\022\010Messages\"\345\002\n\023JudgeCont"
+    "actRequest\0222\n\016initialMessage\030\001 \001(\0132\030.Mes"
+    "sages.InitialMessageH\000\022%\n\004msg0\030\002 \001(\0132\025.M"
+    "essages.MessageMsg0H\000\022%\n\004msg2\030\003 \001(\0132\025.Me"
+    "ssages.MessageMSG2H\000\022:\n\022attestationMessa"
+    "ge\030\004 \001(\0132\034.Messages.AttestationMessageH\000"
+    "\022:\n\022messagePsiHashData\030\005 \001(\0132\034.Messages."
+    "MessagePsiHashDataH\000\022J\n\032messagePsiHashDa"
+    "taFinished\030\006 \001(\0132$.Messages.MessagePsiHa"
+    "shDataFinishedH\000B\010\n\006action\"\277\002\n\024JudgeCont"
+    "actResponse\022%\n\004msg0\030\001 \001(\0132\025.Messages.Mes"
+    "sageMsg0H\000\022%\n\004msg1\030\002 \001(\0132\025.Messages.Mess"
+    "ageMSG1H\000\022%\n\004msg3\030\003 \001(\0132\025.Messages.Messa"
+    "geMSG3H\000\0222\n\016messagePsiSalt\030\004 \001(\0132\030.Messa"
+    "ges.MessagePsiSaltH\000\0226\n\020messagePsiResult"
+    "\030\005 \001(\0132\032.Messages.MessagePsiResultH\000\022<\n\023"
+    "messagePsiIntersect\030\006 \001(\0132\035.Messages.Mes"
+    "sagePsiIntersectH\000B\010\n\006action\",\n\016InitialM"
+    "essage\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \001(\r\"9\n\013Me"
+    "ssageMsg0\022\014\n\004type\030\001 \002(\r\022\014\n\004epid\030\002 \002(\r\022\016\n"
+    "\006status\030\003 \001(\r\"_\n\013MessageMSG1\022\014\n\004type\030\001 \002"
+    "(\r\022\017\n\007context\030\002 \002(\r\022\017\n\003GaX\030\003 \003(\rB\002\020\001\022\017\n\003"
+    "GaY\030\004 \003(\rB\002\020\001\022\017\n\003GID\030\005 \003(\rB\002\020\001\"\226\002\n\013Messa"
+    "geMSG2\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \001(\r\022\017\n\007co"
+    "ntext\030\003 \002(\r\022\031\n\rpublic_key_gx\030\004 \003(\rB\002\020\001\022\031"
+    "\n\rpublic_key_gy\030\005 \003(\rB\002\020\001\022\022\n\nquote_type\030"
+    "\006 \001(\r\022\020\n\004spid\030\007 \003(\rB\002\020\001\022\023\n\013cmac_kdf_id\030\010"
+    " \001(\r\022\027\n\013signature_x\030\t \003(\rB\002\020\001\022\027\n\013signatu"
+    "re_y\030\n \003(\rB\002\020\001\022\020\n\004smac\030\013 \003(\rB\002\020\001\022\022\n\nsize"
+    "_sigrl\030\014 \001(\r\022\021\n\005sigrl\030\r \003(\rB\002\020\001\"\250\001\n\013Mess"
+    "ageMSG3\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \001(\r\022\017\n\007c"
+    "ontext\030\003 \002(\r\022\023\n\007sgx_mac\030\004 \003(\rB\002\020\001\022\024\n\010gax"
+    "_msg3\030\005 \003(\rB\002\020\001\022\024\n\010gay_msg3\030\006 \003(\rB\002\020\001\022\030\n"
+    "\014sec_property\030\007 \003(\rB\002\020\001\022\021\n\005quote\030\010 \003(\rB\002"
+    "\020\001\"\321\003\n\022AttestationMessage\022\014\n\004type\030\001 \002(\r\022"
+    "\014\n\004size\030\002 \002(\r\022\017\n\007context\030\003 \002(\r\022\014\n\004mode\030\004"
+    " \002(\r\022\031\n\021epid_group_status\030\005 \001(\r\022\035\n\025tcb_e"
+    "valuation_status\030\006 \001(\r\022\035\n\025pse_evaluation"
+    "_status\030\007 \001(\r\022&\n\032latest_equivalent_tcb_p"
+    "svn\030\010 \003(\rB\002\020\001\022\035\n\021latest_pse_isvsvn\030\t \003(\r"
+    "B\002\020\001\022\033\n\017latest_psda_svn\030\n \003(\rB\002\020\001\022!\n\025per"
+    "formance_rekey_gid\030\013 \003(\rB\002\020\001\022\030\n\014ec_sign2"
+    "56_x\030\014 \003(\rB\002\020\001\022\030\n\014ec_sign256_y\030\r \003(\rB\002\020\001"
+    "\022\023\n\007mac_smk\030\016 \003(\rB\002\020\001\022\023\n\013result_size\030\017 \001"
+    "(\r\022\024\n\010reserved\030\020 \003(\rB\002\020\001\022\027\n\013payload_tag\030"
+    "\021 \003(\rB\002\020\001\022\023\n\007payload\030\022 \003(\rB\002\020\001\"{\n\016Messag"
+    "ePsiSalt\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007"
+    "context\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\r\n\005state\030\005 \002(\r"
+    "\022\017\n\003mac\030\006 \003(\rB\002\020\001\022\020\n\004salt\030\007 \003(\rB\002\020\001\"~\n\022M"
+    "essagePsiHashData\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030"
+    "\002 \002(\r\022\014\n\004mode\030\003 \002(\r\022\017\n\007context\030\004 \002(\r\022\n\n\002"
+    "id\030\005 \002(\r\022\017\n\003mac\030\006 \003(\rB\002\020\001\022\020\n\004data\030\007 \003(\rB"
+    "\002\020\001\"c\n\032MessagePsiHashDataFinished\022\014\n\004typ"
+    "e\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\014\n\004mode\030\003 \002(\r\022\017\n\007c"
+    "ontext\030\004 \002(\r\022\n\n\002id\030\005 \002(\r\"Z\n\020MessagePsiRe"
+    "sult\022\014\n\004type\030\001 \002(\r\022\014\n\004size\030\002 \002(\r\022\017\n\007cont"
+    "ext\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\r\n\005state\030\005 \002(\r\"q\n\023"
+    "MessagePsiIntersect\022\014\n\004type\030\001 \002(\r\022\014\n\004siz"
+    "e\030\002 \002(\r\022\017\n\007context\030\003 \002(\r\022\n\n\002id\030\004 \002(\r\022\017\n\003"
+    "mac\030\005 \003(\rB\002\020\001\022\020\n\004data\030\006 \003(\rB\002\020\0012Y\n\rConta"
+    "ctTracer\022H\n\014JudgeContact\022\035.Messages.Judg"
+    "eContactRequest\032\025.Messages.MessageMsg0(\001"
+    "0\001", 2482);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
+  JudgeContactRequest::default_instance_ = new JudgeContactRequest();
+  JudgeContactRequest_default_oneof_instance_ = new JudgeContactRequestOneofInstance();
+  JudgeContactResponse::default_instance_ = new JudgeContactResponse();
+  JudgeContactResponse_default_oneof_instance_ = new JudgeContactResponseOneofInstance();
   InitialMessage::default_instance_ = new InitialMessage();
   MessageMsg0::default_instance_ = new MessageMsg0();
   MessageMSG1::default_instance_ = new MessageMSG1();
@@ -426,6 +528,8 @@ void protobuf_AddDesc_Messages_2eproto() {
   MessagePsiHashDataFinished::default_instance_ = new MessagePsiHashDataFinished();
   MessagePsiResult::default_instance_ = new MessagePsiResult();
   MessagePsiIntersect::default_instance_ = new MessagePsiIntersect();
+  JudgeContactRequest::default_instance_->InitAsDefaultInstance();
+  JudgeContactResponse::default_instance_->InitAsDefaultInstance();
   InitialMessage::default_instance_->InitAsDefaultInstance();
   MessageMsg0::default_instance_->InitAsDefaultInstance();
   MessageMSG1::default_instance_->InitAsDefaultInstance();
@@ -446,6 +550,1620 @@ struct StaticDescriptorInitializer_Messages_2eproto {
     protobuf_AddDesc_Messages_2eproto();
   }
 } static_descriptor_initializer_Messages_2eproto_;
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int JudgeContactRequest::kInitialMessageFieldNumber;
+const int JudgeContactRequest::kMsg0FieldNumber;
+const int JudgeContactRequest::kMsg2FieldNumber;
+const int JudgeContactRequest::kAttestationMessageFieldNumber;
+const int JudgeContactRequest::kMessagePsiHashDataFieldNumber;
+const int JudgeContactRequest::kMessagePsiHashDataFinishedFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+JudgeContactRequest::JudgeContactRequest()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:Messages.JudgeContactRequest)
+}
+
+void JudgeContactRequest::InitAsDefaultInstance() {
+  JudgeContactRequest_default_oneof_instance_->initialmessage_ = const_cast< ::Messages::InitialMessage*>(&::Messages::InitialMessage::default_instance());
+  JudgeContactRequest_default_oneof_instance_->msg0_ = const_cast< ::Messages::MessageMsg0*>(&::Messages::MessageMsg0::default_instance());
+  JudgeContactRequest_default_oneof_instance_->msg2_ = const_cast< ::Messages::MessageMSG2*>(&::Messages::MessageMSG2::default_instance());
+  JudgeContactRequest_default_oneof_instance_->attestationmessage_ = const_cast< ::Messages::AttestationMessage*>(&::Messages::AttestationMessage::default_instance());
+  JudgeContactRequest_default_oneof_instance_->messagepsihashdata_ = const_cast< ::Messages::MessagePsiHashData*>(&::Messages::MessagePsiHashData::default_instance());
+  JudgeContactRequest_default_oneof_instance_->messagepsihashdatafinished_ = const_cast< ::Messages::MessagePsiHashDataFinished*>(&::Messages::MessagePsiHashDataFinished::default_instance());
+}
+
+JudgeContactRequest::JudgeContactRequest(const JudgeContactRequest& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:Messages.JudgeContactRequest)
+}
+
+void JudgeContactRequest::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  clear_has_action();
+}
+
+JudgeContactRequest::~JudgeContactRequest() {
+  // @@protoc_insertion_point(destructor:Messages.JudgeContactRequest)
+  SharedDtor();
+}
+
+void JudgeContactRequest::SharedDtor() {
+  if (has_action()) {
+    clear_action();
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void JudgeContactRequest::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* JudgeContactRequest::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return JudgeContactRequest_descriptor_;
+}
+
+const JudgeContactRequest& JudgeContactRequest::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();
+  return *default_instance_;
+}
+
+JudgeContactRequest* JudgeContactRequest::default_instance_ = NULL;
+
+JudgeContactRequest* JudgeContactRequest::New(::google::protobuf::Arena* arena) const {
+  JudgeContactRequest* n = new JudgeContactRequest;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void JudgeContactRequest::clear_action() {
+// @@protoc_insertion_point(one_of_clear_start:Messages.JudgeContactRequest)
+  switch(action_case()) {
+    case kInitialMessage: {
+      delete action_.initialmessage_;
+      break;
+    }
+    case kMsg0: {
+      delete action_.msg0_;
+      break;
+    }
+    case kMsg2: {
+      delete action_.msg2_;
+      break;
+    }
+    case kAttestationMessage: {
+      delete action_.attestationmessage_;
+      break;
+    }
+    case kMessagePsiHashData: {
+      delete action_.messagepsihashdata_;
+      break;
+    }
+    case kMessagePsiHashDataFinished: {
+      delete action_.messagepsihashdatafinished_;
+      break;
+    }
+    case ACTION_NOT_SET: {
+      break;
+    }
+  }
+  _oneof_case_[0] = ACTION_NOT_SET;
+}
+
+
+void JudgeContactRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:Messages.JudgeContactRequest)
+  clear_action();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  if (_internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->Clear();
+  }
+}
+
+bool JudgeContactRequest::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:Messages.JudgeContactRequest)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .Messages.InitialMessage initialMessage = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_initialmessage()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_msg0;
+        break;
+      }
+
+      // optional .Messages.MessageMsg0 msg0 = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_msg0:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_msg0()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_msg2;
+        break;
+      }
+
+      // optional .Messages.MessageMSG2 msg2 = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_msg2:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_msg2()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_attestationMessage;
+        break;
+      }
+
+      // optional .Messages.AttestationMessage attestationMessage = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_attestationMessage:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_attestationmessage()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(42)) goto parse_messagePsiHashData;
+        break;
+      }
+
+      // optional .Messages.MessagePsiHashData messagePsiHashData = 5;
+      case 5: {
+        if (tag == 42) {
+         parse_messagePsiHashData:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_messagepsihashdata()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(50)) goto parse_messagePsiHashDataFinished;
+        break;
+      }
+
+      // optional .Messages.MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+      case 6: {
+        if (tag == 50) {
+         parse_messagePsiHashDataFinished:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_messagepsihashdatafinished()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:Messages.JudgeContactRequest)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:Messages.JudgeContactRequest)
+  return false;
+#undef DO_
+}
+
+void JudgeContactRequest::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:Messages.JudgeContactRequest)
+  // optional .Messages.InitialMessage initialMessage = 1;
+  if (has_initialmessage()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *action_.initialmessage_, output);
+  }
+
+  // optional .Messages.MessageMsg0 msg0 = 2;
+  if (has_msg0()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, *action_.msg0_, output);
+  }
+
+  // optional .Messages.MessageMSG2 msg2 = 3;
+  if (has_msg2()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, *action_.msg2_, output);
+  }
+
+  // optional .Messages.AttestationMessage attestationMessage = 4;
+  if (has_attestationmessage()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, *action_.attestationmessage_, output);
+  }
+
+  // optional .Messages.MessagePsiHashData messagePsiHashData = 5;
+  if (has_messagepsihashdata()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, *action_.messagepsihashdata_, output);
+  }
+
+  // optional .Messages.MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+  if (has_messagepsihashdatafinished()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, *action_.messagepsihashdatafinished_, output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:Messages.JudgeContactRequest)
+}
+
+::google::protobuf::uint8* JudgeContactRequest::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Messages.JudgeContactRequest)
+  // optional .Messages.InitialMessage initialMessage = 1;
+  if (has_initialmessage()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, *action_.initialmessage_, false, target);
+  }
+
+  // optional .Messages.MessageMsg0 msg0 = 2;
+  if (has_msg0()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        2, *action_.msg0_, false, target);
+  }
+
+  // optional .Messages.MessageMSG2 msg2 = 3;
+  if (has_msg2()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        3, *action_.msg2_, false, target);
+  }
+
+  // optional .Messages.AttestationMessage attestationMessage = 4;
+  if (has_attestationmessage()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        4, *action_.attestationmessage_, false, target);
+  }
+
+  // optional .Messages.MessagePsiHashData messagePsiHashData = 5;
+  if (has_messagepsihashdata()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        5, *action_.messagepsihashdata_, false, target);
+  }
+
+  // optional .Messages.MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+  if (has_messagepsihashdatafinished()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        6, *action_.messagepsihashdatafinished_, false, target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Messages.JudgeContactRequest)
+  return target;
+}
+
+int JudgeContactRequest::ByteSize() const {
+// @@protoc_insertion_point(message_byte_size_start:Messages.JudgeContactRequest)
+  int total_size = 0;
+
+  switch (action_case()) {
+    // optional .Messages.InitialMessage initialMessage = 1;
+    case kInitialMessage: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.initialmessage_);
+      break;
+    }
+    // optional .Messages.MessageMsg0 msg0 = 2;
+    case kMsg0: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.msg0_);
+      break;
+    }
+    // optional .Messages.MessageMSG2 msg2 = 3;
+    case kMsg2: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.msg2_);
+      break;
+    }
+    // optional .Messages.AttestationMessage attestationMessage = 4;
+    case kAttestationMessage: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.attestationmessage_);
+      break;
+    }
+    // optional .Messages.MessagePsiHashData messagePsiHashData = 5;
+    case kMessagePsiHashData: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.messagepsihashdata_);
+      break;
+    }
+    // optional .Messages.MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+    case kMessagePsiHashDataFinished: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.messagepsihashdatafinished_);
+      break;
+    }
+    case ACTION_NOT_SET: {
+      break;
+    }
+  }
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void JudgeContactRequest::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:Messages.JudgeContactRequest)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) {
+    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
+  }
+  const JudgeContactRequest* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const JudgeContactRequest>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Messages.JudgeContactRequest)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:Messages.JudgeContactRequest)
+    MergeFrom(*source);
+  }
+}
+
+void JudgeContactRequest::MergeFrom(const JudgeContactRequest& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:Messages.JudgeContactRequest)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) {
+    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
+  }
+  switch (from.action_case()) {
+    case kInitialMessage: {
+      mutable_initialmessage()->::Messages::InitialMessage::MergeFrom(from.initialmessage());
+      break;
+    }
+    case kMsg0: {
+      mutable_msg0()->::Messages::MessageMsg0::MergeFrom(from.msg0());
+      break;
+    }
+    case kMsg2: {
+      mutable_msg2()->::Messages::MessageMSG2::MergeFrom(from.msg2());
+      break;
+    }
+    case kAttestationMessage: {
+      mutable_attestationmessage()->::Messages::AttestationMessage::MergeFrom(from.attestationmessage());
+      break;
+    }
+    case kMessagePsiHashData: {
+      mutable_messagepsihashdata()->::Messages::MessagePsiHashData::MergeFrom(from.messagepsihashdata());
+      break;
+    }
+    case kMessagePsiHashDataFinished: {
+      mutable_messagepsihashdatafinished()->::Messages::MessagePsiHashDataFinished::MergeFrom(from.messagepsihashdatafinished());
+      break;
+    }
+    case ACTION_NOT_SET: {
+      break;
+    }
+  }
+  if (from._internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+  }
+}
+
+void JudgeContactRequest::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:Messages.JudgeContactRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void JudgeContactRequest::CopyFrom(const JudgeContactRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Messages.JudgeContactRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool JudgeContactRequest::IsInitialized() const {
+
+  if (has_initialmessage()) {
+    if (!this->initialmessage().IsInitialized()) return false;
+  }
+  if (has_msg0()) {
+    if (!this->msg0().IsInitialized()) return false;
+  }
+  if (has_msg2()) {
+    if (!this->msg2().IsInitialized()) return false;
+  }
+  if (has_attestationmessage()) {
+    if (!this->attestationmessage().IsInitialized()) return false;
+  }
+  if (has_messagepsihashdata()) {
+    if (!this->messagepsihashdata().IsInitialized()) return false;
+  }
+  if (has_messagepsihashdatafinished()) {
+    if (!this->messagepsihashdatafinished().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void JudgeContactRequest::Swap(JudgeContactRequest* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void JudgeContactRequest::InternalSwap(JudgeContactRequest* other) {
+  std::swap(action_, other->action_);
+  std::swap(_oneof_case_[0], other->_oneof_case_[0]);
+  std::swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata JudgeContactRequest::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = JudgeContactRequest_descriptor_;
+  metadata.reflection = JudgeContactRequest_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// JudgeContactRequest
+
+// optional .Messages.InitialMessage initialMessage = 1;
+bool JudgeContactRequest::has_initialmessage() const {
+  return action_case() == kInitialMessage;
+}
+void JudgeContactRequest::set_has_initialmessage() {
+  _oneof_case_[0] = kInitialMessage;
+}
+void JudgeContactRequest::clear_initialmessage() {
+  if (has_initialmessage()) {
+    delete action_.initialmessage_;
+    clear_has_action();
+  }
+}
+ const ::Messages::InitialMessage& JudgeContactRequest::initialmessage() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.initialMessage)
+  return has_initialmessage()
+      ? *action_.initialmessage_
+      : ::Messages::InitialMessage::default_instance();
+}
+::Messages::InitialMessage* JudgeContactRequest::mutable_initialmessage() {
+  if (!has_initialmessage()) {
+    clear_action();
+    set_has_initialmessage();
+    action_.initialmessage_ = new ::Messages::InitialMessage;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.initialMessage)
+  return action_.initialmessage_;
+}
+::Messages::InitialMessage* JudgeContactRequest::release_initialmessage() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.initialMessage)
+  if (has_initialmessage()) {
+    clear_has_action();
+    ::Messages::InitialMessage* temp = action_.initialmessage_;
+    action_.initialmessage_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactRequest::set_allocated_initialmessage(::Messages::InitialMessage* initialmessage) {
+  clear_action();
+  if (initialmessage) {
+    set_has_initialmessage();
+    action_.initialmessage_ = initialmessage;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.initialMessage)
+}
+
+// optional .Messages.MessageMsg0 msg0 = 2;
+bool JudgeContactRequest::has_msg0() const {
+  return action_case() == kMsg0;
+}
+void JudgeContactRequest::set_has_msg0() {
+  _oneof_case_[0] = kMsg0;
+}
+void JudgeContactRequest::clear_msg0() {
+  if (has_msg0()) {
+    delete action_.msg0_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessageMsg0& JudgeContactRequest::msg0() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.msg0)
+  return has_msg0()
+      ? *action_.msg0_
+      : ::Messages::MessageMsg0::default_instance();
+}
+::Messages::MessageMsg0* JudgeContactRequest::mutable_msg0() {
+  if (!has_msg0()) {
+    clear_action();
+    set_has_msg0();
+    action_.msg0_ = new ::Messages::MessageMsg0;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.msg0)
+  return action_.msg0_;
+}
+::Messages::MessageMsg0* JudgeContactRequest::release_msg0() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.msg0)
+  if (has_msg0()) {
+    clear_has_action();
+    ::Messages::MessageMsg0* temp = action_.msg0_;
+    action_.msg0_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactRequest::set_allocated_msg0(::Messages::MessageMsg0* msg0) {
+  clear_action();
+  if (msg0) {
+    set_has_msg0();
+    action_.msg0_ = msg0;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.msg0)
+}
+
+// optional .Messages.MessageMSG2 msg2 = 3;
+bool JudgeContactRequest::has_msg2() const {
+  return action_case() == kMsg2;
+}
+void JudgeContactRequest::set_has_msg2() {
+  _oneof_case_[0] = kMsg2;
+}
+void JudgeContactRequest::clear_msg2() {
+  if (has_msg2()) {
+    delete action_.msg2_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessageMSG2& JudgeContactRequest::msg2() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.msg2)
+  return has_msg2()
+      ? *action_.msg2_
+      : ::Messages::MessageMSG2::default_instance();
+}
+::Messages::MessageMSG2* JudgeContactRequest::mutable_msg2() {
+  if (!has_msg2()) {
+    clear_action();
+    set_has_msg2();
+    action_.msg2_ = new ::Messages::MessageMSG2;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.msg2)
+  return action_.msg2_;
+}
+::Messages::MessageMSG2* JudgeContactRequest::release_msg2() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.msg2)
+  if (has_msg2()) {
+    clear_has_action();
+    ::Messages::MessageMSG2* temp = action_.msg2_;
+    action_.msg2_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactRequest::set_allocated_msg2(::Messages::MessageMSG2* msg2) {
+  clear_action();
+  if (msg2) {
+    set_has_msg2();
+    action_.msg2_ = msg2;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.msg2)
+}
+
+// optional .Messages.AttestationMessage attestationMessage = 4;
+bool JudgeContactRequest::has_attestationmessage() const {
+  return action_case() == kAttestationMessage;
+}
+void JudgeContactRequest::set_has_attestationmessage() {
+  _oneof_case_[0] = kAttestationMessage;
+}
+void JudgeContactRequest::clear_attestationmessage() {
+  if (has_attestationmessage()) {
+    delete action_.attestationmessage_;
+    clear_has_action();
+  }
+}
+ const ::Messages::AttestationMessage& JudgeContactRequest::attestationmessage() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.attestationMessage)
+  return has_attestationmessage()
+      ? *action_.attestationmessage_
+      : ::Messages::AttestationMessage::default_instance();
+}
+::Messages::AttestationMessage* JudgeContactRequest::mutable_attestationmessage() {
+  if (!has_attestationmessage()) {
+    clear_action();
+    set_has_attestationmessage();
+    action_.attestationmessage_ = new ::Messages::AttestationMessage;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.attestationMessage)
+  return action_.attestationmessage_;
+}
+::Messages::AttestationMessage* JudgeContactRequest::release_attestationmessage() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.attestationMessage)
+  if (has_attestationmessage()) {
+    clear_has_action();
+    ::Messages::AttestationMessage* temp = action_.attestationmessage_;
+    action_.attestationmessage_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactRequest::set_allocated_attestationmessage(::Messages::AttestationMessage* attestationmessage) {
+  clear_action();
+  if (attestationmessage) {
+    set_has_attestationmessage();
+    action_.attestationmessage_ = attestationmessage;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.attestationMessage)
+}
+
+// optional .Messages.MessagePsiHashData messagePsiHashData = 5;
+bool JudgeContactRequest::has_messagepsihashdata() const {
+  return action_case() == kMessagePsiHashData;
+}
+void JudgeContactRequest::set_has_messagepsihashdata() {
+  _oneof_case_[0] = kMessagePsiHashData;
+}
+void JudgeContactRequest::clear_messagepsihashdata() {
+  if (has_messagepsihashdata()) {
+    delete action_.messagepsihashdata_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessagePsiHashData& JudgeContactRequest::messagepsihashdata() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.messagePsiHashData)
+  return has_messagepsihashdata()
+      ? *action_.messagepsihashdata_
+      : ::Messages::MessagePsiHashData::default_instance();
+}
+::Messages::MessagePsiHashData* JudgeContactRequest::mutable_messagepsihashdata() {
+  if (!has_messagepsihashdata()) {
+    clear_action();
+    set_has_messagepsihashdata();
+    action_.messagepsihashdata_ = new ::Messages::MessagePsiHashData;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.messagePsiHashData)
+  return action_.messagepsihashdata_;
+}
+::Messages::MessagePsiHashData* JudgeContactRequest::release_messagepsihashdata() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.messagePsiHashData)
+  if (has_messagepsihashdata()) {
+    clear_has_action();
+    ::Messages::MessagePsiHashData* temp = action_.messagepsihashdata_;
+    action_.messagepsihashdata_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactRequest::set_allocated_messagepsihashdata(::Messages::MessagePsiHashData* messagepsihashdata) {
+  clear_action();
+  if (messagepsihashdata) {
+    set_has_messagepsihashdata();
+    action_.messagepsihashdata_ = messagepsihashdata;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.messagePsiHashData)
+}
+
+// optional .Messages.MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+bool JudgeContactRequest::has_messagepsihashdatafinished() const {
+  return action_case() == kMessagePsiHashDataFinished;
+}
+void JudgeContactRequest::set_has_messagepsihashdatafinished() {
+  _oneof_case_[0] = kMessagePsiHashDataFinished;
+}
+void JudgeContactRequest::clear_messagepsihashdatafinished() {
+  if (has_messagepsihashdatafinished()) {
+    delete action_.messagepsihashdatafinished_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessagePsiHashDataFinished& JudgeContactRequest::messagepsihashdatafinished() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+  return has_messagepsihashdatafinished()
+      ? *action_.messagepsihashdatafinished_
+      : ::Messages::MessagePsiHashDataFinished::default_instance();
+}
+::Messages::MessagePsiHashDataFinished* JudgeContactRequest::mutable_messagepsihashdatafinished() {
+  if (!has_messagepsihashdatafinished()) {
+    clear_action();
+    set_has_messagepsihashdatafinished();
+    action_.messagepsihashdatafinished_ = new ::Messages::MessagePsiHashDataFinished;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+  return action_.messagepsihashdatafinished_;
+}
+::Messages::MessagePsiHashDataFinished* JudgeContactRequest::release_messagepsihashdatafinished() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+  if (has_messagepsihashdatafinished()) {
+    clear_has_action();
+    ::Messages::MessagePsiHashDataFinished* temp = action_.messagepsihashdatafinished_;
+    action_.messagepsihashdatafinished_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactRequest::set_allocated_messagepsihashdatafinished(::Messages::MessagePsiHashDataFinished* messagepsihashdatafinished) {
+  clear_action();
+  if (messagepsihashdatafinished) {
+    set_has_messagepsihashdatafinished();
+    action_.messagepsihashdatafinished_ = messagepsihashdatafinished;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactRequest.messagePsiHashDataFinished)
+}
+
+bool JudgeContactRequest::has_action() const {
+  return action_case() != ACTION_NOT_SET;
+}
+void JudgeContactRequest::clear_has_action() {
+  _oneof_case_[0] = ACTION_NOT_SET;
+}
+JudgeContactRequest::ActionCase JudgeContactRequest::action_case() const {
+  return JudgeContactRequest::ActionCase(_oneof_case_[0]);
+}
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int JudgeContactResponse::kMsg0FieldNumber;
+const int JudgeContactResponse::kMsg1FieldNumber;
+const int JudgeContactResponse::kMsg3FieldNumber;
+const int JudgeContactResponse::kMessagePsiSaltFieldNumber;
+const int JudgeContactResponse::kMessagePsiResultFieldNumber;
+const int JudgeContactResponse::kMessagePsiIntersectFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+JudgeContactResponse::JudgeContactResponse()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:Messages.JudgeContactResponse)
+}
+
+void JudgeContactResponse::InitAsDefaultInstance() {
+  JudgeContactResponse_default_oneof_instance_->msg0_ = const_cast< ::Messages::MessageMsg0*>(&::Messages::MessageMsg0::default_instance());
+  JudgeContactResponse_default_oneof_instance_->msg1_ = const_cast< ::Messages::MessageMSG1*>(&::Messages::MessageMSG1::default_instance());
+  JudgeContactResponse_default_oneof_instance_->msg3_ = const_cast< ::Messages::MessageMSG3*>(&::Messages::MessageMSG3::default_instance());
+  JudgeContactResponse_default_oneof_instance_->messagepsisalt_ = const_cast< ::Messages::MessagePsiSalt*>(&::Messages::MessagePsiSalt::default_instance());
+  JudgeContactResponse_default_oneof_instance_->messagepsiresult_ = const_cast< ::Messages::MessagePsiResult*>(&::Messages::MessagePsiResult::default_instance());
+  JudgeContactResponse_default_oneof_instance_->messagepsiintersect_ = const_cast< ::Messages::MessagePsiIntersect*>(&::Messages::MessagePsiIntersect::default_instance());
+}
+
+JudgeContactResponse::JudgeContactResponse(const JudgeContactResponse& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:Messages.JudgeContactResponse)
+}
+
+void JudgeContactResponse::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  clear_has_action();
+}
+
+JudgeContactResponse::~JudgeContactResponse() {
+  // @@protoc_insertion_point(destructor:Messages.JudgeContactResponse)
+  SharedDtor();
+}
+
+void JudgeContactResponse::SharedDtor() {
+  if (has_action()) {
+    clear_action();
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void JudgeContactResponse::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* JudgeContactResponse::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return JudgeContactResponse_descriptor_;
+}
+
+const JudgeContactResponse& JudgeContactResponse::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();
+  return *default_instance_;
+}
+
+JudgeContactResponse* JudgeContactResponse::default_instance_ = NULL;
+
+JudgeContactResponse* JudgeContactResponse::New(::google::protobuf::Arena* arena) const {
+  JudgeContactResponse* n = new JudgeContactResponse;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void JudgeContactResponse::clear_action() {
+// @@protoc_insertion_point(one_of_clear_start:Messages.JudgeContactResponse)
+  switch(action_case()) {
+    case kMsg0: {
+      delete action_.msg0_;
+      break;
+    }
+    case kMsg1: {
+      delete action_.msg1_;
+      break;
+    }
+    case kMsg3: {
+      delete action_.msg3_;
+      break;
+    }
+    case kMessagePsiSalt: {
+      delete action_.messagepsisalt_;
+      break;
+    }
+    case kMessagePsiResult: {
+      delete action_.messagepsiresult_;
+      break;
+    }
+    case kMessagePsiIntersect: {
+      delete action_.messagepsiintersect_;
+      break;
+    }
+    case ACTION_NOT_SET: {
+      break;
+    }
+  }
+  _oneof_case_[0] = ACTION_NOT_SET;
+}
+
+
+void JudgeContactResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:Messages.JudgeContactResponse)
+  clear_action();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  if (_internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->Clear();
+  }
+}
+
+bool JudgeContactResponse::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:Messages.JudgeContactResponse)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .Messages.MessageMsg0 msg0 = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_msg0()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_msg1;
+        break;
+      }
+
+      // optional .Messages.MessageMSG1 msg1 = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_msg1:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_msg1()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_msg3;
+        break;
+      }
+
+      // optional .Messages.MessageMSG3 msg3 = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_msg3:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_msg3()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_messagePsiSalt;
+        break;
+      }
+
+      // optional .Messages.MessagePsiSalt messagePsiSalt = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_messagePsiSalt:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_messagepsisalt()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(42)) goto parse_messagePsiResult;
+        break;
+      }
+
+      // optional .Messages.MessagePsiResult messagePsiResult = 5;
+      case 5: {
+        if (tag == 42) {
+         parse_messagePsiResult:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_messagepsiresult()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(50)) goto parse_messagePsiIntersect;
+        break;
+      }
+
+      // optional .Messages.MessagePsiIntersect messagePsiIntersect = 6;
+      case 6: {
+        if (tag == 50) {
+         parse_messagePsiIntersect:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_messagepsiintersect()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:Messages.JudgeContactResponse)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:Messages.JudgeContactResponse)
+  return false;
+#undef DO_
+}
+
+void JudgeContactResponse::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:Messages.JudgeContactResponse)
+  // optional .Messages.MessageMsg0 msg0 = 1;
+  if (has_msg0()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *action_.msg0_, output);
+  }
+
+  // optional .Messages.MessageMSG1 msg1 = 2;
+  if (has_msg1()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, *action_.msg1_, output);
+  }
+
+  // optional .Messages.MessageMSG3 msg3 = 3;
+  if (has_msg3()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, *action_.msg3_, output);
+  }
+
+  // optional .Messages.MessagePsiSalt messagePsiSalt = 4;
+  if (has_messagepsisalt()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, *action_.messagepsisalt_, output);
+  }
+
+  // optional .Messages.MessagePsiResult messagePsiResult = 5;
+  if (has_messagepsiresult()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, *action_.messagepsiresult_, output);
+  }
+
+  // optional .Messages.MessagePsiIntersect messagePsiIntersect = 6;
+  if (has_messagepsiintersect()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, *action_.messagepsiintersect_, output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:Messages.JudgeContactResponse)
+}
+
+::google::protobuf::uint8* JudgeContactResponse::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Messages.JudgeContactResponse)
+  // optional .Messages.MessageMsg0 msg0 = 1;
+  if (has_msg0()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, *action_.msg0_, false, target);
+  }
+
+  // optional .Messages.MessageMSG1 msg1 = 2;
+  if (has_msg1()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        2, *action_.msg1_, false, target);
+  }
+
+  // optional .Messages.MessageMSG3 msg3 = 3;
+  if (has_msg3()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        3, *action_.msg3_, false, target);
+  }
+
+  // optional .Messages.MessagePsiSalt messagePsiSalt = 4;
+  if (has_messagepsisalt()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        4, *action_.messagepsisalt_, false, target);
+  }
+
+  // optional .Messages.MessagePsiResult messagePsiResult = 5;
+  if (has_messagepsiresult()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        5, *action_.messagepsiresult_, false, target);
+  }
+
+  // optional .Messages.MessagePsiIntersect messagePsiIntersect = 6;
+  if (has_messagepsiintersect()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        6, *action_.messagepsiintersect_, false, target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Messages.JudgeContactResponse)
+  return target;
+}
+
+int JudgeContactResponse::ByteSize() const {
+// @@protoc_insertion_point(message_byte_size_start:Messages.JudgeContactResponse)
+  int total_size = 0;
+
+  switch (action_case()) {
+    // optional .Messages.MessageMsg0 msg0 = 1;
+    case kMsg0: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.msg0_);
+      break;
+    }
+    // optional .Messages.MessageMSG1 msg1 = 2;
+    case kMsg1: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.msg1_);
+      break;
+    }
+    // optional .Messages.MessageMSG3 msg3 = 3;
+    case kMsg3: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.msg3_);
+      break;
+    }
+    // optional .Messages.MessagePsiSalt messagePsiSalt = 4;
+    case kMessagePsiSalt: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.messagepsisalt_);
+      break;
+    }
+    // optional .Messages.MessagePsiResult messagePsiResult = 5;
+    case kMessagePsiResult: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.messagepsiresult_);
+      break;
+    }
+    // optional .Messages.MessagePsiIntersect messagePsiIntersect = 6;
+    case kMessagePsiIntersect: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *action_.messagepsiintersect_);
+      break;
+    }
+    case ACTION_NOT_SET: {
+      break;
+    }
+  }
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void JudgeContactResponse::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:Messages.JudgeContactResponse)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) {
+    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
+  }
+  const JudgeContactResponse* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const JudgeContactResponse>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Messages.JudgeContactResponse)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:Messages.JudgeContactResponse)
+    MergeFrom(*source);
+  }
+}
+
+void JudgeContactResponse::MergeFrom(const JudgeContactResponse& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:Messages.JudgeContactResponse)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) {
+    ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
+  }
+  switch (from.action_case()) {
+    case kMsg0: {
+      mutable_msg0()->::Messages::MessageMsg0::MergeFrom(from.msg0());
+      break;
+    }
+    case kMsg1: {
+      mutable_msg1()->::Messages::MessageMSG1::MergeFrom(from.msg1());
+      break;
+    }
+    case kMsg3: {
+      mutable_msg3()->::Messages::MessageMSG3::MergeFrom(from.msg3());
+      break;
+    }
+    case kMessagePsiSalt: {
+      mutable_messagepsisalt()->::Messages::MessagePsiSalt::MergeFrom(from.messagepsisalt());
+      break;
+    }
+    case kMessagePsiResult: {
+      mutable_messagepsiresult()->::Messages::MessagePsiResult::MergeFrom(from.messagepsiresult());
+      break;
+    }
+    case kMessagePsiIntersect: {
+      mutable_messagepsiintersect()->::Messages::MessagePsiIntersect::MergeFrom(from.messagepsiintersect());
+      break;
+    }
+    case ACTION_NOT_SET: {
+      break;
+    }
+  }
+  if (from._internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+  }
+}
+
+void JudgeContactResponse::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:Messages.JudgeContactResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void JudgeContactResponse::CopyFrom(const JudgeContactResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Messages.JudgeContactResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool JudgeContactResponse::IsInitialized() const {
+
+  if (has_msg0()) {
+    if (!this->msg0().IsInitialized()) return false;
+  }
+  if (has_msg1()) {
+    if (!this->msg1().IsInitialized()) return false;
+  }
+  if (has_msg3()) {
+    if (!this->msg3().IsInitialized()) return false;
+  }
+  if (has_messagepsisalt()) {
+    if (!this->messagepsisalt().IsInitialized()) return false;
+  }
+  if (has_messagepsiresult()) {
+    if (!this->messagepsiresult().IsInitialized()) return false;
+  }
+  if (has_messagepsiintersect()) {
+    if (!this->messagepsiintersect().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void JudgeContactResponse::Swap(JudgeContactResponse* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void JudgeContactResponse::InternalSwap(JudgeContactResponse* other) {
+  std::swap(action_, other->action_);
+  std::swap(_oneof_case_[0], other->_oneof_case_[0]);
+  std::swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata JudgeContactResponse::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = JudgeContactResponse_descriptor_;
+  metadata.reflection = JudgeContactResponse_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// JudgeContactResponse
+
+// optional .Messages.MessageMsg0 msg0 = 1;
+bool JudgeContactResponse::has_msg0() const {
+  return action_case() == kMsg0;
+}
+void JudgeContactResponse::set_has_msg0() {
+  _oneof_case_[0] = kMsg0;
+}
+void JudgeContactResponse::clear_msg0() {
+  if (has_msg0()) {
+    delete action_.msg0_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessageMsg0& JudgeContactResponse::msg0() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.msg0)
+  return has_msg0()
+      ? *action_.msg0_
+      : ::Messages::MessageMsg0::default_instance();
+}
+::Messages::MessageMsg0* JudgeContactResponse::mutable_msg0() {
+  if (!has_msg0()) {
+    clear_action();
+    set_has_msg0();
+    action_.msg0_ = new ::Messages::MessageMsg0;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.msg0)
+  return action_.msg0_;
+}
+::Messages::MessageMsg0* JudgeContactResponse::release_msg0() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.msg0)
+  if (has_msg0()) {
+    clear_has_action();
+    ::Messages::MessageMsg0* temp = action_.msg0_;
+    action_.msg0_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactResponse::set_allocated_msg0(::Messages::MessageMsg0* msg0) {
+  clear_action();
+  if (msg0) {
+    set_has_msg0();
+    action_.msg0_ = msg0;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.msg0)
+}
+
+// optional .Messages.MessageMSG1 msg1 = 2;
+bool JudgeContactResponse::has_msg1() const {
+  return action_case() == kMsg1;
+}
+void JudgeContactResponse::set_has_msg1() {
+  _oneof_case_[0] = kMsg1;
+}
+void JudgeContactResponse::clear_msg1() {
+  if (has_msg1()) {
+    delete action_.msg1_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessageMSG1& JudgeContactResponse::msg1() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.msg1)
+  return has_msg1()
+      ? *action_.msg1_
+      : ::Messages::MessageMSG1::default_instance();
+}
+::Messages::MessageMSG1* JudgeContactResponse::mutable_msg1() {
+  if (!has_msg1()) {
+    clear_action();
+    set_has_msg1();
+    action_.msg1_ = new ::Messages::MessageMSG1;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.msg1)
+  return action_.msg1_;
+}
+::Messages::MessageMSG1* JudgeContactResponse::release_msg1() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.msg1)
+  if (has_msg1()) {
+    clear_has_action();
+    ::Messages::MessageMSG1* temp = action_.msg1_;
+    action_.msg1_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactResponse::set_allocated_msg1(::Messages::MessageMSG1* msg1) {
+  clear_action();
+  if (msg1) {
+    set_has_msg1();
+    action_.msg1_ = msg1;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.msg1)
+}
+
+// optional .Messages.MessageMSG3 msg3 = 3;
+bool JudgeContactResponse::has_msg3() const {
+  return action_case() == kMsg3;
+}
+void JudgeContactResponse::set_has_msg3() {
+  _oneof_case_[0] = kMsg3;
+}
+void JudgeContactResponse::clear_msg3() {
+  if (has_msg3()) {
+    delete action_.msg3_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessageMSG3& JudgeContactResponse::msg3() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.msg3)
+  return has_msg3()
+      ? *action_.msg3_
+      : ::Messages::MessageMSG3::default_instance();
+}
+::Messages::MessageMSG3* JudgeContactResponse::mutable_msg3() {
+  if (!has_msg3()) {
+    clear_action();
+    set_has_msg3();
+    action_.msg3_ = new ::Messages::MessageMSG3;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.msg3)
+  return action_.msg3_;
+}
+::Messages::MessageMSG3* JudgeContactResponse::release_msg3() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.msg3)
+  if (has_msg3()) {
+    clear_has_action();
+    ::Messages::MessageMSG3* temp = action_.msg3_;
+    action_.msg3_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactResponse::set_allocated_msg3(::Messages::MessageMSG3* msg3) {
+  clear_action();
+  if (msg3) {
+    set_has_msg3();
+    action_.msg3_ = msg3;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.msg3)
+}
+
+// optional .Messages.MessagePsiSalt messagePsiSalt = 4;
+bool JudgeContactResponse::has_messagepsisalt() const {
+  return action_case() == kMessagePsiSalt;
+}
+void JudgeContactResponse::set_has_messagepsisalt() {
+  _oneof_case_[0] = kMessagePsiSalt;
+}
+void JudgeContactResponse::clear_messagepsisalt() {
+  if (has_messagepsisalt()) {
+    delete action_.messagepsisalt_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessagePsiSalt& JudgeContactResponse::messagepsisalt() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.messagePsiSalt)
+  return has_messagepsisalt()
+      ? *action_.messagepsisalt_
+      : ::Messages::MessagePsiSalt::default_instance();
+}
+::Messages::MessagePsiSalt* JudgeContactResponse::mutable_messagepsisalt() {
+  if (!has_messagepsisalt()) {
+    clear_action();
+    set_has_messagepsisalt();
+    action_.messagepsisalt_ = new ::Messages::MessagePsiSalt;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.messagePsiSalt)
+  return action_.messagepsisalt_;
+}
+::Messages::MessagePsiSalt* JudgeContactResponse::release_messagepsisalt() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.messagePsiSalt)
+  if (has_messagepsisalt()) {
+    clear_has_action();
+    ::Messages::MessagePsiSalt* temp = action_.messagepsisalt_;
+    action_.messagepsisalt_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactResponse::set_allocated_messagepsisalt(::Messages::MessagePsiSalt* messagepsisalt) {
+  clear_action();
+  if (messagepsisalt) {
+    set_has_messagepsisalt();
+    action_.messagepsisalt_ = messagepsisalt;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.messagePsiSalt)
+}
+
+// optional .Messages.MessagePsiResult messagePsiResult = 5;
+bool JudgeContactResponse::has_messagepsiresult() const {
+  return action_case() == kMessagePsiResult;
+}
+void JudgeContactResponse::set_has_messagepsiresult() {
+  _oneof_case_[0] = kMessagePsiResult;
+}
+void JudgeContactResponse::clear_messagepsiresult() {
+  if (has_messagepsiresult()) {
+    delete action_.messagepsiresult_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessagePsiResult& JudgeContactResponse::messagepsiresult() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.messagePsiResult)
+  return has_messagepsiresult()
+      ? *action_.messagepsiresult_
+      : ::Messages::MessagePsiResult::default_instance();
+}
+::Messages::MessagePsiResult* JudgeContactResponse::mutable_messagepsiresult() {
+  if (!has_messagepsiresult()) {
+    clear_action();
+    set_has_messagepsiresult();
+    action_.messagepsiresult_ = new ::Messages::MessagePsiResult;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.messagePsiResult)
+  return action_.messagepsiresult_;
+}
+::Messages::MessagePsiResult* JudgeContactResponse::release_messagepsiresult() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.messagePsiResult)
+  if (has_messagepsiresult()) {
+    clear_has_action();
+    ::Messages::MessagePsiResult* temp = action_.messagepsiresult_;
+    action_.messagepsiresult_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactResponse::set_allocated_messagepsiresult(::Messages::MessagePsiResult* messagepsiresult) {
+  clear_action();
+  if (messagepsiresult) {
+    set_has_messagepsiresult();
+    action_.messagepsiresult_ = messagepsiresult;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.messagePsiResult)
+}
+
+// optional .Messages.MessagePsiIntersect messagePsiIntersect = 6;
+bool JudgeContactResponse::has_messagepsiintersect() const {
+  return action_case() == kMessagePsiIntersect;
+}
+void JudgeContactResponse::set_has_messagepsiintersect() {
+  _oneof_case_[0] = kMessagePsiIntersect;
+}
+void JudgeContactResponse::clear_messagepsiintersect() {
+  if (has_messagepsiintersect()) {
+    delete action_.messagepsiintersect_;
+    clear_has_action();
+  }
+}
+ const ::Messages::MessagePsiIntersect& JudgeContactResponse::messagepsiintersect() const {
+  // @@protoc_insertion_point(field_get:Messages.JudgeContactResponse.messagePsiIntersect)
+  return has_messagepsiintersect()
+      ? *action_.messagepsiintersect_
+      : ::Messages::MessagePsiIntersect::default_instance();
+}
+::Messages::MessagePsiIntersect* JudgeContactResponse::mutable_messagepsiintersect() {
+  if (!has_messagepsiintersect()) {
+    clear_action();
+    set_has_messagepsiintersect();
+    action_.messagepsiintersect_ = new ::Messages::MessagePsiIntersect;
+  }
+  // @@protoc_insertion_point(field_mutable:Messages.JudgeContactResponse.messagePsiIntersect)
+  return action_.messagepsiintersect_;
+}
+::Messages::MessagePsiIntersect* JudgeContactResponse::release_messagepsiintersect() {
+  // @@protoc_insertion_point(field_release:Messages.JudgeContactResponse.messagePsiIntersect)
+  if (has_messagepsiintersect()) {
+    clear_has_action();
+    ::Messages::MessagePsiIntersect* temp = action_.messagepsiintersect_;
+    action_.messagepsiintersect_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void JudgeContactResponse::set_allocated_messagepsiintersect(::Messages::MessagePsiIntersect* messagepsiintersect) {
+  clear_action();
+  if (messagepsiintersect) {
+    set_has_messagepsiintersect();
+    action_.messagepsiintersect_ = messagepsiintersect;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Messages.JudgeContactResponse.messagePsiIntersect)
+}
+
+bool JudgeContactResponse::has_action() const {
+  return action_case() != ACTION_NOT_SET;
+}
+void JudgeContactResponse::clear_has_action() {
+  _oneof_case_[0] = ACTION_NOT_SET;
+}
+JudgeContactResponse::ActionCase JudgeContactResponse::action_case() const {
+  return JudgeContactResponse::ActionCase(_oneof_case_[0]);
+}
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // ===================================================================
 
