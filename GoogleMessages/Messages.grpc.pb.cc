@@ -35,39 +35,34 @@ ContactTracer::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& chan
   : channel_(channel), rpcmethod_JudgeContact_(ContactTracer_method_names[0], ::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
   {}
 
-::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* ContactTracer::Stub::JudgeContactRaw(::grpc::ClientContext* context) {
-  return ::grpc_impl::internal::ClientReaderWriterFactory< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>::Create(channel_.get(), rpcmethod_JudgeContact_, context);
+::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* ContactTracer::Stub::JudgeContactRaw(::grpc::ClientContext* context) {
+  return ::grpc_impl::internal::ClientReaderWriterFactory< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>::Create(channel_.get(), rpcmethod_JudgeContact_, context);
 }
 
-void ContactTracer::Stub::experimental_async::JudgeContact(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::MessageMsg0>* reactor) {
-  ::grpc_impl::internal::ClientCallbackReaderWriterFactory< ::Messages::JudgeContactRequest,::Messages::MessageMsg0>::Create(stub_->channel_.get(), stub_->rpcmethod_JudgeContact_, context, reactor);
+void ContactTracer::Stub::experimental_async::JudgeContact(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::JudgeContactResponse>* reactor) {
+  ::grpc_impl::internal::ClientCallbackReaderWriterFactory< ::Messages::JudgeContactRequest,::Messages::JudgeContactResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_JudgeContact_, context, reactor);
 }
 
-::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* ContactTracer::Stub::AsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc_impl::internal::ClientAsyncReaderWriterFactory< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>::Create(channel_.get(), cq, rpcmethod_JudgeContact_, context, true, tag);
+::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* ContactTracer::Stub::AsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc_impl::internal::ClientAsyncReaderWriterFactory< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>::Create(channel_.get(), cq, rpcmethod_JudgeContact_, context, true, tag);
 }
 
-::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* ContactTracer::Stub::PrepareAsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
-  return ::grpc_impl::internal::ClientAsyncReaderWriterFactory< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>::Create(channel_.get(), cq, rpcmethod_JudgeContact_, context, false, nullptr);
+::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* ContactTracer::Stub::PrepareAsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncReaderWriterFactory< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>::Create(channel_.get(), cq, rpcmethod_JudgeContact_, context, false, nullptr);
 }
 
 ContactTracer::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ContactTracer_method_names[0],
       ::grpc::internal::RpcMethod::BIDI_STREAMING,
-      new ::grpc::internal::BidiStreamingHandler< ContactTracer::Service, ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>(
-          [](ContactTracer::Service* service,
-             ::grpc_impl::ServerContext* ctx,
-             ::grpc_impl::ServerReaderWriter<::Messages::MessageMsg0,
-             ::Messages::JudgeContactRequest>* stream) {
-               return service->JudgeContact(ctx, stream);
-             }, this)));
+      new ::grpc::internal::BidiStreamingHandler< ContactTracer::Service, ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>(
+          std::mem_fn(&ContactTracer::Service::JudgeContact), this)));
 }
 
 ContactTracer::Service::~Service() {
 }
 
-::grpc::Status ContactTracer::Service::JudgeContact(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* stream) {
+::grpc::Status ContactTracer::Service::JudgeContact(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* stream) {
   (void) context;
   (void) stream;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");

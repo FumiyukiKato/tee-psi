@@ -66,12 +66,14 @@ else
 	Urts_Library_Name := sgx_urts
 endif
 
-App_Cpp_Files := isv_app/isv_app.cpp ../Util/LogBase.cpp ../Networking/NetworkManager.cpp \
+App_Cpp_Files_tmp := isv_app/isv_app.cpp ../Util/LogBase.cpp ../Networking/NetworkManager.cpp \
 ../Networking/Session.cpp ../Networking/Client.cpp ../Networking/Server.cpp isv_app/MessageManager.cpp ../Networking/NetworkManagerClient.cpp \
-../GoogleMessages/Messages.pb.cpp ../Networking/AbstractNetworkOps.cpp ../Util/UtilityFunctions.cpp ../WebService/WebService.cpp \
-../Util/Base64.cpp
+../GoogleMessages/Messages.pb.cpp ../GoogleMessages/Messages.grpc.pb.cc ../Networking/AbstractNetworkOps.cpp ../Util/UtilityFunctions.cpp ../WebService/WebService.cpp \
+../Util/Base64.cpp ProtoClient/ContactTracerClient.cpp
+App_Cpp_Files := $(App_Cpp_Files_tmp:.cc=.cpp)
 
-App_Include_Paths := -Iworker -I$(SGX_SDK)/include -Iheaders -I../Util -I../Networking -Iisv_app -I../GoogleMessages -I/usr/local/include -I../WebService
+App_Include_Paths := -Iworker -I$(SGX_SDK)/include -Iheaders -I../Util -I../Networking -Iisv_app -I../GoogleMessages -I/usr/local/include -I../WebService \
+-IProtoClient
 
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fPIC -Wno-attributes $(App_Include_Paths)
 
@@ -89,7 +91,8 @@ endif
 
 App_Cpp_Flags := $(App_C_Flags) -std=c++11 -DEnableClient
 App_Link_Flags := -L$(SGX_LIBRARY_PATH) -l$(Urts_Library_Name) -L. -lsgx_ukey_exchange -lpthread -lworker \
--Wl,-rpath=$(CURDIR)/sample_libcrypto -Wl,-rpath=$(CURDIR) -llog4cpp -lboost_system -L/usr/lib -lssl -lcrypto -lboost_thread -lprotobuf -L /usr/local/lib -ljsoncpp -lcurl
+-Wl,-rpath=$(CURDIR)/sample_libcrypto -Wl,-rpath=$(CURDIR) -llog4cpp -lboost_system -L/usr/lib -lssl -lcrypto -lboost_thread -lprotobuf -L /usr/local/lib -ljsoncpp -lcurl \
+`pkg-config --libs protobuf grpc++` -Wl,--no-as-needed -lgrpc++_reflection -Wl,--as-needed -ldl
 
 ifneq ($(SGX_MODE), HW)
 	App_Link_Flags += -lsgx_uae_service_sim
@@ -132,7 +135,11 @@ isv_app/%.o: isv_app/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
 
-../GoogleMessages/%.o: ../GoogleMessages/%.cpp
+ProtoClient/%.o: ProtoClient/%.cpp
+	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
+	@echo "CXX  <= $<"
+
+../GoogleMessages/%.o: ../GoogleMessages/%.cpp ../GoogleMessages/%.cc
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
 

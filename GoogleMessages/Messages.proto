@@ -3,17 +3,17 @@ syntax = "proto2";
 package Messages;
 
 service ContactTracer {
-	rpc JudgeContact(stream JudgeContactRequest) returns (stream MessageMsg0);
+	rpc JudgeContact(stream JudgeContactRequest) returns (stream JudgeContactResponse) {}
 }
 
 message JudgeContactRequest {
 	oneof action {
-		InitialMessage initialMessage = 1;
+		InitialMessage initial_message = 1;
 		MessageMsg0 msg0 = 2;
 		MessageMSG2 msg2 = 3;
-		AttestationMessage attestationMessage = 4;
-		MessagePsiHashData messagePsiHashData = 5;
-		MessagePsiHashDataFinished messagePsiHashDataFinished = 6;
+		AttestationMessage attestation_message = 4;
+		MessagePsiHashData message_psi_hash_data = 5;
+		MessagePsiHashDataFinished message_psi_hash_data_finished = 6;
 	}
 }
 
@@ -22,9 +22,9 @@ message JudgeContactResponse {
 		MessageMsg0 msg0 = 1;
 		MessageMSG1 msg1 = 2;
 		MessageMSG3 msg3 = 3;
-		MessagePsiSalt messagePsiSalt = 4;
-		MessagePsiResult messagePsiResult = 5;
-		MessagePsiIntersect messagePsiIntersect = 6;
+		MessagePsiSalt message_psi_salt = 4;
+		MessagePsiResult message_psi_result = 5;
+		MessagePsiIntersect message_psi_intersect = 6;
 	}
 }
 

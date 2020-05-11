@@ -15,22 +15,51 @@
 // specific language governing permissions and limitations
 // under the License..
 
+#include <string>
 #include <iostream>
 #include <unistd.h>
 
+#include <grpc/grpc.h>
+#include <grpcpp/server.h>
+#include <grpcpp/server_builder.h>
+#include <grpcpp/server_context.h>
+#include <grpcpp/security/server_credentials.h>
+
 #include "MessageHandler.h"
+#include "ContactTracer.h"
 #include "LogBase.h"
 
+using namespace std;
 using namespace util;
+
+using grpc::Server;
+using grpc::ServerBuilder;
+
+void RunServer() {
+  string server_address("0.0.0.0:" + to_string(Settings::grpc_port));
+  ContactTracerImpl service;
+
+  ServerBuilder builder;
+  // リバースプロキシをSSL終端にしてるのでこれでOK
+  builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+  builder.RegisterService(&service);
+  unique_ptr<Server> server(builder.BuildAndStart());
+  Log("[gRPC] Server listening on %s \n", server_address);
+  server->Wait();
+}
 
 int Main(char *filepath) {
     LogBase::Inst();
 
     int ret = 0;
 
-    MessageHandler msg;
-    msg.init(filepath);
-    msg.start();
+    // RunServer(Settings::rh_port);
+    RunServer();
+    
+
+    // MessageHandler msg;
+    // msg.init(filepath);
+    // msg.start();
 
     return ret;
 }

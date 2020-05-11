@@ -36,22 +36,22 @@ class ContactTracer final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>> JudgeContact(::grpc::ClientContext* context) {
-      return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>>(JudgeContactRaw(context));
+    std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>> JudgeContact(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>>(JudgeContactRaw(context));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>> AsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>>(AsyncJudgeContactRaw(context, cq, tag));
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>> AsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>>(AsyncJudgeContactRaw(context, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>> PrepareAsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>>(PrepareAsyncJudgeContactRaw(context, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>> PrepareAsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>>(PrepareAsyncJudgeContactRaw(context, cq));
     }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void JudgeContact(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::MessageMsg0>* reactor) = 0;
+      virtual void JudgeContact(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::JudgeContactResponse>* reactor) = 0;
       #else
-      virtual void JudgeContact(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::MessageMsg0>* reactor) = 0;
+      virtual void JudgeContact(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::JudgeContactResponse>* reactor) = 0;
       #endif
     };
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -62,29 +62,29 @@ class ContactTracer final {
     #endif
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
-    virtual ::grpc::ClientReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* JudgeContactRaw(::grpc::ClientContext* context) = 0;
-    virtual ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* AsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* PrepareAsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* JudgeContactRaw(::grpc::ClientContext* context) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* AsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* PrepareAsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
-    std::unique_ptr< ::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>> JudgeContact(::grpc::ClientContext* context) {
-      return std::unique_ptr< ::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>>(JudgeContactRaw(context));
+    std::unique_ptr< ::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>> JudgeContact(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>>(JudgeContactRaw(context));
     }
-    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>> AsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>>(AsyncJudgeContactRaw(context, cq, tag));
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>> AsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>>(AsyncJudgeContactRaw(context, cq, tag));
     }
-    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>> PrepareAsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>>(PrepareAsyncJudgeContactRaw(context, cq));
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>> PrepareAsyncJudgeContact(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>>(PrepareAsyncJudgeContactRaw(context, cq));
     }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void JudgeContact(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::MessageMsg0>* reactor) override;
+      void JudgeContact(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::JudgeContactResponse>* reactor) override;
       #else
-      void JudgeContact(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::MessageMsg0>* reactor) override;
+      void JudgeContact(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::Messages::JudgeContactRequest,::Messages::JudgeContactResponse>* reactor) override;
       #endif
      private:
       friend class Stub;
@@ -97,9 +97,9 @@ class ContactTracer final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class experimental_async async_stub_{this};
-    ::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* JudgeContactRaw(::grpc::ClientContext* context) override;
-    ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* AsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* PrepareAsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* JudgeContactRaw(::grpc::ClientContext* context) override;
+    ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* AsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReaderWriter< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* PrepareAsyncJudgeContactRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_JudgeContact_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -108,7 +108,7 @@ class ContactTracer final {
    public:
     Service();
     virtual ~Service();
-    virtual ::grpc::Status JudgeContact(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* stream);
+    virtual ::grpc::Status JudgeContact(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* stream);
   };
   template <class BaseClass>
   class WithAsyncMethod_JudgeContact : public BaseClass {
@@ -122,11 +122,11 @@ class ContactTracer final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* /*stream*/)  override {
+    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestJudgeContact(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestJudgeContact(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncBidiStreaming(0, context, stream, new_call_cq, notification_cq, tag);
     }
   };
@@ -143,7 +143,7 @@ class ContactTracer final {
       ::grpc::Service::experimental().
     #endif
         MarkMethodCallback(0,
-          new ::grpc_impl::internal::CallbackBidiHandler< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>(
+          new ::grpc_impl::internal::CallbackBidiHandler< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
@@ -156,15 +156,15 @@ class ContactTracer final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* /*stream*/)  override {
+    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerBidiReactor< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* JudgeContact(
+    virtual ::grpc::ServerBidiReactor< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* JudgeContact(
       ::grpc::CallbackServerContext* /*context*/)
     #else
-    virtual ::grpc::experimental::ServerBidiReactor< ::Messages::JudgeContactRequest, ::Messages::MessageMsg0>* JudgeContact(
+    virtual ::grpc::experimental::ServerBidiReactor< ::Messages::JudgeContactRequest, ::Messages::JudgeContactResponse>* JudgeContact(
       ::grpc::experimental::CallbackServerContext* /*context*/)
     #endif
       { return nullptr; }
@@ -186,7 +186,7 @@ class ContactTracer final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* /*stream*/)  override {
+    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -203,7 +203,7 @@ class ContactTracer final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* /*stream*/)  override {
+    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -236,7 +236,7 @@ class ContactTracer final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::MessageMsg0, ::Messages::JudgeContactRequest>* /*stream*/)  override {
+    ::grpc::Status JudgeContact(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Messages::JudgeContactResponse, ::Messages::JudgeContactRequest>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }

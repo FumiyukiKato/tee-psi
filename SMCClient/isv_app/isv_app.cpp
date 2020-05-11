@@ -19,10 +19,17 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <grpc/grpc.h>
+#include <grpcpp/channel.h>
+#include <grpcpp/create_channel.h>
+#include <grpcpp/security/credentials.h>
+
 #include "LogBase.h"
 #include "NetworkManager.h"
 #include "MessageManager.h"
 #include "UtilityFunctions.h"
+#include "ContactTracerClient.h"
+#include "../GeneralSettings.h"
 
 using namespace util;
 
@@ -30,10 +37,17 @@ int Main(ClientMode mode, char *filepath) {
     LogBase::Inst();
 
     int ret = 0;
+    ContactTracerClient client_service(
+        grpc::CreateChannel("localhost:" + to_string(Settings::grpc_port),
+        grpc::InsecureChannelCredentials())
+    );
 
-    MessageManager *vm = MessageManager::getInstance();
-    vm->init(mode, filepath);
-    vm->start();
+    std::cout << "-------------- JudgeContact --------------" << std::endl;
+    client_service.JudgeContact();
+
+    // MessageManager *vm = MessageManager::getInstance();
+    // vm->init(mode, filepath);
+    // vm->start();
 
     return ret;
 }

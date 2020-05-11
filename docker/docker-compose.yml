@@ -9,6 +9,7 @@ services:
       - ${RUST_SDK_ROOT}:/root/sgx
       - ${TEE_PSI}:/root/sgx/samplecode/tee-psi
       - ${TEE_PSI}/docker/script/init.sh:/root/sgx/init.sh
+      - ../../grpc:/var/grpc
     tty: true
     env_file: ${TEE_PSI}/.env
     command: /root/sgx/init.sh

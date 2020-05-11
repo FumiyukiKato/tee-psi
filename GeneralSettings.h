@@ -25,6 +25,7 @@ using namespace std;
 namespace Settings {
     static int rh_port         = 22225;
     static string rh_host      = "localhost";
+    static int grpc_port       = 50001;
 
     static string server_crt   = std::getenv("SERVER_CRT_PATH"); //certificate for the HTTPS connection between the SP and the App
     static string server_key   = std::getenv("SERVER_KEY_PATH"); //private key for the HTTPS connection
