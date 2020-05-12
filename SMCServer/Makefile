@@ -77,11 +77,11 @@ endif
 
 App_Cpp_Files_tmp := isv_app/isv_app.cpp ../Util/LogBase.cpp ../Networking/NetworkManager.cpp ../Networking/Session.cpp ../Networking/Server.cpp \
 ../Networking/Client.cpp ../Networking/NetworkManagerServer.cpp ../GoogleMessages/Messages.pb.cpp ../GoogleMessages/Messages.grpc.pb.cc ../Networking/AbstractNetworkOps.cpp \
-../Util/UtilityFunctions.cpp ../Enclave/Enclave.cpp ../MessageHandler/MessageHandler.cpp ../Util/Base64.cpp isv_app/sha256.cpp Service/ContactTracer.cpp
+../Util/UtilityFunctions.cpp ../Enclave/Enclave.cpp ../MessageHandler/MessageHandler.cpp ../Util/Base64.cpp isv_app/sha256.cpp Controller/ContactTracer.cpp Service/PsiService.cpp Service/EnclaveService.cpp
 App_Cpp_Files := $(App_Cpp_Files_tmp:.cc=.cpp)
 
 App_Include_Paths := -I../Util -Iservice_provider -I$(SGX_SDK)/include -I$(CUSTOM_EDL_PATH) -Iheaders  -I../Networking -Iisv_app -I../GoogleMessages -I/usr/local/include -I../Enclave \
--I../MessageHandler -Isample_libcrypto -IService
+-I../MessageHandler -Isample_libcrypto -IController -IService
 
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fPIC -Wno-attributes $(App_Include_Paths)
 
@@ -193,6 +193,10 @@ isv_app/enclave_u.o: isv_app/enclave_u.c
 isv_app/%.o: isv_app/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
+
+Controller/%.o: Controller/%.cpp
+	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
+	@echo "CXX  <= $<"
 
 Service/%.o: Service/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@

@@ -139,13 +139,6 @@ class JudgeContactRequest :
     return *this;
   }
 
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
-  }
-
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
     return GetDescriptor();
   }
@@ -244,7 +237,7 @@ class JudgeContactRequest :
     kMessagePsiHashDataFieldNumber = 5,
     kMessagePsiHashDataFinishedFieldNumber = 6,
   };
-  // optional .Messages.InitialMessage initial_message = 1;
+  // .Messages.InitialMessage initial_message = 1;
   bool has_initial_message() const;
   private:
   bool _internal_has_initial_message() const;
@@ -259,7 +252,7 @@ class JudgeContactRequest :
   ::Messages::InitialMessage* _internal_mutable_initial_message();
   public:
 
-  // optional .Messages.MessageMsg0 msg0 = 2;
+  // .Messages.MessageMsg0 msg0 = 2;
   bool has_msg0() const;
   private:
   bool _internal_has_msg0() const;
@@ -274,7 +267,7 @@ class JudgeContactRequest :
   ::Messages::MessageMsg0* _internal_mutable_msg0();
   public:
 
-  // optional .Messages.MessageMSG2 msg2 = 3;
+  // .Messages.MessageMSG2 msg2 = 3;
   bool has_msg2() const;
   private:
   bool _internal_has_msg2() const;
@@ -289,7 +282,7 @@ class JudgeContactRequest :
   ::Messages::MessageMSG2* _internal_mutable_msg2();
   public:
 
-  // optional .Messages.AttestationMessage attestation_message = 4;
+  // .Messages.AttestationMessage attestation_message = 4;
   bool has_attestation_message() const;
   private:
   bool _internal_has_attestation_message() const;
@@ -304,7 +297,7 @@ class JudgeContactRequest :
   ::Messages::AttestationMessage* _internal_mutable_attestation_message();
   public:
 
-  // optional .Messages.MessagePsiHashData message_psi_hash_data = 5;
+  // .Messages.MessagePsiHashData message_psi_hash_data = 5;
   bool has_message_psi_hash_data() const;
   private:
   bool _internal_has_message_psi_hash_data() const;
@@ -319,7 +312,7 @@ class JudgeContactRequest :
   ::Messages::MessagePsiHashData* _internal_mutable_message_psi_hash_data();
   public:
 
-  // optional .Messages.MessagePsiHashDataFinished message_psi_hash_data_finished = 6;
+  // .Messages.MessagePsiHashDataFinished message_psi_hash_data_finished = 6;
   bool has_message_psi_hash_data_finished() const;
   private:
   bool _internal_has_message_psi_hash_data_finished() const;
@@ -350,8 +343,6 @@ class JudgeContactRequest :
   inline void clear_has_action();
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   union ActionUnion {
     ActionUnion() {}
     ::Messages::InitialMessage* initial_message_;
@@ -361,6 +352,7 @@ class JudgeContactRequest :
     ::Messages::MessagePsiHashData* message_psi_hash_data_;
     ::Messages::MessagePsiHashDataFinished* message_psi_hash_data_finished_;
   } action_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 _oneof_case_[1];
 
   friend struct ::TableStruct_Messages_2eproto;
@@ -390,13 +382,6 @@ class JudgeContactResponse :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -497,7 +482,7 @@ class JudgeContactResponse :
     kMessagePsiResultFieldNumber = 5,
     kMessagePsiIntersectFieldNumber = 6,
   };
-  // optional .Messages.MessageMsg0 msg0 = 1;
+  // .Messages.MessageMsg0 msg0 = 1;
   bool has_msg0() const;
   private:
   bool _internal_has_msg0() const;
@@ -512,7 +497,7 @@ class JudgeContactResponse :
   ::Messages::MessageMsg0* _internal_mutable_msg0();
   public:
 
-  // optional .Messages.MessageMSG1 msg1 = 2;
+  // .Messages.MessageMSG1 msg1 = 2;
   bool has_msg1() const;
   private:
   bool _internal_has_msg1() const;
@@ -527,7 +512,7 @@ class JudgeContactResponse :
   ::Messages::MessageMSG1* _internal_mutable_msg1();
   public:
 
-  // optional .Messages.MessageMSG3 msg3 = 3;
+  // .Messages.MessageMSG3 msg3 = 3;
   bool has_msg3() const;
   private:
   bool _internal_has_msg3() const;
@@ -542,7 +527,7 @@ class JudgeContactResponse :
   ::Messages::MessageMSG3* _internal_mutable_msg3();
   public:
 
-  // optional .Messages.MessagePsiSalt message_psi_salt = 4;
+  // .Messages.MessagePsiSalt message_psi_salt = 4;
   bool has_message_psi_salt() const;
   private:
   bool _internal_has_message_psi_salt() const;
@@ -557,7 +542,7 @@ class JudgeContactResponse :
   ::Messages::MessagePsiSalt* _internal_mutable_message_psi_salt();
   public:
 
-  // optional .Messages.MessagePsiResult message_psi_result = 5;
+  // .Messages.MessagePsiResult message_psi_result = 5;
   bool has_message_psi_result() const;
   private:
   bool _internal_has_message_psi_result() const;
@@ -572,7 +557,7 @@ class JudgeContactResponse :
   ::Messages::MessagePsiResult* _internal_mutable_message_psi_result();
   public:
 
-  // optional .Messages.MessagePsiIntersect message_psi_intersect = 6;
+  // .Messages.MessagePsiIntersect message_psi_intersect = 6;
   bool has_message_psi_intersect() const;
   private:
   bool _internal_has_message_psi_intersect() const;
@@ -603,8 +588,6 @@ class JudgeContactResponse :
   inline void clear_has_action();
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   union ActionUnion {
     ActionUnion() {}
     ::Messages::MessageMsg0* msg0_;
@@ -614,6 +597,7 @@ class JudgeContactResponse :
     ::Messages::MessagePsiResult* message_psi_result_;
     ::Messages::MessagePsiIntersect* message_psi_intersect_;
   } action_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 _oneof_case_[1];
 
   friend struct ::TableStruct_Messages_2eproto;
@@ -643,13 +627,6 @@ class InitialMessage :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -736,11 +713,7 @@ class InitialMessage :
     kTypeFieldNumber = 1,
     kSizeFieldNumber = 2,
   };
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -749,11 +722,7 @@ class InitialMessage :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -767,10 +736,9 @@ class InitialMessage :
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 size_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -798,13 +766,6 @@ class MessageMsg0 :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -892,11 +853,7 @@ class MessageMsg0 :
     kEpidFieldNumber = 2,
     kStatusFieldNumber = 3,
   };
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -905,11 +862,7 @@ class MessageMsg0 :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 epid = 2;
-  bool has_epid() const;
-  private:
-  bool _internal_has_epid() const;
-  public:
+  // uint32 epid = 2;
   void clear_epid();
   ::PROTOBUF_NAMESPACE_ID::uint32 epid() const;
   void set_epid(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -918,11 +871,7 @@ class MessageMsg0 :
   void _internal_set_epid(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 status = 3;
-  bool has_status() const;
-  private:
-  bool _internal_has_status() const;
-  public:
+  // uint32 status = 3;
   void clear_status();
   ::PROTOBUF_NAMESPACE_ID::uint32 status() const;
   void set_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -935,15 +884,11 @@ class MessageMsg0 :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 epid_;
   ::PROTOBUF_NAMESPACE_ID::uint32 status_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -971,13 +916,6 @@ class MessageMSG1 :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -1133,11 +1071,7 @@ class MessageMSG1 :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 >*
       mutable_gid();
 
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1146,11 +1080,7 @@ class MessageMSG1 :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 2;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 2;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1163,12 +1093,7 @@ class MessageMSG1 :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > gax_;
   mutable std::atomic<int> _gax_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > gay_;
@@ -1177,6 +1102,7 @@ class MessageMSG1 :
   mutable std::atomic<int> _gid_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 context_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1204,13 +1130,6 @@ class MessageMSG2 :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -1462,11 +1381,7 @@ class MessageMSG2 :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 >*
       mutable_sigrl();
 
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1475,11 +1390,7 @@ class MessageMSG2 :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1488,11 +1399,7 @@ class MessageMSG2 :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 3;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 3;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1501,11 +1408,7 @@ class MessageMSG2 :
   void _internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 quote_type = 6;
-  bool has_quote_type() const;
-  private:
-  bool _internal_has_quote_type() const;
-  public:
+  // uint32 quote_type = 6;
   void clear_quote_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 quote_type() const;
   void set_quote_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1514,11 +1417,7 @@ class MessageMSG2 :
   void _internal_set_quote_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 cmac_kdf_id = 8;
-  bool has_cmac_kdf_id() const;
-  private:
-  bool _internal_has_cmac_kdf_id() const;
-  public:
+  // uint32 cmac_kdf_id = 8;
   void clear_cmac_kdf_id();
   ::PROTOBUF_NAMESPACE_ID::uint32 cmac_kdf_id() const;
   void set_cmac_kdf_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1527,11 +1426,7 @@ class MessageMSG2 :
   void _internal_set_cmac_kdf_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 size_sigrl = 12;
-  bool has_size_sigrl() const;
-  private:
-  bool _internal_has_size_sigrl() const;
-  public:
+  // uint32 size_sigrl = 12;
   void clear_size_sigrl();
   ::PROTOBUF_NAMESPACE_ID::uint32 size_sigrl() const;
   void set_size_sigrl(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1544,12 +1439,7 @@ class MessageMSG2 :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > public_key_gx_;
   mutable std::atomic<int> _public_key_gx_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > public_key_gy_;
@@ -1570,6 +1460,7 @@ class MessageMSG2 :
   ::PROTOBUF_NAMESPACE_ID::uint32 quote_type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 cmac_kdf_id_;
   ::PROTOBUF_NAMESPACE_ID::uint32 size_sigrl_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1597,13 +1488,6 @@ class MessageMSG3 :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -1806,11 +1690,7 @@ class MessageMSG3 :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 >*
       mutable_quote();
 
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1819,11 +1699,7 @@ class MessageMSG3 :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1832,11 +1708,7 @@ class MessageMSG3 :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 3;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 3;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -1849,12 +1721,7 @@ class MessageMSG3 :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > sgx_mac_;
   mutable std::atomic<int> _sgx_mac_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > gax_msg3_;
@@ -1868,6 +1735,7 @@ class MessageMSG3 :
   ::PROTOBUF_NAMESPACE_ID::uint32 type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 context_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1895,13 +1763,6 @@ class AttestationMessage :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -2224,11 +2085,7 @@ class AttestationMessage :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 >*
       mutable_payload();
 
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2237,11 +2094,7 @@ class AttestationMessage :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2250,11 +2103,7 @@ class AttestationMessage :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 3;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 3;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2263,11 +2112,7 @@ class AttestationMessage :
   void _internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 mode = 4;
-  bool has_mode() const;
-  private:
-  bool _internal_has_mode() const;
-  public:
+  // uint32 mode = 4;
   void clear_mode();
   ::PROTOBUF_NAMESPACE_ID::uint32 mode() const;
   void set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2276,11 +2121,7 @@ class AttestationMessage :
   void _internal_set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 epid_group_status = 5;
-  bool has_epid_group_status() const;
-  private:
-  bool _internal_has_epid_group_status() const;
-  public:
+  // uint32 epid_group_status = 5;
   void clear_epid_group_status();
   ::PROTOBUF_NAMESPACE_ID::uint32 epid_group_status() const;
   void set_epid_group_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2289,11 +2130,7 @@ class AttestationMessage :
   void _internal_set_epid_group_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 tcb_evaluation_status = 6;
-  bool has_tcb_evaluation_status() const;
-  private:
-  bool _internal_has_tcb_evaluation_status() const;
-  public:
+  // uint32 tcb_evaluation_status = 6;
   void clear_tcb_evaluation_status();
   ::PROTOBUF_NAMESPACE_ID::uint32 tcb_evaluation_status() const;
   void set_tcb_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2302,11 +2139,7 @@ class AttestationMessage :
   void _internal_set_tcb_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 pse_evaluation_status = 7;
-  bool has_pse_evaluation_status() const;
-  private:
-  bool _internal_has_pse_evaluation_status() const;
-  public:
+  // uint32 pse_evaluation_status = 7;
   void clear_pse_evaluation_status();
   ::PROTOBUF_NAMESPACE_ID::uint32 pse_evaluation_status() const;
   void set_pse_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2315,11 +2148,7 @@ class AttestationMessage :
   void _internal_set_pse_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // optional uint32 result_size = 15;
-  bool has_result_size() const;
-  private:
-  bool _internal_has_result_size() const;
-  public:
+  // uint32 result_size = 15;
   void clear_result_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 result_size() const;
   void set_result_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2332,12 +2161,7 @@ class AttestationMessage :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > latest_equivalent_tcb_psvn_;
   mutable std::atomic<int> _latest_equivalent_tcb_psvn_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > latest_pse_isvsvn_;
@@ -2366,6 +2190,7 @@ class AttestationMessage :
   ::PROTOBUF_NAMESPACE_ID::uint32 tcb_evaluation_status_;
   ::PROTOBUF_NAMESPACE_ID::uint32 pse_evaluation_status_;
   ::PROTOBUF_NAMESPACE_ID::uint32 result_size_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -2393,13 +2218,6 @@ class MessagePsiSalt :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -2535,11 +2353,7 @@ class MessagePsiSalt :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 >*
       mutable_salt();
 
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2548,11 +2362,7 @@ class MessagePsiSalt :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2561,11 +2371,7 @@ class MessagePsiSalt :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 3;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 3;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2574,11 +2380,7 @@ class MessagePsiSalt :
   void _internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 id = 4;
-  bool has_id() const;
-  private:
-  bool _internal_has_id() const;
-  public:
+  // uint32 id = 4;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::uint32 id() const;
   void set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2587,11 +2389,7 @@ class MessagePsiSalt :
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 state = 5;
-  bool has_state() const;
-  private:
-  bool _internal_has_state() const;
-  public:
+  // uint32 state = 5;
   void clear_state();
   ::PROTOBUF_NAMESPACE_ID::uint32 state() const;
   void set_state(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2604,12 +2402,7 @@ class MessagePsiSalt :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > mac_;
   mutable std::atomic<int> _mac_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > salt_;
@@ -2619,6 +2412,7 @@ class MessagePsiSalt :
   ::PROTOBUF_NAMESPACE_ID::uint32 context_;
   ::PROTOBUF_NAMESPACE_ID::uint32 id_;
   ::PROTOBUF_NAMESPACE_ID::uint32 state_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -2646,13 +2440,6 @@ class MessagePsiHashData :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -2788,11 +2575,7 @@ class MessagePsiHashData :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 >*
       mutable_data();
 
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2801,11 +2584,7 @@ class MessagePsiHashData :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2814,11 +2593,7 @@ class MessagePsiHashData :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 mode = 3;
-  bool has_mode() const;
-  private:
-  bool _internal_has_mode() const;
-  public:
+  // uint32 mode = 3;
   void clear_mode();
   ::PROTOBUF_NAMESPACE_ID::uint32 mode() const;
   void set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2827,11 +2602,7 @@ class MessagePsiHashData :
   void _internal_set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 4;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 4;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2840,11 +2611,7 @@ class MessagePsiHashData :
   void _internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 id = 5;
-  bool has_id() const;
-  private:
-  bool _internal_has_id() const;
-  public:
+  // uint32 id = 5;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::uint32 id() const;
   void set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -2857,12 +2624,7 @@ class MessagePsiHashData :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > mac_;
   mutable std::atomic<int> _mac_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > data_;
@@ -2872,6 +2634,7 @@ class MessagePsiHashData :
   ::PROTOBUF_NAMESPACE_ID::uint32 mode_;
   ::PROTOBUF_NAMESPACE_ID::uint32 context_;
   ::PROTOBUF_NAMESPACE_ID::uint32 id_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -2899,13 +2662,6 @@ class MessagePsiHashDataFinished :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -2995,11 +2751,7 @@ class MessagePsiHashDataFinished :
     kContextFieldNumber = 4,
     kIdFieldNumber = 5,
   };
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3008,11 +2760,7 @@ class MessagePsiHashDataFinished :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3021,11 +2769,7 @@ class MessagePsiHashDataFinished :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 mode = 3;
-  bool has_mode() const;
-  private:
-  bool _internal_has_mode() const;
-  public:
+  // uint32 mode = 3;
   void clear_mode();
   ::PROTOBUF_NAMESPACE_ID::uint32 mode() const;
   void set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3034,11 +2778,7 @@ class MessagePsiHashDataFinished :
   void _internal_set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 4;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 4;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3047,11 +2787,7 @@ class MessagePsiHashDataFinished :
   void _internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 id = 5;
-  bool has_id() const;
-  private:
-  bool _internal_has_id() const;
-  public:
+  // uint32 id = 5;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::uint32 id() const;
   void set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3064,17 +2800,13 @@ class MessagePsiHashDataFinished :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 mode_;
   ::PROTOBUF_NAMESPACE_ID::uint32 context_;
   ::PROTOBUF_NAMESPACE_ID::uint32 id_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -3102,13 +2834,6 @@ class MessagePsiResult :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -3198,11 +2923,7 @@ class MessagePsiResult :
     kIdFieldNumber = 4,
     kStateFieldNumber = 5,
   };
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3211,11 +2932,7 @@ class MessagePsiResult :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3224,11 +2941,7 @@ class MessagePsiResult :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 3;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 3;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3237,11 +2950,7 @@ class MessagePsiResult :
   void _internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 id = 4;
-  bool has_id() const;
-  private:
-  bool _internal_has_id() const;
-  public:
+  // uint32 id = 4;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::uint32 id() const;
   void set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3250,11 +2959,7 @@ class MessagePsiResult :
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 state = 5;
-  bool has_state() const;
-  private:
-  bool _internal_has_state() const;
-  public:
+  // uint32 state = 5;
   void clear_state();
   ::PROTOBUF_NAMESPACE_ID::uint32 state() const;
   void set_state(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3267,17 +2972,13 @@ class MessagePsiResult :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 context_;
   ::PROTOBUF_NAMESPACE_ID::uint32 id_;
   ::PROTOBUF_NAMESPACE_ID::uint32 state_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // -------------------------------------------------------------------
@@ -3305,13 +3006,6 @@ class MessagePsiIntersect :
       CopyFrom(from);
     }
     return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
   }
 
   static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
@@ -3446,11 +3140,7 @@ class MessagePsiIntersect :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 >*
       mutable_data();
 
-  // required uint32 type = 1;
-  bool has_type() const;
-  private:
-  bool _internal_has_type() const;
-  public:
+  // uint32 type = 1;
   void clear_type();
   ::PROTOBUF_NAMESPACE_ID::uint32 type() const;
   void set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3459,11 +3149,7 @@ class MessagePsiIntersect :
   void _internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 size = 2;
-  bool has_size() const;
-  private:
-  bool _internal_has_size() const;
-  public:
+  // uint32 size = 2;
   void clear_size();
   ::PROTOBUF_NAMESPACE_ID::uint32 size() const;
   void set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3472,11 +3158,7 @@ class MessagePsiIntersect :
   void _internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 context = 3;
-  bool has_context() const;
-  private:
-  bool _internal_has_context() const;
-  public:
+  // uint32 context = 3;
   void clear_context();
   ::PROTOBUF_NAMESPACE_ID::uint32 context() const;
   void set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3485,11 +3167,7 @@ class MessagePsiIntersect :
   void _internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // required uint32 id = 4;
-  bool has_id() const;
-  private:
-  bool _internal_has_id() const;
-  public:
+  // uint32 id = 4;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::uint32 id() const;
   void set_id(::PROTOBUF_NAMESPACE_ID::uint32 value);
@@ -3502,12 +3180,7 @@ class MessagePsiIntersect :
  private:
   class _Internal;
 
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > mac_;
   mutable std::atomic<int> _mac_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::uint32 > data_;
@@ -3516,6 +3189,7 @@ class MessagePsiIntersect :
   ::PROTOBUF_NAMESPACE_ID::uint32 size_;
   ::PROTOBUF_NAMESPACE_ID::uint32 context_;
   ::PROTOBUF_NAMESPACE_ID::uint32 id_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Messages_2eproto;
 };
 // ===================================================================
@@ -3529,7 +3203,7 @@ class MessagePsiIntersect :
 #endif  // __GNUC__
 // JudgeContactRequest
 
-// optional .Messages.InitialMessage initial_message = 1;
+// .Messages.InitialMessage initial_message = 1;
 inline bool JudgeContactRequest::_internal_has_initial_message() const {
   return action_case() == kInitialMessage;
 }
@@ -3579,7 +3253,7 @@ inline ::Messages::InitialMessage* JudgeContactRequest::mutable_initial_message(
   return _internal_mutable_initial_message();
 }
 
-// optional .Messages.MessageMsg0 msg0 = 2;
+// .Messages.MessageMsg0 msg0 = 2;
 inline bool JudgeContactRequest::_internal_has_msg0() const {
   return action_case() == kMsg0;
 }
@@ -3629,7 +3303,7 @@ inline ::Messages::MessageMsg0* JudgeContactRequest::mutable_msg0() {
   return _internal_mutable_msg0();
 }
 
-// optional .Messages.MessageMSG2 msg2 = 3;
+// .Messages.MessageMSG2 msg2 = 3;
 inline bool JudgeContactRequest::_internal_has_msg2() const {
   return action_case() == kMsg2;
 }
@@ -3679,7 +3353,7 @@ inline ::Messages::MessageMSG2* JudgeContactRequest::mutable_msg2() {
   return _internal_mutable_msg2();
 }
 
-// optional .Messages.AttestationMessage attestation_message = 4;
+// .Messages.AttestationMessage attestation_message = 4;
 inline bool JudgeContactRequest::_internal_has_attestation_message() const {
   return action_case() == kAttestationMessage;
 }
@@ -3729,7 +3403,7 @@ inline ::Messages::AttestationMessage* JudgeContactRequest::mutable_attestation_
   return _internal_mutable_attestation_message();
 }
 
-// optional .Messages.MessagePsiHashData message_psi_hash_data = 5;
+// .Messages.MessagePsiHashData message_psi_hash_data = 5;
 inline bool JudgeContactRequest::_internal_has_message_psi_hash_data() const {
   return action_case() == kMessagePsiHashData;
 }
@@ -3779,7 +3453,7 @@ inline ::Messages::MessagePsiHashData* JudgeContactRequest::mutable_message_psi_
   return _internal_mutable_message_psi_hash_data();
 }
 
-// optional .Messages.MessagePsiHashDataFinished message_psi_hash_data_finished = 6;
+// .Messages.MessagePsiHashDataFinished message_psi_hash_data_finished = 6;
 inline bool JudgeContactRequest::_internal_has_message_psi_hash_data_finished() const {
   return action_case() == kMessagePsiHashDataFinished;
 }
@@ -3842,7 +3516,7 @@ inline JudgeContactRequest::ActionCase JudgeContactRequest::action_case() const 
 
 // JudgeContactResponse
 
-// optional .Messages.MessageMsg0 msg0 = 1;
+// .Messages.MessageMsg0 msg0 = 1;
 inline bool JudgeContactResponse::_internal_has_msg0() const {
   return action_case() == kMsg0;
 }
@@ -3892,7 +3566,7 @@ inline ::Messages::MessageMsg0* JudgeContactResponse::mutable_msg0() {
   return _internal_mutable_msg0();
 }
 
-// optional .Messages.MessageMSG1 msg1 = 2;
+// .Messages.MessageMSG1 msg1 = 2;
 inline bool JudgeContactResponse::_internal_has_msg1() const {
   return action_case() == kMsg1;
 }
@@ -3942,7 +3616,7 @@ inline ::Messages::MessageMSG1* JudgeContactResponse::mutable_msg1() {
   return _internal_mutable_msg1();
 }
 
-// optional .Messages.MessageMSG3 msg3 = 3;
+// .Messages.MessageMSG3 msg3 = 3;
 inline bool JudgeContactResponse::_internal_has_msg3() const {
   return action_case() == kMsg3;
 }
@@ -3992,7 +3666,7 @@ inline ::Messages::MessageMSG3* JudgeContactResponse::mutable_msg3() {
   return _internal_mutable_msg3();
 }
 
-// optional .Messages.MessagePsiSalt message_psi_salt = 4;
+// .Messages.MessagePsiSalt message_psi_salt = 4;
 inline bool JudgeContactResponse::_internal_has_message_psi_salt() const {
   return action_case() == kMessagePsiSalt;
 }
@@ -4042,7 +3716,7 @@ inline ::Messages::MessagePsiSalt* JudgeContactResponse::mutable_message_psi_sal
   return _internal_mutable_message_psi_salt();
 }
 
-// optional .Messages.MessagePsiResult message_psi_result = 5;
+// .Messages.MessagePsiResult message_psi_result = 5;
 inline bool JudgeContactResponse::_internal_has_message_psi_result() const {
   return action_case() == kMessagePsiResult;
 }
@@ -4092,7 +3766,7 @@ inline ::Messages::MessagePsiResult* JudgeContactResponse::mutable_message_psi_r
   return _internal_mutable_message_psi_result();
 }
 
-// optional .Messages.MessagePsiIntersect message_psi_intersect = 6;
+// .Messages.MessagePsiIntersect message_psi_intersect = 6;
 inline bool JudgeContactResponse::_internal_has_message_psi_intersect() const {
   return action_case() == kMessagePsiIntersect;
 }
@@ -4155,17 +3829,9 @@ inline JudgeContactResponse::ActionCase JudgeContactResponse::action_case() cons
 
 // InitialMessage
 
-// required uint32 type = 1;
-inline bool InitialMessage::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool InitialMessage::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void InitialMessage::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 InitialMessage::_internal_type() const {
   return type_;
@@ -4175,7 +3841,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 InitialMessage::type() const {
   return _internal_type();
 }
 inline void InitialMessage::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void InitialMessage::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4183,17 +3849,9 @@ inline void InitialMessage::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.InitialMessage.type)
 }
 
-// optional uint32 size = 2;
-inline bool InitialMessage::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool InitialMessage::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void InitialMessage::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 InitialMessage::_internal_size() const {
   return size_;
@@ -4203,7 +3861,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 InitialMessage::size() const {
   return _internal_size();
 }
 inline void InitialMessage::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void InitialMessage::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4215,17 +3873,9 @@ inline void InitialMessage::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
 
 // MessageMsg0
 
-// required uint32 type = 1;
-inline bool MessageMsg0::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessageMsg0::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessageMsg0::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMsg0::_internal_type() const {
   return type_;
@@ -4235,7 +3885,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMsg0::type() const {
   return _internal_type();
 }
 inline void MessageMsg0::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessageMsg0::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4243,17 +3893,9 @@ inline void MessageMsg0::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessageMsg0.type)
 }
 
-// required uint32 epid = 2;
-inline bool MessageMsg0::_internal_has_epid() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessageMsg0::has_epid() const {
-  return _internal_has_epid();
-}
+// uint32 epid = 2;
 inline void MessageMsg0::clear_epid() {
   epid_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMsg0::_internal_epid() const {
   return epid_;
@@ -4263,7 +3905,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMsg0::epid() const {
   return _internal_epid();
 }
 inline void MessageMsg0::_internal_set_epid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   epid_ = value;
 }
 inline void MessageMsg0::set_epid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4271,17 +3913,9 @@ inline void MessageMsg0::set_epid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessageMsg0.epid)
 }
 
-// optional uint32 status = 3;
-inline bool MessageMsg0::_internal_has_status() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessageMsg0::has_status() const {
-  return _internal_has_status();
-}
+// uint32 status = 3;
 inline void MessageMsg0::clear_status() {
   status_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMsg0::_internal_status() const {
   return status_;
@@ -4291,7 +3925,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMsg0::status() const {
   return _internal_status();
 }
 inline void MessageMsg0::_internal_set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   status_ = value;
 }
 inline void MessageMsg0::set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4303,17 +3937,9 @@ inline void MessageMsg0::set_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
 
 // MessageMSG1
 
-// required uint32 type = 1;
-inline bool MessageMSG1::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessageMSG1::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessageMSG1::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG1::_internal_type() const {
   return type_;
@@ -4323,7 +3949,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG1::type() const {
   return _internal_type();
 }
 inline void MessageMSG1::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessageMSG1::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4331,17 +3957,9 @@ inline void MessageMSG1::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessageMSG1.type)
 }
 
-// required uint32 context = 2;
-inline bool MessageMSG1::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessageMSG1::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 2;
 inline void MessageMSG1::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG1::_internal_context() const {
   return context_;
@@ -4351,7 +3969,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG1::context() const {
   return _internal_context();
 }
 inline void MessageMSG1::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   context_ = value;
 }
 inline void MessageMSG1::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4504,17 +4122,9 @@ MessageMSG1::mutable_gid() {
 
 // MessageMSG2
 
-// required uint32 type = 1;
-inline bool MessageMSG2::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessageMSG2::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessageMSG2::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::_internal_type() const {
   return type_;
@@ -4524,7 +4134,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::type() const {
   return _internal_type();
 }
 inline void MessageMSG2::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessageMSG2::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4532,17 +4142,9 @@ inline void MessageMSG2::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessageMSG2.type)
 }
 
-// optional uint32 size = 2;
-inline bool MessageMSG2::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessageMSG2::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void MessageMSG2::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::_internal_size() const {
   return size_;
@@ -4552,7 +4154,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::size() const {
   return _internal_size();
 }
 inline void MessageMSG2::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void MessageMSG2::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4560,17 +4162,9 @@ inline void MessageMSG2::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessageMSG2.size)
 }
 
-// required uint32 context = 3;
-inline bool MessageMSG2::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessageMSG2::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 3;
 inline void MessageMSG2::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::_internal_context() const {
   return context_;
@@ -4580,7 +4174,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::context() const {
   return _internal_context();
 }
 inline void MessageMSG2::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   context_ = value;
 }
 inline void MessageMSG2::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4682,17 +4276,9 @@ MessageMSG2::mutable_public_key_gy() {
   return _internal_mutable_public_key_gy();
 }
 
-// optional uint32 quote_type = 6;
-inline bool MessageMSG2::_internal_has_quote_type() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool MessageMSG2::has_quote_type() const {
-  return _internal_has_quote_type();
-}
+// uint32 quote_type = 6;
 inline void MessageMSG2::clear_quote_type() {
   quote_type_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::_internal_quote_type() const {
   return quote_type_;
@@ -4702,7 +4288,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::quote_type() const {
   return _internal_quote_type();
 }
 inline void MessageMSG2::_internal_set_quote_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  
   quote_type_ = value;
 }
 inline void MessageMSG2::set_quote_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4757,17 +4343,9 @@ MessageMSG2::mutable_spid() {
   return _internal_mutable_spid();
 }
 
-// optional uint32 cmac_kdf_id = 8;
-inline bool MessageMSG2::_internal_has_cmac_kdf_id() const {
-  bool value = (_has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool MessageMSG2::has_cmac_kdf_id() const {
-  return _internal_has_cmac_kdf_id();
-}
+// uint32 cmac_kdf_id = 8;
 inline void MessageMSG2::clear_cmac_kdf_id() {
   cmac_kdf_id_ = 0u;
-  _has_bits_[0] &= ~0x00000010u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::_internal_cmac_kdf_id() const {
   return cmac_kdf_id_;
@@ -4777,7 +4355,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::cmac_kdf_id() const {
   return _internal_cmac_kdf_id();
 }
 inline void MessageMSG2::_internal_set_cmac_kdf_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000010u;
+  
   cmac_kdf_id_ = value;
 }
 inline void MessageMSG2::set_cmac_kdf_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -4926,17 +4504,9 @@ MessageMSG2::mutable_smac() {
   return _internal_mutable_smac();
 }
 
-// optional uint32 size_sigrl = 12;
-inline bool MessageMSG2::_internal_has_size_sigrl() const {
-  bool value = (_has_bits_[0] & 0x00000020u) != 0;
-  return value;
-}
-inline bool MessageMSG2::has_size_sigrl() const {
-  return _internal_has_size_sigrl();
-}
+// uint32 size_sigrl = 12;
 inline void MessageMSG2::clear_size_sigrl() {
   size_sigrl_ = 0u;
-  _has_bits_[0] &= ~0x00000020u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::_internal_size_sigrl() const {
   return size_sigrl_;
@@ -4946,7 +4516,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG2::size_sigrl() const {
   return _internal_size_sigrl();
 }
 inline void MessageMSG2::_internal_set_size_sigrl(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000020u;
+  
   size_sigrl_ = value;
 }
 inline void MessageMSG2::set_size_sigrl(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5005,17 +4575,9 @@ MessageMSG2::mutable_sigrl() {
 
 // MessageMSG3
 
-// required uint32 type = 1;
-inline bool MessageMSG3::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessageMSG3::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessageMSG3::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG3::_internal_type() const {
   return type_;
@@ -5025,7 +4587,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG3::type() const {
   return _internal_type();
 }
 inline void MessageMSG3::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessageMSG3::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5033,17 +4595,9 @@ inline void MessageMSG3::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessageMSG3.type)
 }
 
-// optional uint32 size = 2;
-inline bool MessageMSG3::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessageMSG3::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void MessageMSG3::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG3::_internal_size() const {
   return size_;
@@ -5053,7 +4607,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG3::size() const {
   return _internal_size();
 }
 inline void MessageMSG3::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void MessageMSG3::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5061,17 +4615,9 @@ inline void MessageMSG3::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessageMSG3.size)
 }
 
-// required uint32 context = 3;
-inline bool MessageMSG3::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessageMSG3::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 3;
 inline void MessageMSG3::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG3::_internal_context() const {
   return context_;
@@ -5081,7 +4627,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessageMSG3::context() const {
   return _internal_context();
 }
 inline void MessageMSG3::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   context_ = value;
 }
 inline void MessageMSG3::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5328,17 +4874,9 @@ MessageMSG3::mutable_quote() {
 
 // AttestationMessage
 
-// required uint32 type = 1;
-inline bool AttestationMessage::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void AttestationMessage::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_type() const {
   return type_;
@@ -5348,7 +4886,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::type() const {
   return _internal_type();
 }
 inline void AttestationMessage::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void AttestationMessage::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5356,17 +4894,9 @@ inline void AttestationMessage::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) 
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.type)
 }
 
-// required uint32 size = 2;
-inline bool AttestationMessage::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void AttestationMessage::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_size() const {
   return size_;
@@ -5376,7 +4906,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::size() const {
   return _internal_size();
 }
 inline void AttestationMessage::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void AttestationMessage::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5384,17 +4914,9 @@ inline void AttestationMessage::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) 
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.size)
 }
 
-// required uint32 context = 3;
-inline bool AttestationMessage::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 3;
 inline void AttestationMessage::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_context() const {
   return context_;
@@ -5404,7 +4926,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::context() const {
   return _internal_context();
 }
 inline void AttestationMessage::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   context_ = value;
 }
 inline void AttestationMessage::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5412,17 +4934,9 @@ inline void AttestationMessage::set_context(::PROTOBUF_NAMESPACE_ID::uint32 valu
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.context)
 }
 
-// required uint32 mode = 4;
-inline bool AttestationMessage::_internal_has_mode() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_mode() const {
-  return _internal_has_mode();
-}
+// uint32 mode = 4;
 inline void AttestationMessage::clear_mode() {
   mode_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_mode() const {
   return mode_;
@@ -5432,7 +4946,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::mode() const {
   return _internal_mode();
 }
 inline void AttestationMessage::_internal_set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  
   mode_ = value;
 }
 inline void AttestationMessage::set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5440,17 +4954,9 @@ inline void AttestationMessage::set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) 
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.mode)
 }
 
-// optional uint32 epid_group_status = 5;
-inline bool AttestationMessage::_internal_has_epid_group_status() const {
-  bool value = (_has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_epid_group_status() const {
-  return _internal_has_epid_group_status();
-}
+// uint32 epid_group_status = 5;
 inline void AttestationMessage::clear_epid_group_status() {
   epid_group_status_ = 0u;
-  _has_bits_[0] &= ~0x00000010u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_epid_group_status() const {
   return epid_group_status_;
@@ -5460,7 +4966,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::epid_group_status() c
   return _internal_epid_group_status();
 }
 inline void AttestationMessage::_internal_set_epid_group_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000010u;
+  
   epid_group_status_ = value;
 }
 inline void AttestationMessage::set_epid_group_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5468,17 +4974,9 @@ inline void AttestationMessage::set_epid_group_status(::PROTOBUF_NAMESPACE_ID::u
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.epid_group_status)
 }
 
-// optional uint32 tcb_evaluation_status = 6;
-inline bool AttestationMessage::_internal_has_tcb_evaluation_status() const {
-  bool value = (_has_bits_[0] & 0x00000020u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_tcb_evaluation_status() const {
-  return _internal_has_tcb_evaluation_status();
-}
+// uint32 tcb_evaluation_status = 6;
 inline void AttestationMessage::clear_tcb_evaluation_status() {
   tcb_evaluation_status_ = 0u;
-  _has_bits_[0] &= ~0x00000020u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_tcb_evaluation_status() const {
   return tcb_evaluation_status_;
@@ -5488,7 +4986,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::tcb_evaluation_status
   return _internal_tcb_evaluation_status();
 }
 inline void AttestationMessage::_internal_set_tcb_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000020u;
+  
   tcb_evaluation_status_ = value;
 }
 inline void AttestationMessage::set_tcb_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5496,17 +4994,9 @@ inline void AttestationMessage::set_tcb_evaluation_status(::PROTOBUF_NAMESPACE_I
   // @@protoc_insertion_point(field_set:Messages.AttestationMessage.tcb_evaluation_status)
 }
 
-// optional uint32 pse_evaluation_status = 7;
-inline bool AttestationMessage::_internal_has_pse_evaluation_status() const {
-  bool value = (_has_bits_[0] & 0x00000040u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_pse_evaluation_status() const {
-  return _internal_has_pse_evaluation_status();
-}
+// uint32 pse_evaluation_status = 7;
 inline void AttestationMessage::clear_pse_evaluation_status() {
   pse_evaluation_status_ = 0u;
-  _has_bits_[0] &= ~0x00000040u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_pse_evaluation_status() const {
   return pse_evaluation_status_;
@@ -5516,7 +5006,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::pse_evaluation_status
   return _internal_pse_evaluation_status();
 }
 inline void AttestationMessage::_internal_set_pse_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000040u;
+  
   pse_evaluation_status_ = value;
 }
 inline void AttestationMessage::set_pse_evaluation_status(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -5853,17 +5343,9 @@ AttestationMessage::mutable_mac_smk() {
   return _internal_mutable_mac_smk();
 }
 
-// optional uint32 result_size = 15;
-inline bool AttestationMessage::_internal_has_result_size() const {
-  bool value = (_has_bits_[0] & 0x00000080u) != 0;
-  return value;
-}
-inline bool AttestationMessage::has_result_size() const {
-  return _internal_has_result_size();
-}
+// uint32 result_size = 15;
 inline void AttestationMessage::clear_result_size() {
   result_size_ = 0u;
-  _has_bits_[0] &= ~0x00000080u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::_internal_result_size() const {
   return result_size_;
@@ -5873,7 +5355,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 AttestationMessage::result_size() const {
   return _internal_result_size();
 }
 inline void AttestationMessage::_internal_set_result_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000080u;
+  
   result_size_ = value;
 }
 inline void AttestationMessage::set_result_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6026,17 +5508,9 @@ AttestationMessage::mutable_payload() {
 
 // MessagePsiSalt
 
-// required uint32 type = 1;
-inline bool MessagePsiSalt::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessagePsiSalt::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessagePsiSalt::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::_internal_type() const {
   return type_;
@@ -6046,7 +5520,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::type() const {
   return _internal_type();
 }
 inline void MessagePsiSalt::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessagePsiSalt::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6054,17 +5528,9 @@ inline void MessagePsiSalt::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiSalt.type)
 }
 
-// required uint32 size = 2;
-inline bool MessagePsiSalt::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessagePsiSalt::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void MessagePsiSalt::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::_internal_size() const {
   return size_;
@@ -6074,7 +5540,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::size() const {
   return _internal_size();
 }
 inline void MessagePsiSalt::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void MessagePsiSalt::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6082,17 +5548,9 @@ inline void MessagePsiSalt::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiSalt.size)
 }
 
-// required uint32 context = 3;
-inline bool MessagePsiSalt::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessagePsiSalt::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 3;
 inline void MessagePsiSalt::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::_internal_context() const {
   return context_;
@@ -6102,7 +5560,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::context() const {
   return _internal_context();
 }
 inline void MessagePsiSalt::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   context_ = value;
 }
 inline void MessagePsiSalt::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6110,17 +5568,9 @@ inline void MessagePsiSalt::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiSalt.context)
 }
 
-// required uint32 id = 4;
-inline bool MessagePsiSalt::_internal_has_id() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool MessagePsiSalt::has_id() const {
-  return _internal_has_id();
-}
+// uint32 id = 4;
 inline void MessagePsiSalt::clear_id() {
   id_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::_internal_id() const {
   return id_;
@@ -6130,7 +5580,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::id() const {
   return _internal_id();
 }
 inline void MessagePsiSalt::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  
   id_ = value;
 }
 inline void MessagePsiSalt::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6138,17 +5588,9 @@ inline void MessagePsiSalt::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiSalt.id)
 }
 
-// required uint32 state = 5;
-inline bool MessagePsiSalt::_internal_has_state() const {
-  bool value = (_has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool MessagePsiSalt::has_state() const {
-  return _internal_has_state();
-}
+// uint32 state = 5;
 inline void MessagePsiSalt::clear_state() {
   state_ = 0u;
-  _has_bits_[0] &= ~0x00000010u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::_internal_state() const {
   return state_;
@@ -6158,7 +5600,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiSalt::state() const {
   return _internal_state();
 }
 inline void MessagePsiSalt::_internal_set_state(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000010u;
+  
   state_ = value;
 }
 inline void MessagePsiSalt::set_state(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6264,17 +5706,9 @@ MessagePsiSalt::mutable_salt() {
 
 // MessagePsiHashData
 
-// required uint32 type = 1;
-inline bool MessagePsiHashData::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessagePsiHashData::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessagePsiHashData::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::_internal_type() const {
   return type_;
@@ -6284,7 +5718,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::type() const {
   return _internal_type();
 }
 inline void MessagePsiHashData::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessagePsiHashData::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6292,17 +5726,9 @@ inline void MessagePsiHashData::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) 
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.type)
 }
 
-// required uint32 size = 2;
-inline bool MessagePsiHashData::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessagePsiHashData::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void MessagePsiHashData::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::_internal_size() const {
   return size_;
@@ -6312,7 +5738,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::size() const {
   return _internal_size();
 }
 inline void MessagePsiHashData::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void MessagePsiHashData::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6320,17 +5746,9 @@ inline void MessagePsiHashData::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) 
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.size)
 }
 
-// required uint32 mode = 3;
-inline bool MessagePsiHashData::_internal_has_mode() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessagePsiHashData::has_mode() const {
-  return _internal_has_mode();
-}
+// uint32 mode = 3;
 inline void MessagePsiHashData::clear_mode() {
   mode_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::_internal_mode() const {
   return mode_;
@@ -6340,7 +5758,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::mode() const {
   return _internal_mode();
 }
 inline void MessagePsiHashData::_internal_set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   mode_ = value;
 }
 inline void MessagePsiHashData::set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6348,17 +5766,9 @@ inline void MessagePsiHashData::set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) 
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.mode)
 }
 
-// required uint32 context = 4;
-inline bool MessagePsiHashData::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool MessagePsiHashData::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 4;
 inline void MessagePsiHashData::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::_internal_context() const {
   return context_;
@@ -6368,7 +5778,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::context() const {
   return _internal_context();
 }
 inline void MessagePsiHashData::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  
   context_ = value;
 }
 inline void MessagePsiHashData::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6376,17 +5786,9 @@ inline void MessagePsiHashData::set_context(::PROTOBUF_NAMESPACE_ID::uint32 valu
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashData.context)
 }
 
-// required uint32 id = 5;
-inline bool MessagePsiHashData::_internal_has_id() const {
-  bool value = (_has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool MessagePsiHashData::has_id() const {
-  return _internal_has_id();
-}
+// uint32 id = 5;
 inline void MessagePsiHashData::clear_id() {
   id_ = 0u;
-  _has_bits_[0] &= ~0x00000010u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::_internal_id() const {
   return id_;
@@ -6396,7 +5798,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashData::id() const {
   return _internal_id();
 }
 inline void MessagePsiHashData::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000010u;
+  
   id_ = value;
 }
 inline void MessagePsiHashData::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6502,17 +5904,9 @@ MessagePsiHashData::mutable_data() {
 
 // MessagePsiHashDataFinished
 
-// required uint32 type = 1;
-inline bool MessagePsiHashDataFinished::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessagePsiHashDataFinished::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessagePsiHashDataFinished::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::_internal_type() const {
   return type_;
@@ -6522,7 +5916,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::type() const 
   return _internal_type();
 }
 inline void MessagePsiHashDataFinished::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessagePsiHashDataFinished::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6530,17 +5924,9 @@ inline void MessagePsiHashDataFinished::set_type(::PROTOBUF_NAMESPACE_ID::uint32
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.type)
 }
 
-// required uint32 size = 2;
-inline bool MessagePsiHashDataFinished::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessagePsiHashDataFinished::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void MessagePsiHashDataFinished::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::_internal_size() const {
   return size_;
@@ -6550,7 +5936,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::size() const 
   return _internal_size();
 }
 inline void MessagePsiHashDataFinished::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void MessagePsiHashDataFinished::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6558,17 +5944,9 @@ inline void MessagePsiHashDataFinished::set_size(::PROTOBUF_NAMESPACE_ID::uint32
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.size)
 }
 
-// required uint32 mode = 3;
-inline bool MessagePsiHashDataFinished::_internal_has_mode() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessagePsiHashDataFinished::has_mode() const {
-  return _internal_has_mode();
-}
+// uint32 mode = 3;
 inline void MessagePsiHashDataFinished::clear_mode() {
   mode_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::_internal_mode() const {
   return mode_;
@@ -6578,7 +5956,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::mode() const 
   return _internal_mode();
 }
 inline void MessagePsiHashDataFinished::_internal_set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   mode_ = value;
 }
 inline void MessagePsiHashDataFinished::set_mode(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6586,17 +5964,9 @@ inline void MessagePsiHashDataFinished::set_mode(::PROTOBUF_NAMESPACE_ID::uint32
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.mode)
 }
 
-// required uint32 context = 4;
-inline bool MessagePsiHashDataFinished::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool MessagePsiHashDataFinished::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 4;
 inline void MessagePsiHashDataFinished::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::_internal_context() const {
   return context_;
@@ -6606,7 +5976,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::context() con
   return _internal_context();
 }
 inline void MessagePsiHashDataFinished::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  
   context_ = value;
 }
 inline void MessagePsiHashDataFinished::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6614,17 +5984,9 @@ inline void MessagePsiHashDataFinished::set_context(::PROTOBUF_NAMESPACE_ID::uin
   // @@protoc_insertion_point(field_set:Messages.MessagePsiHashDataFinished.context)
 }
 
-// required uint32 id = 5;
-inline bool MessagePsiHashDataFinished::_internal_has_id() const {
-  bool value = (_has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool MessagePsiHashDataFinished::has_id() const {
-  return _internal_has_id();
-}
+// uint32 id = 5;
 inline void MessagePsiHashDataFinished::clear_id() {
   id_ = 0u;
-  _has_bits_[0] &= ~0x00000010u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::_internal_id() const {
   return id_;
@@ -6634,7 +5996,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiHashDataFinished::id() const {
   return _internal_id();
 }
 inline void MessagePsiHashDataFinished::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000010u;
+  
   id_ = value;
 }
 inline void MessagePsiHashDataFinished::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6646,17 +6008,9 @@ inline void MessagePsiHashDataFinished::set_id(::PROTOBUF_NAMESPACE_ID::uint32 v
 
 // MessagePsiResult
 
-// required uint32 type = 1;
-inline bool MessagePsiResult::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessagePsiResult::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessagePsiResult::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::_internal_type() const {
   return type_;
@@ -6666,7 +6020,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::type() const {
   return _internal_type();
 }
 inline void MessagePsiResult::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessagePsiResult::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6674,17 +6028,9 @@ inline void MessagePsiResult::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiResult.type)
 }
 
-// required uint32 size = 2;
-inline bool MessagePsiResult::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessagePsiResult::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void MessagePsiResult::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::_internal_size() const {
   return size_;
@@ -6694,7 +6040,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::size() const {
   return _internal_size();
 }
 inline void MessagePsiResult::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void MessagePsiResult::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6702,17 +6048,9 @@ inline void MessagePsiResult::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiResult.size)
 }
 
-// required uint32 context = 3;
-inline bool MessagePsiResult::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessagePsiResult::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 3;
 inline void MessagePsiResult::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::_internal_context() const {
   return context_;
@@ -6722,7 +6060,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::context() const {
   return _internal_context();
 }
 inline void MessagePsiResult::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   context_ = value;
 }
 inline void MessagePsiResult::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6730,17 +6068,9 @@ inline void MessagePsiResult::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value)
   // @@protoc_insertion_point(field_set:Messages.MessagePsiResult.context)
 }
 
-// required uint32 id = 4;
-inline bool MessagePsiResult::_internal_has_id() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool MessagePsiResult::has_id() const {
-  return _internal_has_id();
-}
+// uint32 id = 4;
 inline void MessagePsiResult::clear_id() {
   id_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::_internal_id() const {
   return id_;
@@ -6750,7 +6080,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::id() const {
   return _internal_id();
 }
 inline void MessagePsiResult::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  
   id_ = value;
 }
 inline void MessagePsiResult::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6758,17 +6088,9 @@ inline void MessagePsiResult::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   // @@protoc_insertion_point(field_set:Messages.MessagePsiResult.id)
 }
 
-// required uint32 state = 5;
-inline bool MessagePsiResult::_internal_has_state() const {
-  bool value = (_has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool MessagePsiResult::has_state() const {
-  return _internal_has_state();
-}
+// uint32 state = 5;
 inline void MessagePsiResult::clear_state() {
   state_ = 0u;
-  _has_bits_[0] &= ~0x00000010u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::_internal_state() const {
   return state_;
@@ -6778,7 +6100,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiResult::state() const {
   return _internal_state();
 }
 inline void MessagePsiResult::_internal_set_state(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000010u;
+  
   state_ = value;
 }
 inline void MessagePsiResult::set_state(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6790,17 +6112,9 @@ inline void MessagePsiResult::set_state(::PROTOBUF_NAMESPACE_ID::uint32 value) {
 
 // MessagePsiIntersect
 
-// required uint32 type = 1;
-inline bool MessagePsiIntersect::_internal_has_type() const {
-  bool value = (_has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool MessagePsiIntersect::has_type() const {
-  return _internal_has_type();
-}
+// uint32 type = 1;
 inline void MessagePsiIntersect::clear_type() {
   type_ = 0u;
-  _has_bits_[0] &= ~0x00000001u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::_internal_type() const {
   return type_;
@@ -6810,7 +6124,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::type() const {
   return _internal_type();
 }
 inline void MessagePsiIntersect::_internal_set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000001u;
+  
   type_ = value;
 }
 inline void MessagePsiIntersect::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6818,17 +6132,9 @@ inline void MessagePsiIntersect::set_type(::PROTOBUF_NAMESPACE_ID::uint32 value)
   // @@protoc_insertion_point(field_set:Messages.MessagePsiIntersect.type)
 }
 
-// required uint32 size = 2;
-inline bool MessagePsiIntersect::_internal_has_size() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool MessagePsiIntersect::has_size() const {
-  return _internal_has_size();
-}
+// uint32 size = 2;
 inline void MessagePsiIntersect::clear_size() {
   size_ = 0u;
-  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::_internal_size() const {
   return size_;
@@ -6838,7 +6144,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::size() const {
   return _internal_size();
 }
 inline void MessagePsiIntersect::_internal_set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000002u;
+  
   size_ = value;
 }
 inline void MessagePsiIntersect::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6846,17 +6152,9 @@ inline void MessagePsiIntersect::set_size(::PROTOBUF_NAMESPACE_ID::uint32 value)
   // @@protoc_insertion_point(field_set:Messages.MessagePsiIntersect.size)
 }
 
-// required uint32 context = 3;
-inline bool MessagePsiIntersect::_internal_has_context() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool MessagePsiIntersect::has_context() const {
-  return _internal_has_context();
-}
+// uint32 context = 3;
 inline void MessagePsiIntersect::clear_context() {
   context_ = 0u;
-  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::_internal_context() const {
   return context_;
@@ -6866,7 +6164,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::context() const {
   return _internal_context();
 }
 inline void MessagePsiIntersect::_internal_set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  
   context_ = value;
 }
 inline void MessagePsiIntersect::set_context(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -6874,17 +6172,9 @@ inline void MessagePsiIntersect::set_context(::PROTOBUF_NAMESPACE_ID::uint32 val
   // @@protoc_insertion_point(field_set:Messages.MessagePsiIntersect.context)
 }
 
-// required uint32 id = 4;
-inline bool MessagePsiIntersect::_internal_has_id() const {
-  bool value = (_has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool MessagePsiIntersect::has_id() const {
-  return _internal_has_id();
-}
+// uint32 id = 4;
 inline void MessagePsiIntersect::clear_id() {
   id_ = 0u;
-  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::_internal_id() const {
   return id_;
@@ -6894,7 +6184,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 MessagePsiIntersect::id() const {
   return _internal_id();
 }
 inline void MessagePsiIntersect::_internal_set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  
   id_ = value;
 }
 inline void MessagePsiIntersect::set_id(::PROTOBUF_NAMESPACE_ID::uint32 value) {

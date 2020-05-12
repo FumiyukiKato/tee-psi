@@ -18,6 +18,8 @@
 #include <string>
 #include <iostream>
 #include <unistd.h>
+#include <exception>
+#include <stdexcept>
 
 #include <grpc/grpc.h>
 #include <grpcpp/server.h>
@@ -25,7 +27,6 @@
 #include <grpcpp/server_context.h>
 #include <grpcpp/security/server_credentials.h>
 
-#include "MessageHandler.h"
 #include "ContactTracer.h"
 #include "LogBase.h"
 
@@ -35,10 +36,15 @@ using namespace util;
 using grpc::Server;
 using grpc::ServerBuilder;
 
-void RunServer() {
+void RunServer(char *filepath) {
   string server_address("0.0.0.0:" + to_string(Settings::grpc_port));
-  ContactTracerImpl service;
-
+  Log("aa");
+  ContactTracerImpl service(filepath);
+  Log("bb");
+  int status = service.initialize();
+  Log("cc");
+  if (status < 0) throw runtime_error("loading error!");
+Log("dc");
   ServerBuilder builder;
   // リバースプロキシをSSL終端にしてるのでこれでOK
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
@@ -52,10 +58,8 @@ int Main(char *filepath) {
     LogBase::Inst();
 
     int ret = 0;
-
     // RunServer(Settings::rh_port);
-    RunServer();
-    
+    RunServer(filepath);
 
     // MessageHandler msg;
     // msg.init(filepath);

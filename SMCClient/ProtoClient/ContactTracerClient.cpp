@@ -2,7 +2,6 @@
 
 using namespace util;
 
-using Messages::JudgeContactRequest;
 using Messages::JudgeContactResponse;
 using Messages::JudgeContactRequest;
 using Messages::InitialMessage;
@@ -10,37 +9,56 @@ using Messages::MessageMsg0;
 using grpc::ClientContext;
 using grpc::ClientReaderWriter;
 
-ContactTracerClient::ContactTracerClient(std::shared_ptr<Channel> channel)
-    : stub_(ContactTracer::NewStub(channel)) {}
+ContactTracerClient::ContactTracerClient(std::shared_ptr<Channel> channel, ClientMode mode)
+    : stub_(ContactTracer::NewStub(channel)) {
+    this->ws = WebService::getInstance();
+    this->ws->init();
+    this->sp = new PSIWorker(this->ws);
+}
+
+void ContactTracerClient::handleMSG0(MessageMsg0 *msg) {
+    uint32_t extended_epid_group_id = msg->epid();
+    int ret = this->sp->sp_ra_proc_msg0_req(extended_epid_group_id);
+
+    if (ret == 0)
+        msg->set_status(TYPE_OK);
+    else
+        msg->set_status(TYPE_TERMINATE);
+}
+
+ContactTracerClient::~ContactTracerClient() {}
 
 void ContactTracerClient::JudgeContact() {
     ClientContext context;
-
     std::shared_ptr<ClientReaderWriter<JudgeContactRequest, JudgeContactResponse> > stream(
         stub_->JudgeContact(&context));
 
-    JudgeContactResponse res;    
-
+    JudgeContactResponse res;
     JudgeContactRequest req;
+    
+    // initial message
     InitialMessage msg;
-    msg.set_type(4);
-    msg.set_size(200);
-    std::cout << "Sending message " << msg.type() << std::endl;
+    msg.set_type(RA_VERIFICATION);
     req.mutable_initial_message()->CopyFrom(msg);
     stream->Write(req);
     stream->WritesDone();
-    Log("[gRPC] Write done");
+    Log("[gRPC] client RA_VERIFICATION");
 
-
-    Log("[gRPC] start read");
     while (stream->Read(&res)) {
-        Log("[gRPC] Get message");
         switch (res.action_case()) {
             case JudgeContactResponse::ActionCase::kMsg0: {
-                Log("[gRPC] Get Message0");
-                MessageMsg0 msg = res.msg0();
-                std::cout << "type is " << msg.type() << std::endl;
+                Log("[gRPC] Receive Message0");
+                MessageMsg0 msg0 = res.msg0();
+                this->handleMSG0(&msg0);
+                req.mutable_msg0()->CopyFrom(msg0);
+                stream->Write(req);
+                stream->WritesDone();
+                Log("[gRPC] client RA_MSG0");
                 break;
+            }
+
+            case JudgeContactResponse::ActionCase::kMsg1: {
+                Log("[gRPC] Receive Message1");
             }
             
             default: {
@@ -48,7 +66,7 @@ void ContactTracerClient::JudgeContact() {
             }
         }
     }
-    
+
     Status status = stream->Finish();
 
     if (!status.ok()) {

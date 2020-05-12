@@ -39,7 +39,8 @@ int Main(ClientMode mode, char *filepath) {
     int ret = 0;
     ContactTracerClient client_service(
         grpc::CreateChannel("localhost:" + to_string(Settings::grpc_port),
-        grpc::InsecureChannelCredentials())
+        grpc::InsecureChannelCredentials()),
+        mode
     );
 
     std::cout << "-------------- JudgeContact --------------" << std::endl;

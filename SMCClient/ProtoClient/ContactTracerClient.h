@@ -12,6 +12,10 @@
 #include "Messages.pb.h"
 #include "Messages.grpc.pb.h"
 #include "UtilityFunctions.h"
+#include "MessageManager.h"
+#include "Worker.h"
+#include "LogBase.h"
+#include "WebService.h"
 
 using namespace util;
 
@@ -25,11 +29,16 @@ using Messages::ContactTracer;
 
 class ContactTracerClient {
     public:
-        ContactTracerClient(std::shared_ptr<Channel> channel);
+        ContactTracerClient(std::shared_ptr<Channel> channel, ClientMode mode);
         void JudgeContact();
+        virtual ~ContactTracerClient();
+        void handleMSG0(Messages::MessageMsg0 *msg);
 
     private:
+        PSIWorker *sp = NULL;
+        WebService *ws = NULL;
         std::unique_ptr<ContactTracer::Stub> stub_;
+        ClientMode mode;
 };
 
 #endif

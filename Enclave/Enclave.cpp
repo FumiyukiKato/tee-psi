@@ -46,13 +46,13 @@ sgx_status_t Enclave::createEnclave() {
     sgx_launch_token_t launch_token = {0};
 
     memset(&launch_token, 0, sizeof(sgx_launch_token_t));
-
+    Log("sgx create");
     ret = sgx_create_enclave(this->enclave_path,
                              SGX_DEBUG_FLAG,
                              &launch_token,
                              &launch_token_update,
                              &this->enclave_id, NULL);
-
+    Log("sgx error");
     if (SGX_SUCCESS != ret) {
         Log("Error, call sgx_create_enclave fail", log::error);
         print_error_message(ret);

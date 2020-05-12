@@ -3,15 +3,37 @@
 
 using namespace util;
 using namespace std;
+
 using grpc::Status;
 using Messages::JudgeContactRequest;
 using Messages::JudgeContactResponse;
 using Messages::JudgeContactRequest;
 using Messages::MessageMsg0;
+using Messages::MessageMSG1;
 using grpc::ServerContext;
 using grpc::ServerReaderWriter;
 
 std::mutex mu_;
+
+ContactTracerImpl::ContactTracerImpl(string filepath) {
+    this->data_path = filepath;
+    Log("f");
+    this->enclave_service = new EnclaveService();
+    Log("e");
+    this->psi_service = new PsiService();
+    Log("p");
+}
+
+ContactTracerImpl::~ContactTracerImpl() {
+    delete this->psi_service;
+    delete this->enclave_service;
+}
+
+int ContactTracerImpl::initialize() {
+    int status = this->enclave_service->load(this->data_path);
+    if (status < 0) return -1;
+    return 0;
+}
 
 Status ContactTracerImpl::JudgeContact(ServerContext* context,
                 ServerReaderWriter<JudgeContactResponse, JudgeContactRequest>* stream) {
@@ -23,16 +45,20 @@ Status ContactTracerImpl::JudgeContact(ServerContext* context,
         switch (req.action_case()) {
             case JudgeContactRequest::ActionCase::kInitialMessage: {
                 Log("[gRPC] Get InitialMessage");
-                Log("type is %d", req.initial_message().type());
                 MessageMsg0 msg;
-                msg.set_type(3);
-                msg.set_epid(100);
-                msg.set_status(1);
-                Log("erro is %d", 1);
+                this->psi_service->handleVerification(msg, this->enclave_service);
                 res.mutable_msg0()->CopyFrom(msg);
-                Log("erro is %d", 3);
                 stream->Write(res);
-                Log("erro is %d", 4);
+                break;
+            }
+
+            case JudgeContactRequest::ActionCase::kMsg0: {
+                Log("[gRPC] Get Message0");
+                MessageMsg0 msg0 = res.msg0();
+                MessageMSG1 msg1;
+                this->psi_service->handleMsg0(msg0, msg1, this->enclave_service);
+                res.mutable_msg1()->CopyFrom(msg1);
+                stream->Write(res);
                 break;
             }
             
@@ -41,8 +67,6 @@ Status ContactTracerImpl::JudgeContact(ServerContext* context,
             }
         }
     }
-    
-    Log("erro is %d", 5);
     
     return Status::OK;
 }
