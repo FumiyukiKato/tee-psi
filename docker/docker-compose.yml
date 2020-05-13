@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: baiduxlab/sgx-rust
+    build: .
     devices:
       - /dev/isgx
     volumes:

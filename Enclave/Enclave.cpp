@@ -59,7 +59,8 @@ sgx_status_t Enclave::createEnclave() {
     } else {
         Log("Enclave created, ID: %llx", this->enclave_id);
     }
-
+    
+    Log("Call sgx_create_enclave success");
     return ret;
 }
 

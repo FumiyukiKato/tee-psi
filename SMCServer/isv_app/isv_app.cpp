@@ -18,19 +18,44 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "MessageHandler.h"
+// #include "MessageHandler.h"
+#include "ContactTracer.h"
 #include "LogBase.h"
+#include <grpc/grpc.h>
+#include <grpc++/server.h>
+#include <grpc++/server_builder.h>
+#include <grpc++/server_context.h>
+#include <grpc++/security/server_credentials.h>
 
 using namespace util;
+
+
+void RunServer(char *filepath) {
+    string server_address("0.0.0.0:" + to_string(Settings::rh_port));
+    ContactTracerImpl service(filepath);
+    int status = service.initialize();
+    if (status < 0) throw runtime_error("loading error!");
+    
+    grpc::ServerBuilder builder;
+    Log("a");
+    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    Log("b");
+    builder.RegisterService(&service);
+    Log("c");
+    unique_ptr<grpc::Server> server(builder.BuildAndStart());
+    Log("[gRPC] Server listening on %s \n", server_address);
+    server->Wait();
+}
 
 int Main(char *filepath) {
     LogBase::Inst();
 
     int ret = 0;
+    RunServer(filepath);
 
-    MessageHandler msg;
-    msg.init(filepath);
-    msg.start();
+    // MessageHandler msg;
+    // msg.init(filepath);
+    // msg.start();
 
     return ret;
 }
