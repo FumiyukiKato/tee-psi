@@ -29,7 +29,7 @@ struct ExampleMiddleware
     }
 
     int authenticate(const crow::request& req, std::string tmpToken) {
-        auto token = req.url_params.get("token");
+        auto token = req.url_params.get("auth_token");
         if (!token) return -1;
         if (token == tmpToken) return 0;
         std::cout << "[TOKEN INFO] invalid token: " << token << std::endl;
@@ -55,6 +55,24 @@ int main()
 {
   crow::App<ExampleMiddleware> app;
 
+  
+  /* Routing */
+
+  // with url parameter ?auth_token='xxxxxxxxxxx'
+  // all other parameter must be in json format
+
+  // - /remote_attestation_mock
+  //     - request parameter
+  //         - none
+  //     - response parameter
+  //         - shared key: bytes (128bit or 256bit?)
+  //         - id_token: string (for key identity)
+  //     - description
+  //         - mock-up remote attestation
+  //             - We consider the SGX server trusted.
+  //             - here, simply to accept shared key given by SGX server
+  //         - We can simplify Remote Attestation as mock. Remote attestation includes multiple communications with IAS and server with SGX. The purpose is to trust the SGX server and to exchange Session Key between SGX and client.
+  //         - Normally, it is unnatural to do this with stateless HTTP, but the client-side should send out requests continuously, and the server-side should manage the state with token.
   CROW_ROUTE(app, "/remote_attestation_mock")
     .methods("GET"_method)
   ([](const crow::request& req){
@@ -66,10 +84,21 @@ int main()
         return crow::response(400, res);
     }
     
-    res["message"] = "Hello, World!";
+    res["shared_key"] = "B0702B28101BFCAA36965C6338688530";
+    res["id_token"] = std::string("B0702B28101BFCAA36965C6338688530").c_str();
     return crow::response(200, res);
   });
 
+  // - /judge_contact
+  //     - request parameter
+  //         - history: bytes(encrypted with shared key)
+  //         - token: string
+  //     - response parameter
+  //         - risk_level: int
+  //     - description
+  //         - before this, need to do mock-up remote attestation and get the shared key.
+  //         - Properly speaking, this should be done in the same session as remote attestation.
+  //         - Only SGX can access a shared key. So, this history data reach to SGX securely.
   CROW_ROUTE(app, "/judge_contact")
       .methods("GET"_method)
   ([](const crow::request& req){
@@ -81,10 +110,19 @@ int main()
         return crow::response(400, res);
     }
     
-    res["message"] = "Hello, World!";
+    res["risk_level"] = 1;
     return crow::response(200, res);
   });
 
+  // - /report_infection
+  //     - request_parameter
+  //         - user_id(block-chain key): bytes(encrypted with shared key)
+  //         - token: string
+  //     - response parameter
+  //         - none
+  //     - description
+  //         - before this, need to do mock-up remote attestation and get the shared key.
+  //         - when this request
   CROW_ROUTE(app, "/report_infection")
       .methods("GET"_method)
   ([](const crow::request& req){
@@ -96,12 +134,13 @@ int main()
         return crow::response(400, res);
     }
     
-    res["message"] = "Hello, World!";
+    res["message"] = "ok";
     return crow::response(200, res);
   });
 
+
   app
     .port(8080)
-    .ssl_file("../server.crt", "../server.key") // curl --cacert path/to/server.crt https://localhost:50001
+    .ssl_file("../server.crt", "../server.key")
     .run();
 }
