@@ -84,3 +84,9 @@ $ ./app [-f file path] [-m mode]
 ```
 $ python script/geohash_data_generator.py [ --num data_size ] [ --mode (random|order) ]
 ```
+
+### https curl
+
+```
+$ curl --cacert path/to/server.crt https://localhost:50001
+```
