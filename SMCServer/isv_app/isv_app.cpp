@@ -2,28 +2,20 @@
 
 #include <random>
 #include "crow_all.h"
+#include <string>
 
 #include "PsiService.h"
 #include "LogBase.h"
 
-#define STR_LEN 32
-#define ENC_LEN 32
+#define TOKEN_LEN 32
 
 std::random_device rd{};
-
-void generateRandomHexStirng(char str[]) {
-  char hex_characters[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-  for(int i=0;i<STR_LEN;i++) {
-    str[i]=hex_characters[rd()%16];
-  }
-  str[STR_LEN]=0;
-};
 
 struct AuthMiddleware  {
     std::string tmpToken;
 
     AuthMiddleware() {
-      char chToken[STR_LEN];
+      char chToken[TOKEN_LEN];
       // generateRandomHexStirng(chToken);
       // tmpToken = chToken;
       tmpToken = "B0702B28101BFCAA36965C6338688530";
@@ -36,6 +28,14 @@ struct AuthMiddleware  {
         if (token == tmpToken) return 0;
         std::cout << "[TOKEN INFO] invalid token: " << token << std::endl;
         return -1;
+    };
+
+    void generateRandomHexStirng(char str[]) {
+        char hex_characters[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+        for(int i=0;i<TOKEN_LEN;i++) {
+            str[i]=hex_characters[rd()%16];
+        }
+        str[TOKEN_LEN]=0;
     };
     
     struct context {};
@@ -57,8 +57,10 @@ int Main(char *filepath) {
   LogBase::Inst();
   int ret = 0;
 
+  Log("[Main] preparing service...");
   PsiService service;
   service.start(filepath);
+  Log("[Main] service is ready!");
   PsiService *service_ptr = &service;
 
   crow::App<AuthMiddleware> app;
@@ -90,8 +92,8 @@ int Main(char *filepath) {
         return crow::response(400, res);
     }
     
-    uint8_t token[ENC_LEN];
-    uint8_t sk[ENC_LEN];
+    uint8_t token[KEY_SIZE];
+    uint8_t sk[KEY_SIZE];
     int status = service_ptr->remoteAttestationMock(token, sk);
     if (status < 0) {
         res["error"] = "internal server error";
@@ -99,8 +101,8 @@ int Main(char *filepath) {
     }
 
 
-    res["shared_key"] = token;
-    res["id_token"] = sk;
+    res["shared_key"] = ByteArrayToString(sk, KEY_SIZE);
+    res["id_token"] = ByteArrayToString(token, KEY_SIZE);
     return crow::response(200, res);
   });
 
@@ -154,7 +156,7 @@ int Main(char *filepath) {
   });
 
   app
-    .port(8080)
+    .port(8081)
     .ssl_file("../server.crt", "../server.key")
     .run();
 }
@@ -163,6 +165,7 @@ int main( int argc, char **argv ) {
     
     int opt;
     char *filepath = NULL;
+    filepath = "../data/sample.txt";
 
     while ((opt = getopt(argc, argv, "f:")) != -1) {
         switch (opt) {
@@ -171,13 +174,13 @@ int main( int argc, char **argv ) {
                     filepath = optarg;
                 } else {
                     Log("Usage: %s [-f central data file path] \n", argv[0]);
-                    return -1;
+                    // return -1;
                 }
                 break;
                                 
             default:
                 Log("Usage: %s [-f central data file path] \n", argv[0]);
-                return -1;
+                // return -1;
         }
     }
     

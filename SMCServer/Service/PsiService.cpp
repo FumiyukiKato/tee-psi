@@ -1,4 +1,6 @@
 #include "PsiService.h"
+#include "sample_libcrypto.h"
+#include "sha256.h"
 
 PsiService::PsiService() {
     Clocker clocker = Clocker("Total Request clocker");
@@ -20,7 +22,7 @@ void PsiService::start(string path) {
     }
 
     sgx_status_t status;
-    uint8_t salt[SALT_SIZE];
+    uint8_t salt[KEY_SIZE];
     ret = initialize(this->enclave->getID(), &status, salt);
     
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
@@ -33,7 +35,7 @@ void PsiService::start(string path) {
 
     // saltでハッシュ化してenclave内にロードする
     const string data_file_path = this->data_path;
-    string psi_salt = ByteArrayToString(salt, SALT_SIZE);
+    string psi_salt = ByteArrayToString(salt, KEY_SIZE);
     int data_size = loadHashedData(data_file_path, psi_salt);
     if (data_size < 0) {
         Log("Error, loading central data from file failed");
@@ -135,10 +137,11 @@ uint32_t PsiService::getExtendedEPID_GID() {
     return extended_epid_group_id;
 }
 
-int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *token) {
+int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
     Log("[Remote Attestaion Mock] start");
+    sgx_status_t status;
     int ret = remote_attestation_mock(this->enclave->getID(), &status, token, sk);
-    if (SGX_SUCCESS != ret) {
+    if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
         ret = -1;
         Log("Error, call remote_attestation_mock fail");
         return ret;

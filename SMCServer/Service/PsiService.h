@@ -18,6 +18,8 @@ enum ClientMode {
     CENTRAL
 };
 
+#define KEY_SIZE 32
+
 using namespace std;
 using namespace util;
 

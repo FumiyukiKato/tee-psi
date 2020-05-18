@@ -76,7 +76,7 @@ else
 endif
 
 App_Cpp_Files := isv_app/isv_app.cpp ../Util/LogBase.cpp \
-../Util/UtilityFunctions.cpp ../Enclave/Enclave.cpp ../Util/Base64.cpp Service/PsiService.cpp
+../Util/UtilityFunctions.cpp ../Enclave/Enclave.cpp ../Util/Base64.cpp Service/PsiService.cpp isv_app/sha256.cpp
 
 App_Include_Paths := -I../Util -Iservice_provider -I$(SGX_SDK)/include -I$(CUSTOM_EDL_PATH) -Iheaders -Iisv_app -I/usr/local/include -I../Enclave \
 -Isample_libcrypto -IService
@@ -194,6 +194,10 @@ isv_app/%.o: isv_app/%.cpp
 # ../MessageHandler/%.o: ../MessageHandler/%.cpp ../GeneralSettings.h
 # 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 # 	@echo "CXX  <=  $<"
+
+Service/%.o: Service/%.cpp
+	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
+	@echo "CXX  <=  $<"
 
 ../Util/%.o: ../Util/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@

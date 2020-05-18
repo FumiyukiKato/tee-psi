@@ -91,7 +91,13 @@ impl SetIntersection {
 
 #[derive(Clone, Default)]
 struct KeyManager {
-    key: HashMap<[u8; 32], [u8; 32]>
+    map: HashMap<[u8; 32], [u8; 32]>
+}
+
+impl KeyManager {
+    pub fn new() -> Self {
+        KeyManager::default()
+    }
 }
 
 // for PSP PSI
@@ -160,9 +166,9 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
     CENTRAL_GLOBAL_HASH_BUFFER.store(central_ptr as *mut (), Ordering::SeqCst);
 
     let mut key_manager = KeyManager::new();
-    let key_manager_box = Box::new(RefCell::<SetIntersection>::new(key_manager));
-    let key_manager_ptr = Box::into_raw(central_data_box);
-    KEY_MANAGER.store(key_manager_ptr, Ordering::SeqCst);
+    let key_manager_box = Box::new(RefCell::<KeyManager>::new(key_manager));
+    let key_manager_ptr = Box::into_raw(key_manager_box);
+    KEY_MANAGER.store(key_manager_ptr as *mut (), Ordering::SeqCst);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -224,11 +230,11 @@ fn remote_attestation_mock(
         Ok(rng) => rng,
         Err(_) => { return sgx_status_t::SGX_ERROR_UNEXPECTED; },
     };
-    rand.fill_bytes(&mut token);
-    rand.fill_bytes(&mut sk);
+    rand.fill_bytes(token);
+    rand.fill_bytes(sk);
     
     let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
-    key_manager.insert(token, sk);
+    key_manager.map.insert(*token, *sk);
     
     sgx_status_t::SGX_SUCCESS
 }
