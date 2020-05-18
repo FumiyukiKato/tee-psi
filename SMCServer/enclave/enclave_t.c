@@ -114,10 +114,9 @@ typedef struct ms_get_central_intersection_t {
 typedef struct ms_judge_contact_t {
 	sgx_status_t ms_retval;
 	uint8_t* ms_session_token;
-	uint8_t* ms_encrypted_geohash_data;
-	size_t ms_geo_data_size;
-	uint8_t* ms_encrypted_timestamp_data;
-	size_t ms_time_data_size;
+	uint8_t* ms_gcm_tag;
+	uint8_t* ms_encrypted_history_data;
+	size_t ms_array_size;
 	uint8_t* ms_risk_level;
 	uint8_t* ms_result;
 	size_t ms_result_size;
@@ -666,7 +665,7 @@ static sgx_status_t SGX_CDECL sgx_remote_attestation_mock(void* pms)
 	size_t _len_token = 32 * sizeof(uint8_t);
 	uint8_t* _in_token = NULL;
 	uint8_t* _tmp_sk = ms->ms_sk;
-	size_t _len_sk = 32 * sizeof(uint8_t);
+	size_t _len_sk = 16 * sizeof(uint8_t);
 	uint8_t* _in_sk = NULL;
 
 	CHECK_UNIQUE_POINTER(_tmp_token, _len_token);
@@ -1269,16 +1268,15 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 	uint8_t* _tmp_session_token = ms->ms_session_token;
 	size_t _len_session_token = 32 * sizeof(uint8_t);
 	uint8_t* _in_session_token = NULL;
-	uint8_t* _tmp_encrypted_geohash_data = ms->ms_encrypted_geohash_data;
-	size_t _tmp_geo_data_size = ms->ms_geo_data_size;
-	size_t _len_encrypted_geohash_data = _tmp_geo_data_size;
-	uint8_t* _in_encrypted_geohash_data = NULL;
-	uint8_t* _tmp_encrypted_timestamp_data = ms->ms_encrypted_timestamp_data;
-	size_t _tmp_time_data_size = ms->ms_time_data_size;
-	size_t _len_encrypted_timestamp_data = _tmp_time_data_size;
-	uint8_t* _in_encrypted_timestamp_data = NULL;
+	uint8_t* _tmp_gcm_tag = ms->ms_gcm_tag;
+	size_t _len_gcm_tag = 16 * sizeof(uint8_t);
+	uint8_t* _in_gcm_tag = NULL;
+	uint8_t* _tmp_encrypted_history_data = ms->ms_encrypted_history_data;
+	size_t _tmp_array_size = ms->ms_array_size;
+	size_t _len_encrypted_history_data = _tmp_array_size;
+	uint8_t* _in_encrypted_history_data = NULL;
 	uint8_t* _tmp_risk_level = ms->ms_risk_level;
-	size_t _len_risk_level = 24 * sizeof(uint8_t);
+	size_t _len_risk_level = 1 * sizeof(uint8_t);
 	uint8_t* _in_risk_level = NULL;
 	uint8_t* _tmp_result = ms->ms_result;
 	size_t _tmp_result_size = ms->ms_result_size;
@@ -1286,8 +1284,8 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 	uint8_t* _in_result = NULL;
 
 	CHECK_UNIQUE_POINTER(_tmp_session_token, _len_session_token);
-	CHECK_UNIQUE_POINTER(_tmp_encrypted_geohash_data, _len_encrypted_geohash_data);
-	CHECK_UNIQUE_POINTER(_tmp_encrypted_timestamp_data, _len_encrypted_timestamp_data);
+	CHECK_UNIQUE_POINTER(_tmp_gcm_tag, _len_gcm_tag);
+	CHECK_UNIQUE_POINTER(_tmp_encrypted_history_data, _len_encrypted_history_data);
 	CHECK_UNIQUE_POINTER(_tmp_risk_level, _len_risk_level);
 	CHECK_UNIQUE_POINTER(_tmp_result, _len_result);
 
@@ -1314,37 +1312,37 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 		}
 
 	}
-	if (_tmp_encrypted_geohash_data != NULL && _len_encrypted_geohash_data != 0) {
-		if ( _len_encrypted_geohash_data % sizeof(*_tmp_encrypted_geohash_data) != 0)
+	if (_tmp_gcm_tag != NULL && _len_gcm_tag != 0) {
+		if ( _len_gcm_tag % sizeof(*_tmp_gcm_tag) != 0)
 		{
 			status = SGX_ERROR_INVALID_PARAMETER;
 			goto err;
 		}
-		_in_encrypted_geohash_data = (uint8_t*)malloc(_len_encrypted_geohash_data);
-		if (_in_encrypted_geohash_data == NULL) {
+		_in_gcm_tag = (uint8_t*)malloc(_len_gcm_tag);
+		if (_in_gcm_tag == NULL) {
 			status = SGX_ERROR_OUT_OF_MEMORY;
 			goto err;
 		}
 
-		if (memcpy_s(_in_encrypted_geohash_data, _len_encrypted_geohash_data, _tmp_encrypted_geohash_data, _len_encrypted_geohash_data)) {
+		if (memcpy_s(_in_gcm_tag, _len_gcm_tag, _tmp_gcm_tag, _len_gcm_tag)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
 
 	}
-	if (_tmp_encrypted_timestamp_data != NULL && _len_encrypted_timestamp_data != 0) {
-		if ( _len_encrypted_timestamp_data % sizeof(*_tmp_encrypted_timestamp_data) != 0)
+	if (_tmp_encrypted_history_data != NULL && _len_encrypted_history_data != 0) {
+		if ( _len_encrypted_history_data % sizeof(*_tmp_encrypted_history_data) != 0)
 		{
 			status = SGX_ERROR_INVALID_PARAMETER;
 			goto err;
 		}
-		_in_encrypted_timestamp_data = (uint8_t*)malloc(_len_encrypted_timestamp_data);
-		if (_in_encrypted_timestamp_data == NULL) {
+		_in_encrypted_history_data = (uint8_t*)malloc(_len_encrypted_history_data);
+		if (_in_encrypted_history_data == NULL) {
 			status = SGX_ERROR_OUT_OF_MEMORY;
 			goto err;
 		}
 
-		if (memcpy_s(_in_encrypted_timestamp_data, _len_encrypted_timestamp_data, _tmp_encrypted_timestamp_data, _len_encrypted_timestamp_data)) {
+		if (memcpy_s(_in_encrypted_history_data, _len_encrypted_history_data, _tmp_encrypted_history_data, _len_encrypted_history_data)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
@@ -1377,7 +1375,7 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 		memset((void*)_in_result, 0, _len_result);
 	}
 
-	ms->ms_retval = judge_contact(_in_session_token, _in_encrypted_geohash_data, _tmp_geo_data_size, _in_encrypted_timestamp_data, _tmp_time_data_size, _in_risk_level, _in_result, _tmp_result_size);
+	ms->ms_retval = judge_contact(_in_session_token, _in_gcm_tag, _in_encrypted_history_data, _tmp_array_size, _in_risk_level, _in_result, _tmp_result_size);
 	if (_in_risk_level) {
 		if (memcpy_s(_tmp_risk_level, _len_risk_level, _in_risk_level, _len_risk_level)) {
 			status = SGX_ERROR_UNEXPECTED;
@@ -1393,8 +1391,8 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 
 err:
 	if (_in_session_token) free(_in_session_token);
-	if (_in_encrypted_geohash_data) free(_in_encrypted_geohash_data);
-	if (_in_encrypted_timestamp_data) free(_in_encrypted_timestamp_data);
+	if (_in_gcm_tag) free(_in_gcm_tag);
+	if (_in_encrypted_history_data) free(_in_encrypted_history_data);
 	if (_in_risk_level) free(_in_risk_level);
 	if (_in_result) free(_in_result);
 	return status;

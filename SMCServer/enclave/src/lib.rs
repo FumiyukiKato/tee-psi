@@ -45,6 +45,8 @@ use std::cell::RefCell;
 use std::sync::atomic::{AtomicPtr, Ordering};
 use std::boxed::Box;
 use std::collections::HashMap;
+use std::string::String;
+use std::string::ToString;
 
 const G_SP_PUB_KEY: sgx_ec256_public_t = sgx_ec256_public_t {
     gx : [0x72, 0x12, 0x8a, 0x7a, 0x17, 0x52, 0x6e, 0xbf,
@@ -70,7 +72,7 @@ const CLIENT_IDX: usize = 0;
 const CENTRAL_IDX: usize = 1;
 
 const SESSIONTOKEN_SIZE: usize = 32;
-const RISKLEVEL_RESULT: usize = 24;
+const RISKLEVEL_RESULT: usize = 1;
 
 #[derive(Clone, Default)]
 struct SetIntersection {
@@ -94,7 +96,7 @@ impl SetIntersection {
 
 #[derive(Clone, Default)]
 struct KeyManager {
-    map: HashMap<[u8; SESSIONTOKEN_SIZE], sgx_aes_ctr_128bit_key_t>
+    map: HashMap<String, sgx_aes_gcm_128bit_key_t>
 }
 
 impl KeyManager {
@@ -222,11 +224,23 @@ fn uploadCentralData(
     sgx_status_t::SGX_SUCCESS
 }
 
+fn get_key_from_vec(token: &[u8; SESSIONTOKEN_SIZE]) -> String {
+    const CHARS: &'static str = "0123456789ABCDEF";
+    let mut key: String = "".to_string();
+    for i in 0_usize..(SESSIONTOKEN_SIZE) {
+        let high: u8 = token[i] / 16;
+        let low : u8  = token[i] % 16;
+        key.push(CHARS.chars().nth(high as usize).unwrap());
+        key.push(CHARS.chars().nth(low as usize).unwrap());
+    }
+    key
+}
+
 #[no_mangle]
 pub extern "C"
 fn remote_attestation_mock(
     token: &mut [u8; SESSIONTOKEN_SIZE],
-    sk   : &mut sgx_aes_ctr_128bit_key_t
+    sk   : &mut sgx_aes_gcm_128bit_key_t
 ) -> sgx_status_t {
 
     let mut rand = match StdRng::new() {
@@ -237,7 +251,8 @@ fn remote_attestation_mock(
     rand.fill_bytes(sk);
     
     let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
-    key_manager.map.insert(*token, *sk);
+    println!("{}", get_key_from_vec(token));
+    key_manager.map.insert(get_key_from_vec(token), *sk);
     
     sgx_status_t::SGX_SUCCESS
 }
@@ -588,33 +603,28 @@ fn get_result(id: u32,
 pub extern "C"
 fn judge_contact( 
     session_token: &[u8; SESSIONTOKEN_SIZE],
-    encrypted_geohash_data: * const u8,
-    geo_data_size: usize,
-    encrypted_timestamp_data: * const u8,
-    time_data_size: usize,
+    gcm_tag: &[u8; SGX_MAC_SIZE],
+    encrypted_history_data: * const u8,
+    array_size: usize,
     risk_level: &mut [u8; RISKLEVEL_RESULT],
     result: * mut u8,
     result_size: usize
 ) -> sgx_status_t {
 
     let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
-    let sk_key: sgx_aes_ctr_128bit_key_t = match key_manager.map.get(session_token) {
-        Some(key) => *key,
-        None => return sgx_status_t::SGX_ERROR_UNEXPECTED,
-    };
+    println!("{}", &get_key_from_vec(session_token));
+    let sk_key: sgx_aes_gcm_128bit_key_t = 
+        match key_manager.map.get(&get_key_from_vec(session_token)) {
+            Some(key) => *key,
+            None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
+        };
     let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
 
-    let geo_data_slice = unsafe {
-        slice::from_raw_parts(encrypted_geohash_data, geo_data_size as usize)
+    let history_data_slice = unsafe {
+        slice::from_raw_parts(encrypted_history_data, array_size as usize)
     };
-    if geo_data_slice.len() != geo_data_size {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-    }
-    let time_data_slice = unsafe {
-        slice::from_raw_parts(encrypted_timestamp_data, time_data_size as usize)
-    };
-    if time_data_slice.len() != time_data_size {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    if history_data_slice.len() != array_size {
+        return sgx_status_t::SGX_ERROR_UNEXPECTED;
     }
 
     sgx_status_t::SGX_SUCCESS

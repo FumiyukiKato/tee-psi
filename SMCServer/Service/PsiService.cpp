@@ -23,7 +23,7 @@ void PsiService::start(string path) {
     }
 
     sgx_status_t status;
-    uint8_t salt[KEY_SIZE];
+    uint8_t salt[SALT_SIZE];
     ret = initialize(this->enclave->getID(), &status, salt);
     
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
@@ -36,7 +36,7 @@ void PsiService::start(string path) {
 
     // saltでハッシュ化してenclave内にロードする
     const string data_file_path = this->data_path;
-    string psi_salt = ByteArrayToString(salt, KEY_SIZE);
+    string psi_salt = ByteArrayToString(salt, SALT_SIZE);
     int data_size = loadHashedData(data_file_path, psi_salt);
     if (data_size < 0) {
         Log("Error, loading central data from file failed");
@@ -151,13 +151,12 @@ int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
 
 int PsiService::judgeContact(
     uint8_t *session_token, 
-    uint8_t *encrypted_geohash_data, 
-    size_t geo_data_size,
-    uint8_t *encrypted_timestamp_data, 
-    size_t time_data_size,
+    uint8_t *gcm_tag, 
+    uint8_t *encrypted_history_data, 
+    size_t array_size,
     uint8_t *risk_level,
     uint8_t *result,
-    size_t result_size
+    size_t history_num
 ) {
     Log("[Service] judge contact start");
     sgx_status_t status;
@@ -165,16 +164,15 @@ int PsiService::judgeContact(
         this->enclave->getID(),
         &status,
         session_token,
-        encrypted_geohash_data,
-        geo_data_size,
-        encrypted_timestamp_data,
-        time_data_size,
+        gcm_tag,
+        encrypted_history_data,
+        array_size,
         risk_level,
         result,
-        result_size
+        history_num
     );
     if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
-        Log("[Service] judge_contact failed, %d, %d!", ret, status);
+        Log("[Service] judge contact failed, %d, %d!", ret, status);
         return -1;
     }
     return 0;

@@ -18,8 +18,9 @@ enum ClientMode {
     CENTRAL
 };
 
-#define KEY_SIZE 16
 #define SESSIONTOKEN_SIZE 32
+#define SESSIONKEY_SIZE 16
+#define SALT_SIZE 32
 
 using namespace std;
 using namespace util;
@@ -34,13 +35,12 @@ public:
     int remoteAttestationMock(uint8_t *token, uint8_t *sk);    
     int judgeContact(
         uint8_t *session_token, 
-        uint8_t *encrypted_geohash_data, 
-        size_t geo_data_size,
-        uint8_t *encrypted_timestamp_data, 
-        size_t time_data_size,
+        uint8_t *gcm_tag, 
+        uint8_t *encrypted_history_data, 
+        size_t array_size,
         uint8_t *risk_level,
-        uint8_t* result,
-        size_t result_size
+        uint8_t *result,
+        size_t history_num
     );
     
 private:
@@ -61,4 +61,3 @@ private:
 };
 
 #endif
-
