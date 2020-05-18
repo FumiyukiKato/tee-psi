@@ -44,6 +44,7 @@ use std::vec::Vec;
 use std::cell::RefCell;
 use std::sync::atomic::{AtomicPtr, Ordering};
 use std::boxed::Box;
+use std::collections::HashMap;
 
 const G_SP_PUB_KEY: sgx_ec256_public_t = sgx_ec256_public_t {
     gx : [0x72, 0x12, 0x8a, 0x7a, 0x17, 0x52, 0x6e, 0xbf,
@@ -88,10 +89,17 @@ impl SetIntersection {
     }
 }
 
+#[derive(Clone, Default)]
+struct KeyManager {
+    key: HashMap<[u8; 32], [u8; 32]>
+}
+
 // for PSP PSI
 static P2P_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 // for Central PSI
 static CENTRAL_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+
+static KEY_MANAGER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 
 fn get_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
 {
@@ -113,6 +121,15 @@ fn get_central_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
     }
 }
 
+fn get_ref_key_manager() -> Option<&'static RefCell<KeyManager>>
+{
+    let ptr = KEY_MANAGER.load(Ordering::SeqCst) as * mut RefCell<KeyManager>;
+    if ptr.is_null() {
+        None
+    } else {
+        Some(unsafe { &* ptr })
+    }
+}
 
 // TODO; 初期化と解放の関数をモードで分ける
 #[no_mangle]
@@ -141,6 +158,11 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
     let central_data_box = Box::new(RefCell::<SetIntersection>::new(central_data));
     let central_ptr = Box::into_raw(central_data_box);
     CENTRAL_GLOBAL_HASH_BUFFER.store(central_ptr as *mut (), Ordering::SeqCst);
+
+    let mut key_manager = KeyManager::new();
+    let key_manager_box = Box::new(RefCell::<SetIntersection>::new(key_manager));
+    let key_manager_ptr = Box::into_raw(central_data_box);
+    KEY_MANAGER.store(key_manager_ptr, Ordering::SeqCst);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -187,6 +209,26 @@ fn uploadCentralData(
     // maxまで確保してここでshrinkする
     intersection.data[CENTRAL_IDX].hashdata.shrink_to_fit();
     intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
+    
+    sgx_status_t::SGX_SUCCESS
+}
+
+#[no_mangle]
+pub extern "C"
+fn remote_attestation_mock(
+    token: &mut [u8; 32],
+    sk   : &mut [u8; 32]
+) -> sgx_status_t {
+
+    let mut rand = match StdRng::new() {
+        Ok(rng) => rng,
+        Err(_) => { return sgx_status_t::SGX_ERROR_UNEXPECTED; },
+    };
+    rand.fill_bytes(&mut token);
+    rand.fill_bytes(&mut sk);
+    
+    let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
+    key_manager.insert(token, sk);
     
     sgx_status_t::SGX_SUCCESS
 }

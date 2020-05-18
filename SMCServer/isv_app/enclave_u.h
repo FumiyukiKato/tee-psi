@@ -247,6 +247,7 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, u_fstatat64_ocall, (int* error, int dirfd, con
 sgx_status_t initialize(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t salt[32]);
 sgx_status_t uploadCentralData(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* hashdata, size_t hash_size);
 sgx_status_t uninitialize(sgx_enclave_id_t eid);
+sgx_status_t remote_attestation_mock(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t token[32], uint8_t sk[32]);
 sgx_status_t enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_pse, sgx_ra_context_t* p_context);
 sgx_status_t enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context);
 sgx_status_t verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* message, size_t message_size, uint8_t mac[16]);
