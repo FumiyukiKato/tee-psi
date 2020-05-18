@@ -13,6 +13,7 @@ PsiService::~PsiService() {
 
 
 void PsiService::start(string path) {
+    Log("[Service] enclave init");
     this->data_path = path;
 
     sgx_status_t ret = this->initEnclave();
@@ -67,7 +68,7 @@ void PsiService::start(string path) {
         return;
     }
     clocker.stop();
-    Log("Call initEnclave success");
+    Log("[Service] Call initEnclave success");
 }
 
 int PsiService::loadHashedData(
@@ -78,7 +79,7 @@ int PsiService::loadHashedData(
     uint8_t * file_data = NULL;
     int file_size = 0;
     
-    Log("[PSI] load central data from : %s", this->data_path);
+    Log("[Service] load central data from : %s", this->data_path);
 
     file_size = ReadFileToBuffer(file_path, &file_data);
     if (file_size <= 0) {
@@ -111,7 +112,7 @@ int PsiService::loadHashedData(
         this->hash_vector.push_back(hash);
         this->data_map[hash] = p;
     }
-    Log("[PSI] complete load and hash central data, size: %d", this->hash_vector.size());
+    Log("[Service] complete load and hash central data, size: %d", this->hash_vector.size());
     
     std::sort(this->hash_vector.begin(), this->hash_vector.end());
     return this->hash_vector.size();
@@ -132,13 +133,11 @@ uint32_t PsiService::getExtendedEPID_GID() {
         return ret;
     }
 
-    Log("Call sgx_get_extended_epid_group_id success");
-
     return extended_epid_group_id;
 }
 
 int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
-    Log("[Remote Attestaion Mock] start");
+    Log("[Service] Remote Attestaion Mock start");
     sgx_status_t status;
     int ret = remote_attestation_mock(this->enclave->getID(), &status, token, sk);
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
@@ -147,5 +146,36 @@ int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
         return ret;
     }
     
+    return 0;
+}
+
+int PsiService::judgeContact(
+    uint8_t *session_token, 
+    uint8_t *encrypted_geohash_data, 
+    size_t geo_data_size,
+    uint8_t *encrypted_timestamp_data, 
+    size_t time_data_size,
+    uint8_t *risk_level,
+    uint8_t *result,
+    size_t result_size
+) {
+    Log("[Service] judge contact start");
+    sgx_status_t status;
+    sgx_status_t ret = judge_contact(
+        this->enclave->getID(),
+        &status,
+        session_token,
+        encrypted_geohash_data,
+        geo_data_size,
+        encrypted_timestamp_data,
+        time_data_size,
+        risk_level,
+        result,
+        result_size
+    );
+    if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
+        Log("[Service] judge_contact failed, %d, %d!", ret, status);
+        return -1;
+    }
     return 0;
 }

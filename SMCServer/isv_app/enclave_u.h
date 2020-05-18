@@ -256,6 +256,7 @@ sgx_status_t add_hash_data(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t 
 sgx_status_t get_result_size(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, uint32_t mode, size_t* len);
 sgx_status_t get_result(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, sgx_ra_context_t context, uint8_t* result, size_t result_size, uint8_t result_mac[16]);
 sgx_status_t get_central_intersection(sgx_enclave_id_t eid, sgx_status_t* retval, uint32_t id, sgx_ra_context_t context, uint8_t* result, size_t result_size, uint8_t result_mac[16]);
+sgx_status_t judge_contact(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t* encrypted_geohash_data, size_t geo_data_size, uint8_t* encrypted_timestamp_data, size_t time_data_size, uint8_t risk_level[24], uint8_t* result, size_t result_size);
 sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
 sgx_status_t sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size);

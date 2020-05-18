@@ -69,6 +69,9 @@ const CLIENT_ID: u32 = 1;
 const CLIENT_IDX: usize = 0;
 const CENTRAL_IDX: usize = 1;
 
+const SESSIONTOKEN_SIZE: usize = 32;
+const RISKLEVEL_RESULT: usize = 24;
+
 #[derive(Clone, Default)]
 struct SetIntersection {
     salt: [u8; SGX_SALT_SIZE],
@@ -91,7 +94,7 @@ impl SetIntersection {
 
 #[derive(Clone, Default)]
 struct KeyManager {
-    map: HashMap<[u8; 32], [u8; 32]>
+    map: HashMap<[u8; SESSIONTOKEN_SIZE], sgx_aes_ctr_128bit_key_t>
 }
 
 impl KeyManager {
@@ -222,8 +225,8 @@ fn uploadCentralData(
 #[no_mangle]
 pub extern "C"
 fn remote_attestation_mock(
-    token: &mut [u8; 32],
-    sk   : &mut [u8; 32]
+    token: &mut [u8; SESSIONTOKEN_SIZE],
+    sk   : &mut sgx_aes_ctr_128bit_key_t
 ) -> sgx_status_t {
 
     let mut rand = match StdRng::new() {
@@ -576,6 +579,42 @@ fn get_result(id: u32,
             intersection.data[i].result = Vec::new();
             intersection.data[i].state = 0;
         }
+    }
+
+    sgx_status_t::SGX_SUCCESS
+}
+
+#[no_mangle]
+pub extern "C"
+fn judge_contact( 
+    session_token: &[u8; SESSIONTOKEN_SIZE],
+    encrypted_geohash_data: * const u8,
+    geo_data_size: usize,
+    encrypted_timestamp_data: * const u8,
+    time_data_size: usize,
+    risk_level: &mut [u8; RISKLEVEL_RESULT],
+    result: * mut u8,
+    result_size: usize
+) -> sgx_status_t {
+
+    let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
+    let sk_key: sgx_aes_ctr_128bit_key_t = match key_manager.map.get(session_token) {
+        Some(key) => *key,
+        None => return sgx_status_t::SGX_ERROR_UNEXPECTED,
+    };
+    let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
+
+    let geo_data_slice = unsafe {
+        slice::from_raw_parts(encrypted_geohash_data, geo_data_size as usize)
+    };
+    if geo_data_slice.len() != geo_data_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+    let time_data_slice = unsafe {
+        slice::from_raw_parts(encrypted_timestamp_data, time_data_size as usize)
+    };
+    if time_data_slice.len() != time_data_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
     }
 
     sgx_status_t::SGX_SUCCESS

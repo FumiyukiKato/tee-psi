@@ -77,6 +77,15 @@ enclave {
                                        [out, size=result_size] uint8_t* result,
                                        size_t result_size,
                                        [out] uint8_t result_mac[16]);
+
+        public sgx_status_t judge_contact([in] uint8_t session_token[32],
+                                        [in, size=geo_data_size] uint8_t* encrypted_geohash_data,
+                                        size_t geo_data_size,
+                                        [in, size=time_data_size] uint8_t* encrypted_timestamp_data,
+                                        size_t time_data_size,
+                                        [out] uint8_t risk_level[24],
+                                        [out, size=result_size] uint8_t* result,
+                                        size_t result_size);
     };
 
 };

@@ -8,6 +8,9 @@
 #include "LogBase.h"
 
 #define TOKEN_LEN 32
+#define E_GEODATA_SIZE 20
+#define E_TIMESTAMP_SIZE 30
+#define E_RISKLEVEL_SIZE 1
 
 std::random_device rd{};
 
@@ -73,8 +76,8 @@ int Main(char *filepath) {
   //     - request parameter
   //         - none
   //     - response parameter
-  //         - shared key: bytes (128bit or 256bit?)
-  //         - id_token: string (for key identity)
+  //         - shared key: bytes (256bit)
+  //         - id_token: string (256bit)
   //     - description
   //         - mock-up remote attestation
   //             - We consider the SGX server trusted.
@@ -84,25 +87,24 @@ int Main(char *filepath) {
   CROW_ROUTE(app, "/remote_attestation_mock")
     .methods("GET"_method)
   ([service_ptr](const crow::request& req){
-    auto x = crow::json::load(req.body);
+    auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
     
-    if (!x) { // TODO; jsonの型によるエラー処理
-        res["error"] = "invalid json format";
+    if (json_req) {
+        res["error"] = "invalid parameter, parameter is not needed";
         return crow::response(400, res);
     }
     
     uint8_t token[KEY_SIZE];
-    uint8_t sk[KEY_SIZE];
+    uint8_t sk[SESSIONTOKEN_SIZE];
     int status = service_ptr->remoteAttestationMock(token, sk);
     if (status < 0) {
         res["error"] = "internal server error";
         return crow::response(500, res);
     }
 
-
-    res["shared_key"] = ByteArrayToString(sk, KEY_SIZE);
-    res["id_token"] = ByteArrayToString(token, KEY_SIZE);
+    res["shared_key"] = Base64encodeUint8(sk, KEY_SIZE);
+    res["session_token"] = Base64encodeUint8(token, SESSIONTOKEN_SIZE);
     return crow::response(200, res);
   });
 
@@ -119,14 +121,70 @@ int Main(char *filepath) {
   CROW_ROUTE(app, "/judge_contact")
       .methods("GET"_method)
   ([service_ptr](const crow::request& req){
-    auto x = crow::json::load(req.body);
+    auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
     
-    if (!x) {
+    if (!json_req || !json_req.has("history") || 
+        !json_req.has("session_token") || !json_req.has("gcm_tag") ||
+        !json_req["history"][0].has("geohash")) {
         res["error"] = "invalid json format";
         return crow::response(400, res);
     }
     
+    uint8_t *session_token = NULL;
+    auto session_token_str = json_req["session_token"].s();
+    StringToByteArray(session_token_str, &session_token);
+
+    // uint8_t *gcm_tag = NULL;
+    // auto gcm_tag_str = json_req["gcm_tag"].s();
+    // StringToByteArray(gcm_tag_str, &gcm_tag);
+
+    auto history_data = json_req["history"];
+    size_t history_size = history_data.size();
+    std::cout << "historysize: " << history_size << std::endl;
+    if(history_size < 0) {
+        res["error"] = "invalid history size";
+        return crow::response(400, res);
+    }
+
+    size_t geo_data_size = E_GEODATA_SIZE * history_size;
+    size_t time_data_size = E_TIMESTAMP_SIZE * history_size;
+    uint8_t encrypted_geohash_data[E_GEODATA_SIZE * history_size];
+    uint8_t encrypted_timestamp_data[E_TIMESTAMP_SIZE * history_size];
+    for (int i=0; i<history_size; i++) {
+        uint8_t *g_buf = NULL;
+        uint8_t *t_buf = NULL;
+        if(E_GEODATA_SIZE == StringToByteArray(Base64decode(history_data[i]["geohash"].s()), &g_buf)) {
+            memcpy(&encrypted_geohash_data[i*E_GEODATA_SIZE], g_buf, E_GEODATA_SIZE);
+        } else {
+            res["error"] = "invalid geohash code size, not 24";
+            return crow::response(400, res);
+        }
+        if(E_TIMESTAMP_SIZE == StringToByteArray(Base64decode(history_data[i]["timestamp"].s()), &t_buf)) {
+            memcpy(&encrypted_timestamp_data[i*E_TIMESTAMP_SIZE], t_buf, E_TIMESTAMP_SIZE);
+        } else {
+            res["error"] = "invalid timestamp code size, not 24";
+            return crow::response(400, res);
+        }
+    }
+    
+    uint8_t result[history_size];
+    uint8_t risk_level[E_RISKLEVEL_SIZE];
+    int status = service_ptr->judgeContact(
+        session_token,
+        encrypted_geohash_data,
+        geo_data_size,
+        encrypted_timestamp_data,
+        time_data_size,
+        risk_level,
+        result,
+        history_size
+    );
+    if (status < 0) {
+        res["error"] = "internal server error";
+        return crow::response(500, res);
+    }
+
     res["risk_level"] = 1;
     return crow::response(200, res);
   });
