@@ -8,10 +8,8 @@
 #include "LogBase.h"
 
 #define TOKEN_LEN 32
-#define E_GEODATA_SIZE 20
-#define E_TIMESTAMP_SIZE 30
 #define E_RISKLEVEL_SIZE 1
-#define GCMTAG_SIZE 32
+#define GCMTAG_SIZE 16
 
 std::random_device rd{};
 
@@ -135,14 +133,14 @@ int Main(char *filepath) {
     
     uint8_t *session_token = NULL;
     auto session_token_str = json_req["session_token"].s();
-    if (SESSIONTOKEN_SIZE * 2 == HexStringToByteArray(session_token_str, &session_token)) {
+    if (SESSIONTOKEN_SIZE != HexStringToByteArray(session_token_str, &session_token)) {
         res["error"] = "invalid format session token";
         return crow::response(400, res);
     };
 
     uint8_t *gcm_tag = NULL;
     auto gcm_tag_str = json_req["gcm_tag"].s();
-    if (GCMTAG_SIZE * 2 == HexStringToByteArray(gcm_tag_str, &gcm_tag)) {
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(gcm_tag_str), &gcm_tag)) {
         res["error"] = "invalid format gcm_tag";
         return crow::response(400, res);
     };
@@ -155,24 +153,30 @@ int Main(char *filepath) {
 
     auto history_data = json_req["history"];
     uint8_t *encrypted_history_data = NULL;
-    size_t array_size = StringToByteArray(Base64decode(history_data.s()), &encrypted_history_data);
+    size_t data_size = StringToByteArray(Base64decode(history_data.s()), &encrypted_history_data);
     uint8_t result[history_num];
     uint8_t risk_level[E_RISKLEVEL_SIZE];
+    uint8_t result_mac[GCMTAG_SIZE] = {0};
     int status = service_ptr->judgeContact(
         session_token,
         gcm_tag,
         encrypted_history_data,
-        array_size,
+        data_size,
         risk_level,
         result,
-        history_num
+        history_num,
+        result_mac
     );
     if (status < 0) {
         res["error"] = "internal server error";
         return crow::response(500, res);
     }
-
+    
+    
+    std::cout << risk_level << std::endl;
+    std::cout << result_mac << std::endl;
     res["risk_level"] = Base64encodeUint8(risk_level, E_RISKLEVEL_SIZE);
+    res["gcm_tag"] = Base64encodeUint8(result_mac, GCMTAG_SIZE);
     return crow::response(200, res);
   });
 
@@ -200,8 +204,11 @@ int Main(char *filepath) {
     return crow::response(200, res);
   });
 
+  crow::logger::setLogLevel(crow::LogLevel::Debug);
+
   app
-    .port(8081)
+    .port(8080)
+    .multithreaded()
     .ssl_file("../server.crt", "../server.key")
     .run();
 }

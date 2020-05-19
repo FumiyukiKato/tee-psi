@@ -90,10 +90,11 @@ typedef struct ms_judge_contact_t {
 	uint8_t* ms_session_token;
 	uint8_t* ms_gcm_tag;
 	uint8_t* ms_encrypted_history_data;
-	size_t ms_array_size;
+	size_t ms_data_size;
 	uint8_t* ms_risk_level;
 	uint8_t* ms_result;
-	size_t ms_result_size;
+	size_t ms_history_num;
+	uint8_t* ms_result_mac;
 } ms_judge_contact_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
@@ -1173,17 +1174,18 @@ sgx_status_t get_central_intersection(sgx_enclave_id_t eid, sgx_status_t* retval
 	return status;
 }
 
-sgx_status_t judge_contact(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t gcm_tag[16], uint8_t* encrypted_history_data, size_t array_size, uint8_t risk_level[1], uint8_t* result, size_t result_size)
+sgx_status_t judge_contact(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t gcm_tag[16], uint8_t* encrypted_history_data, size_t data_size, uint8_t risk_level[1], uint8_t* result, size_t history_num, uint8_t result_mac[16])
 {
 	sgx_status_t status;
 	ms_judge_contact_t ms;
 	ms.ms_session_token = (uint8_t*)session_token;
 	ms.ms_gcm_tag = (uint8_t*)gcm_tag;
 	ms.ms_encrypted_history_data = encrypted_history_data;
-	ms.ms_array_size = array_size;
+	ms.ms_data_size = data_size;
 	ms.ms_risk_level = (uint8_t*)risk_level;
 	ms.ms_result = result;
-	ms.ms_result_size = result_size;
+	ms.ms_history_num = history_num;
+	ms.ms_result_mac = (uint8_t*)result_mac;
 	status = sgx_ecall(eid, 12, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;

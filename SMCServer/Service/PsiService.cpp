@@ -152,11 +152,12 @@ int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
 int PsiService::judgeContact(
     uint8_t *session_token, 
     uint8_t *gcm_tag, 
-    uint8_t *encrypted_history_data, 
-    size_t array_size,
+    uint8_t *encrypted_history_data,
+    size_t data_size,
     uint8_t *risk_level,
     uint8_t *result,
-    size_t history_num
+    size_t history_num,
+    uint8_t *result_mac
 ) {
     Log("[Service] judge contact start");
     sgx_status_t status;
@@ -166,10 +167,11 @@ int PsiService::judgeContact(
         session_token,
         gcm_tag,
         encrypted_history_data,
-        array_size,
+        data_size,
         risk_level,
         result,
-        history_num
+        history_num,
+        result_mac
     );
     if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
         Log("[Service] judge contact failed, %d, %d!", ret, status);

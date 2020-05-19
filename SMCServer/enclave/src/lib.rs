@@ -74,6 +74,10 @@ const CENTRAL_IDX: usize = 1;
 const SESSIONTOKEN_SIZE: usize = 32;
 const RISKLEVEL_RESULT: usize = 1;
 
+const GEOHASH_DIDIT: usize = 10;
+const U8_GEODATA_SIZE: usize = 10;
+const U8_TIMESTAMP_SIZE: usize = 15;
+
 #[derive(Clone, Default)]
 struct SetIntersection {
     salt: [u8; SGX_SALT_SIZE],
@@ -102,6 +106,86 @@ struct KeyManager {
 impl KeyManager {
     pub fn new() -> Self {
         KeyManager::default()
+    }
+}
+
+#[derive(Clone, Default)]
+struct SpatialData {
+    geoHash  : String, // geohashはBase32でエンコードされるので
+    timestamp: SGXDateTime  // timestampではない
+}
+
+impl SpatialData {
+    pub fn new(u_geoHash: [u8; U8_GEODATA_SIZE], u_timestamp: [u8; U8_TIMESTAMP_SIZE]) -> Self {
+        SpatialData {
+            geoHash: parse_geohash_from_u8(u_geoHash),
+            timestamp: SGXDateTime::from_u8(u_timestamp)
+        }
+    }
+}
+
+#[derive(Clone)]
+enum TimeZone {
+    Utc,
+    Jst
+}
+
+#[derive(Clone)]
+struct SGXDateTime { // crateを入れれないのと信頼できないので簡易的に構造体を作る
+    year  : u32,
+    month : u32,
+    date  : u32,
+    hour  : u32,
+    minute: u32,
+    second: u32,
+    timezone: TimeZone
+}
+
+impl Default for SGXDateTime {
+    fn default() -> Self {
+        Self {
+            year  : 2020,
+            month : 5,
+            date  : 4,
+            hour  : 10,
+            minute: 10,
+            second: 10,
+            timezone: TimeZone::Utc
+        }
+    }
+}
+
+impl SGXDateTime {
+    pub fn new(y: u32, mo: u32, d: u32, h: u32, mi: u32, s: u32, timezone: TimeZone) -> Self {
+        SGXDateTime {
+            year  : y,
+            month : mo,
+            date  : d,
+            hour  : h,
+            minute: mi,
+            second: s,
+            timezone: timezone
+        }
+    }
+
+    pub fn from_u8(u_timestamp: [u8; U8_TIMESTAMP_SIZE]) -> Self {
+        let s_timestamp = String::from_utf8(u_timestamp.to_vec()).unwrap();
+        let year: u32   = (&s_timestamp[0..4]).parse().unwrap();
+        let month: u32  = (&s_timestamp[4..6]).parse().unwrap();
+        let date: u32   = (&s_timestamp[6..8]).parse().unwrap();
+        let hour: u32   = (&s_timestamp[9..11]).parse().unwrap();
+        let minute: u32 = (&s_timestamp[11..13]).parse().unwrap();
+        let second: u32 = (&s_timestamp[13..15]).parse().unwrap();
+        SGXDateTime {
+            year  : year,
+            month : month,
+            date  : date,
+            hour  : hour,
+            minute: minute,
+            second: second,
+            timezone: TimeZone::Utc
+        }
+        
     }
 }
 
@@ -142,6 +226,10 @@ fn get_ref_key_manager() -> Option<&'static RefCell<KeyManager>>
     }
 }
 
+fn parse_geohash_from_u8(u_geoHash: [u8; U8_GEODATA_SIZE]) -> String {
+    return String::from_utf8(u_geoHash.to_vec()).unwrap();
+}
+
 // TODO; 初期化と解放の関数をモードで分ける
 #[no_mangle]
 pub extern "C"
@@ -170,7 +258,7 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
     let central_ptr = Box::into_raw(central_data_box);
     CENTRAL_GLOBAL_HASH_BUFFER.store(central_ptr as *mut (), Ordering::SeqCst);
 
-    let mut key_manager = KeyManager::new();
+    let key_manager = KeyManager::new();
     let key_manager_box = Box::new(RefCell::<KeyManager>::new(key_manager));
     let key_manager_ptr = Box::into_raw(key_manager_box);
     KEY_MANAGER.store(key_manager_ptr as *mut (), Ordering::SeqCst);
@@ -226,6 +314,18 @@ fn uploadCentralData(
 
 fn get_key_from_vec(token: &[u8; SESSIONTOKEN_SIZE]) -> String {
     const CHARS: &'static str = "0123456789ABCDEF";
+    let mut key: String = "".to_string();
+    for i in 0_usize..(SESSIONTOKEN_SIZE) {
+        let high: u8 = token[i] / 16;
+        let low : u8  = token[i] % 16;
+        key.push(CHARS.chars().nth(high as usize).unwrap());
+        key.push(CHARS.chars().nth(low as usize).unwrap());
+    }
+    key
+}
+
+fn geo_hash_encode(token: &[u8; U8_GEODATA_SIZE]) -> String {
+    const CHARS: &'static str = "0123456789bcdefghjkmnpqrstuvwxyz";
     let mut key: String = "".to_string();
     for i in 0_usize..(SESSIONTOKEN_SIZE) {
         let high: u8 = token[i] / 16;
@@ -602,23 +702,26 @@ fn get_result(id: u32,
 #[no_mangle]
 pub extern "C"
 fn judge_contact( 
-    session_token: &[u8; SESSIONTOKEN_SIZE],
-    gcm_tag: &[u8; SGX_MAC_SIZE],
+    session_token         : &[u8; SESSIONTOKEN_SIZE],
+    gcm_tag               : &[u8; SGX_MAC_SIZE],
     encrypted_history_data: * const u8,
-    array_size: usize,
-    risk_level: &mut [u8; RISKLEVEL_RESULT],
-    result: * mut u8,
-    result_size: usize
+    data_size             : usize,
+    risk_level            : &mut [u8; RISKLEVEL_RESULT],
+    result                : * mut u8,
+    history_num           : usize,
+    result_mac            : &mut [u8; SGX_MAC_SIZE]
 ) -> sgx_status_t {
 
-    let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
-    println!("{}", &get_key_from_vec(session_token));
+    let key_manager = get_ref_key_manager().unwrap().borrow_mut();
     let sk_key: sgx_aes_gcm_128bit_key_t = 
         match key_manager.map.get(&get_key_from_vec(session_token)) {
             Some(key) => *key,
             None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
         };
-    let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
+    let intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
+    
+    let MERGED_DATA_SIZE: usize = U8_GEODATA_SIZE + U8_TIMESTAMP_SIZE;
+    let array_size: usize = history_num * MERGED_DATA_SIZE;
 
     let history_data_slice = unsafe {
         slice::from_raw_parts(encrypted_history_data, array_size as usize)
@@ -626,6 +729,44 @@ fn judge_contact(
     if history_data_slice.len() != array_size {
         return sgx_status_t::SGX_ERROR_UNEXPECTED;
     }
+
+    let mut decrypted: Vec<u8> = vec![0; array_size];
+    let iv = [0; SGX_AESGCM_IV_SIZE];
+    let aad:[u8; 0] = [0; 0];
+    let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
+                                          &history_data_slice,
+                                          &iv,
+                                          &aad,
+                                          gcm_tag,
+                                          decrypted.as_mut_slice());
+    match ret {
+        Ok(()) => {},
+        Err(x) => return x,
+    };
+
+    let mut buffer: Vec<SpatialData> = Vec::with_capacity(1000);
+    for i in 0_usize..(history_num) {
+        let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+        let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+        geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_GEODATA_SIZE]);
+        timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_GEODATA_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+        let data = SpatialData::new(geoHash, timestamp);
+        buffer.push(data);
+    }
+
+    let mock_risk_level: &[u8] = &[ sk_key[0] % 3 as u8 ]; // mock
+    println!("{}", mock_risk_level[0]);
+    let ret = rsgx_rijndael128GCM_encrypt(&sk_key,
+                                            mock_risk_level,
+                                            &iv,
+                                            &aad,
+                                            risk_level,
+                                            result_mac);
+    println!("{}", risk_level[0]);
+    match ret {
+        Ok(()) => {},
+        Err(x) => return x,
+    };
 
     sgx_status_t::SGX_SUCCESS
 }

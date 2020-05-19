@@ -34,13 +34,14 @@ public:
     void start(string filepath);
     int remoteAttestationMock(uint8_t *token, uint8_t *sk);    
     int judgeContact(
-        uint8_t *session_token, 
-        uint8_t *gcm_tag, 
-        uint8_t *encrypted_history_data, 
-        size_t array_size,
+        uint8_t *session_token,
+        uint8_t *gcm_tag,
+        uint8_t *encrypted_history_data,
+        size_t data_size,
         uint8_t *risk_level,
         uint8_t *result,
-        size_t history_num
+        size_t history_num,
+        uint8_t *result_mac
     );
     
 private:
