@@ -245,7 +245,7 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, u_fstatat64_ocall, (int* error, int dirfd, con
 #endif
 
 sgx_status_t initialize(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t salt[32]);
-sgx_status_t uploadCentralData(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* hashdata, size_t hash_size);
+sgx_status_t uploadCentralData(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* filedata, size_t file_size);
 sgx_status_t uninitialize(sgx_enclave_id_t eid);
 sgx_status_t remote_attestation_mock(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t token[32], uint8_t sk[16]);
 sgx_status_t enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_pse, sgx_ra_context_t* p_context);

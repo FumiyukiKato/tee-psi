@@ -28,8 +28,8 @@ enclave {
 
         public sgx_status_t initialize([out] uint8_t salt[32]);
 
-        public sgx_status_t uploadCentralData([in, size=hash_size] uint8_t* hashdata,
-											    size_t hash_size);
+        public sgx_status_t uploadCentralData([in, size=file_size] uint8_t* filedata,
+											    size_t file_size);
 
         public void uninitialize();
 

@@ -8,8 +8,8 @@ typedef struct ms_initialize_t {
 
 typedef struct ms_uploadCentralData_t {
 	sgx_status_t ms_retval;
-	uint8_t* ms_hashdata;
-	size_t ms_hash_size;
+	uint8_t* ms_filedata;
+	size_t ms_file_size;
 } ms_uploadCentralData_t;
 
 typedef struct ms_remote_attestation_mock_t {
@@ -1038,12 +1038,12 @@ sgx_status_t initialize(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t salt
 	return status;
 }
 
-sgx_status_t uploadCentralData(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* hashdata, size_t hash_size)
+sgx_status_t uploadCentralData(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* filedata, size_t file_size)
 {
 	sgx_status_t status;
 	ms_uploadCentralData_t ms;
-	ms.ms_hashdata = hashdata;
-	ms.ms_hash_size = hash_size;
+	ms.ms_filedata = filedata;
+	ms.ms_file_size = file_size;
 	status = sgx_ecall(eid, 1, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;

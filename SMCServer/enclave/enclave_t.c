@@ -34,8 +34,8 @@ typedef struct ms_initialize_t {
 
 typedef struct ms_uploadCentralData_t {
 	sgx_status_t ms_retval;
-	uint8_t* ms_hashdata;
-	size_t ms_hash_size;
+	uint8_t* ms_filedata;
+	size_t ms_file_size;
 } ms_uploadCentralData_t;
 
 typedef struct ms_remote_attestation_mock_t {
@@ -607,41 +607,41 @@ static sgx_status_t SGX_CDECL sgx_uploadCentralData(void* pms)
 	sgx_lfence();
 	ms_uploadCentralData_t* ms = SGX_CAST(ms_uploadCentralData_t*, pms);
 	sgx_status_t status = SGX_SUCCESS;
-	uint8_t* _tmp_hashdata = ms->ms_hashdata;
-	size_t _tmp_hash_size = ms->ms_hash_size;
-	size_t _len_hashdata = _tmp_hash_size;
-	uint8_t* _in_hashdata = NULL;
+	uint8_t* _tmp_filedata = ms->ms_filedata;
+	size_t _tmp_file_size = ms->ms_file_size;
+	size_t _len_filedata = _tmp_file_size;
+	uint8_t* _in_filedata = NULL;
 
-	CHECK_UNIQUE_POINTER(_tmp_hashdata, _len_hashdata);
+	CHECK_UNIQUE_POINTER(_tmp_filedata, _len_filedata);
 
 	//
 	// fence after pointer checks
 	//
 	sgx_lfence();
 
-	if (_tmp_hashdata != NULL && _len_hashdata != 0) {
-		if ( _len_hashdata % sizeof(*_tmp_hashdata) != 0)
+	if (_tmp_filedata != NULL && _len_filedata != 0) {
+		if ( _len_filedata % sizeof(*_tmp_filedata) != 0)
 		{
 			status = SGX_ERROR_INVALID_PARAMETER;
 			goto err;
 		}
-		_in_hashdata = (uint8_t*)malloc(_len_hashdata);
-		if (_in_hashdata == NULL) {
+		_in_filedata = (uint8_t*)malloc(_len_filedata);
+		if (_in_filedata == NULL) {
 			status = SGX_ERROR_OUT_OF_MEMORY;
 			goto err;
 		}
 
-		if (memcpy_s(_in_hashdata, _len_hashdata, _tmp_hashdata, _len_hashdata)) {
+		if (memcpy_s(_in_filedata, _len_filedata, _tmp_filedata, _len_filedata)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
 
 	}
 
-	ms->ms_retval = uploadCentralData(_in_hashdata, _tmp_hash_size);
+	ms->ms_retval = uploadCentralData(_in_filedata, _tmp_file_size);
 
 err:
-	if (_in_hashdata) free(_in_hashdata);
+	if (_in_filedata) free(_in_filedata);
 	return status;
 }
 

@@ -75,8 +75,8 @@ const SESSIONTOKEN_SIZE: usize = 32;
 const RISKLEVEL_RESULT: usize = 1;
 
 const GEOHASH_DIDIT: usize = 10;
-const U8_GEODATA_SIZE: usize = 10;
-const U8_TIMESTAMP_SIZE: usize = 15;
+const U8_GEODATA_SIZE: usize = 9;
+const U8_TIMESTAMP_SIZE: usize = 10;
 
 #[derive(Clone, Default)]
 struct SetIntersection {
@@ -110,16 +110,27 @@ impl KeyManager {
 }
 
 #[derive(Clone, Default)]
+struct CentralData {
+    data: Vec<SpatialData>
+}
+
+impl CentralData {
+    pub fn new() -> Self {
+        CentralData::default()
+    }
+}
+
+#[derive(Clone, Default)]
 struct SpatialData {
     geoHash  : String, // geohashはBase32でエンコードされるので
-    timestamp: SGXDateTime  // timestampではない
+    timestamp: u64     // timestampではない
 }
 
 impl SpatialData {
     pub fn new(u_geoHash: [u8; U8_GEODATA_SIZE], u_timestamp: [u8; U8_TIMESTAMP_SIZE]) -> Self {
         SpatialData {
             geoHash: parse_geohash_from_u8(u_geoHash),
-            timestamp: SGXDateTime::from_u8(u_timestamp)
+            timestamp: parse_timestamp_from_u8(u_timestamp)
         }
     }
 }
@@ -195,6 +206,7 @@ static P2P_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 static CENTRAL_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 
 static KEY_MANAGER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+static CENTRAL_DATA: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 
 fn get_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
 {
@@ -226,8 +238,24 @@ fn get_ref_key_manager() -> Option<&'static RefCell<KeyManager>>
     }
 }
 
+fn get_central_data_manager() -> Option<&'static RefCell<CentralData>>
+{
+    let ptr = CENTRAL_DATA.load(Ordering::SeqCst) as * mut RefCell<CentralData>;
+    if ptr.is_null() {
+        None
+    } else {
+        Some(unsafe { &* ptr })
+    }
+}
+
 fn parse_geohash_from_u8(u_geoHash: [u8; U8_GEODATA_SIZE]) -> String {
     return String::from_utf8(u_geoHash.to_vec()).unwrap();
+}
+
+fn parse_timestamp_from_u8(u_timestamp: [u8; U8_TIMESTAMP_SIZE]) -> u64 {
+    let s_timestamp = String::from_utf8(u_timestamp.to_vec()).unwrap();
+    let num: u64 = (&s_timestamp).parse().unwrap();
+    num
 }
 
 // TODO; 初期化と解放の関数をモードで分ける
@@ -250,7 +278,7 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
     // for Central
     // id = 2つまり，data[1]がサーバーのデータとして扱う
     let mut central_data = SetIntersection::new();
-    central_data.data[CENTRAL_IDX].hashdata = Vec::with_capacity(22000);
+    central_data.data[CENTRAL_IDX].hashdata = Vec::with_capacity(200);
     rand.fill_bytes(&mut central_data.salt);
     *salt = central_data.salt;
     
@@ -262,6 +290,11 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
     let key_manager_box = Box::new(RefCell::<KeyManager>::new(key_manager));
     let key_manager_ptr = Box::into_raw(key_manager_box);
     KEY_MANAGER.store(key_manager_ptr as *mut (), Ordering::SeqCst);
+
+    let central_data = CentralData::new();
+    let central_data_box = Box::new(RefCell::<CentralData>::new(central_data));
+    let central_data_ptr = Box::into_raw(central_data_box);
+    CENTRAL_DATA.store(central_data_ptr as *mut (), Ordering::SeqCst);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -286,29 +319,29 @@ fn uninitialize() {
 #[no_mangle]
 pub extern "C"
 fn uploadCentralData(
-    hashdata: * const u8,
-    hash_size: usize,
+    spdata: * const u8,
+    spdata_size: usize,
 ) -> sgx_status_t {
 
-    let hash_slice = unsafe {
-        slice::from_raw_parts(hashdata, hash_size as usize)
+    let sp_slice = unsafe {
+        slice::from_raw_parts(spdata, spdata_size as usize)
     };
 
-    if hash_slice.len() != hash_size {
+    if sp_slice.len() != spdata_size {
         return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
     }
 
-    let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
-    
-    for i in 0_usize..(hash_size/SGX_HASH_SIZE) {
-        let mut hash = [0_u8; SGX_HASH_SIZE];
-        hash.copy_from_slice(&hash_slice[i*SGX_HASH_SIZE..(i + 1)*SGX_HASH_SIZE]);
-        intersection.data[CENTRAL_IDX].hashdata.push(hash);
+    let mut central_data = get_central_data_manager().unwrap().borrow_mut();
+    let MERGED_DATA_SIZE = U8_GEODATA_SIZE+U8_TIMESTAMP_SIZE;
+    for i in 0_usize..(spdata_size/MERGED_DATA_SIZE) {
+        let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+        let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+        timestamp.copy_from_slice(&sp_slice[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+        geoHash.copy_from_slice(&sp_slice[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+        let data = SpatialData::new(geoHash, timestamp);
+        central_data.data.push(data);
     }
-    // maxまで確保してここでshrinkする
-    intersection.data[CENTRAL_IDX].hashdata.shrink_to_fit();
-    intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
-    
+    println!("{}", central_data.data[0].geoHash);
     sgx_status_t::SGX_SUCCESS
 }
 
@@ -746,10 +779,10 @@ fn judge_contact(
 
     let mut buffer: Vec<SpatialData> = Vec::with_capacity(1000);
     for i in 0_usize..(history_num) {
-        let mut geoHash = [0_u8; U8_GEODATA_SIZE];
         let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
-        geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_GEODATA_SIZE]);
-        timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_GEODATA_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+        let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+        timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+        geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
         let data = SpatialData::new(geoHash, timestamp);
         buffer.push(data);
     }
