@@ -8,6 +8,8 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <curl/curl.h>
+#include <jsoncpp/json/json.h>
 
 #include "Enclave.h"
 #include "UtilityFunctions.h"
@@ -43,6 +45,7 @@ public:
         size_t history_num,
         uint8_t *result_mac
     );
+    int loadDataFromBlockChain(string user_id);
     
 private:
     sgx_status_t initEnclave();

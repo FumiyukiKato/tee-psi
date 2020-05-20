@@ -5,6 +5,7 @@
 PsiService::PsiService() {
     Clocker clocker = Clocker("Total Request clocker");
     this->clocker = clocker;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
 PsiService::~PsiService() {
@@ -177,5 +178,42 @@ int PsiService::judgeContact(
         Log("[Service] judge contact failed, %d, %d!", ret, status);
         return -1;
     }
+    return 0;
+}
+
+int PsiService::loadDataFromBlockChain(string user_id) {
+    CURLcode res = CURLE_OK;
+    CURL *curl = curl_easy_init();
+    curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L );
+    
+    string params_json = "\\{\"selector\":\\{\"userId\":\"" + user_id + "\"\\}\\}"; // エスケープは無視
+    
+    // // 一応jsonを経由する
+    // Json::Reader reader;
+    // Json::Value value;
+    // reader.parse(params_json, value);
+    // Json::FastWriter fastWriter;
+    // string params = fastWriter.write(value);
+
+    string block_chain_url = "http://13.71.146.191:10000/api/queryusergeodata/" + params_json;
+    curl_easy_setopt( curl, CURLOPT_URL, block_chain_url.c_str());
+    
+    std::cout << block_chain_url.c_str() << std::endl;
+    
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2L); // 2秒しか待たない
+
+    res = curl_easy_perform(curl);
+    if (res != CURLE_OK) {
+        Log("curl_easy_perform() failed: %s", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+        return -1;
+    }
+    
+    std::cout << res << std::endl;
+    
+    curl_easy_cleanup(curl);
     return 0;
 }

@@ -183,7 +183,6 @@ int Main(char *filepath) {
   // - /report_infection
   //     - request_parameter
   //         - user_id(block-chain key): bytes(encrypted with shared key)
-  //         - token: string
   //     - response parameter
   //         - none
   //     - description
@@ -192,15 +191,18 @@ int Main(char *filepath) {
   CROW_ROUTE(app, "/report_infection")
       .methods("GET"_method)
   ([service_ptr](const crow::request& req){
-    auto x = crow::json::load(req.body);
+    auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
     
-    if (!x) {
+    if (!json_req || !json_req.has("user_id")) {
         res["error"] = "invalid json format";
         return crow::response(400, res);
     }
+
+    std::string user_id = json_req["user_id"].s();
+    int status = service_ptr->loadDataFromBlockChain(user_id);
     
-    res[""] = "ok";
+    res["message"] = "ok";
     return crow::response(200, res);
   });
 
