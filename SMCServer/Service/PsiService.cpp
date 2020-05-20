@@ -181,7 +181,12 @@ int PsiService::judgeContact(
     return 0;
 }
 
-int PsiService::loadDataFromBlockChain(string user_id) {
+int PsiService::loadDataFromBlockChain(
+    string user_id,
+    uint8_t *session_token,
+    uint8_t *gcm_tag,
+    uint8_t *sKey
+) {
     CURLcode res = CURLE_OK;
     CURL *curl = curl_easy_init();
     curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L );

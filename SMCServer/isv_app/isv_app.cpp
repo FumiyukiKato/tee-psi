@@ -183,6 +183,8 @@ int Main(char *filepath) {
   // - /report_infection
   //     - request_parameter
   //         - user_id(block-chain key): bytes(encrypted with shared key)
+  //         - sKey
+  //         - gcm_tag base64
   //     - response parameter
   //         - none
   //     - description
@@ -194,13 +196,41 @@ int Main(char *filepath) {
     auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
     
-    if (!json_req || !json_req.has("user_id")) {
+    if (!json_req || !json_req.has("user_id")
+        ||!json_req.has("session_token") || !json_req.has("gcm_tag")
+        ||!json_req.has("sKey")) {
         res["error"] = "invalid json format";
         return crow::response(400, res);
     }
 
+    uint8_t *session_token = NULL;
+    auto session_token_str = json_req["session_token"].s();
+    if (SESSIONTOKEN_SIZE != HexStringToByteArray(session_token_str, &session_token)) {
+        res["error"] = "invalid format session token";
+        return crow::response(400, res);
+    };
+
+    uint8_t *sKey = NULL;
+    auto sKey_str = json_req["sKey"].s();
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(sKey_str), &sKey)) {
+        res["error"] = "invalid format sKey";
+        return crow::response(400, res);
+    };
+
+    uint8_t *gcm_tag = NULL;
+    auto gcm_tag_str = json_req["gcm_tag"].s();
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(gcm_tag_str), &gcm_tag)) {
+        res["error"] = "invalid format gcm_tag";
+        return crow::response(400, res);
+    };
+
     std::string user_id = json_req["user_id"].s();
-    int status = service_ptr->loadDataFromBlockChain(user_id);
+    int status = service_ptr->loadDataFromBlockChain(
+        user_id,
+        session_token,
+        gcm_tag,
+        sKey
+    );
     
     res["message"] = "ok";
     return crow::response(200, res);
