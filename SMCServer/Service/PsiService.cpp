@@ -1,6 +1,4 @@
 #include "PsiService.h"
-#include "sample_libcrypto.h"
-#include "sha256.h"
 
 PsiService::PsiService() {
     Clocker clocker = Clocker("Total Request clocker");
@@ -41,53 +39,6 @@ void PsiService::start(string path) {
         return;
     }
     Log("[Service] Call initEnclave success");
-}
-
-int PsiService::loadHashedData(
-    const string file_path,
-    string psi_salt
-) {
-    //read file
-    uint8_t * file_data = NULL;
-    int file_size = 0;
-    
-    Log("[Service] load central data from : %s", this->data_path);
-
-    file_size = ReadFileToBuffer(file_path, &file_data);
-    if (file_size <= 0) {
-        return -1;
-    }
-    
-    char * p = (char*)file_data;
-    const char * s = p;
-    char* n = (char*)p;
-    for( ; p - s < file_size; p = n + 1) {
-        n = strchr(p, '\n');
-        if (n == NULL) {
-            //only one line or last line
-            n = p + strlen(p);
-        } else {
-            n[0] = '\0';
-        }
-        if (strlen(p) <= 0) {//ignore null line
-            continue;
-        }
-
-        sgx_sha256_hash_t report_data = {0};
-        Sha256 sha256;
-        sha256.update((uint8_t*)p, strlen(p));
-        sha256.update((uint8_t*)psi_salt.c_str(), psi_salt.size());
-        sha256.hash((sgx_sha256_hash_t * )&report_data);
-
-        string hash = ByteArrayToString(report_data, sizeof(sgx_sha256_hash_t));
-
-        this->hash_vector.push_back(hash);
-        this->data_map[hash] = p;
-    }
-    Log("[Service] complete load and hash central data, size: %d", this->hash_vector.size());
-    
-    std::sort(this->hash_vector.begin(), this->hash_vector.end());
-    return this->hash_vector.size();
 }
 
 sgx_status_t PsiService::initEnclave() {
@@ -152,35 +103,54 @@ int PsiService::judgeContact(
     return 0;
 }
 
+
+// for parsing curl request
+size_t jsonParseCallback(
+    const char* in,
+    std::size_t size,
+    std::size_t num,
+    std::string* out)
+{
+    const std::size_t totalBytes(size * num);
+    out->append(in, totalBytes);
+    return totalBytes;
+}
+
 int PsiService::loadDataFromBlockChain(
     string user_id,
     uint8_t *session_token,
     uint8_t *gcm_tag,
-    uint8_t *sKey
+    uint8_t *sKey,
+    uint8_t *data,
+    size_t *data_size
 ) {
     CURLcode res = CURLE_OK;
     CURL *curl = curl_easy_init();
     curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L );
-    
-    string params_json = "\\{\"selector\":\\{\"userId\":\"" + user_id + "\"\\}\\}"; // エスケープは無視
-    
-    // // 一応jsonを経由する
-    // Json::Reader reader;
-    // Json::Value value;
-    // reader.parse(params_json, value);
-    // Json::FastWriter fastWriter;
-    // string params = fastWriter.write(value);
 
-    string block_chain_url = "http://13.71.146.191:10000/api/queryusergeodata/" + params_json;
-    curl_easy_setopt( curl, CURLOPT_URL, block_chain_url.c_str());
-    
-    std::cout << block_chain_url.c_str() << std::endl;
-    
+    // build request
+    // url
+    std::ostringstream url;
+    std::ostringstream params_stream;
+    url << "http://13.71.146.191:10000/api/queryusergeodata/";
+    params_stream <<  "\{\"selector\":{\"userId\":\"" << user_id << "\"\}\}";
+    url << curl_easy_escape(curl, params_stream.str().c_str(), strlen(params_stream.str().c_str()));
+    curl_easy_setopt( curl, CURLOPT_URL, url.str().c_str() );
+
+    // header
     struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Content-Type: application/json");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 2L); // 2秒しか待たない
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L); // 2秒しか待たない
+    curl_easy_setopt(curl, CURLOPT_PROXY, "proxy.kuins.net:8080");
 
+    // response data
+    long httpCode(0);
+    std::unique_ptr<std::string> httpData(new std::string());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, jsonParseCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+
+    // request
     res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
         Log("curl_easy_perform() failed: %s", curl_easy_strerror(res));
@@ -188,8 +158,46 @@ int PsiService::loadDataFromBlockChain(
         return -1;
     }
     
-    std::cout << res << std::endl;
-    
+    // response
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
     curl_easy_cleanup(curl);
+
+    if (httpCode != 200) return -1;
+    
+    Json::Value jsonResponse;
+    Json::Reader jsonReader;
+    std::vector<uint8_t> encryptedGeoData;
+
+    // response例
+    // {
+    // "response": // なぜかstringで入っている意味が分からない
+    //    "[
+    //       {"createTime":20200510054040,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089780627","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510054141,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089841402","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510110606,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109246280","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510114545,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109405481","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"}
+    //    ]"
+    // }
+    if (jsonReader.parse(*httpData.get(), jsonResponse)) {
+        Json::Value resJson;
+        Json::Reader resReader;
+        resReader.parse(jsonResponse["response"].asString(), resJson);
+        std::cout << resJson[0]["gps"] << std::endl;
+//        gcm_tag = resJson[0]["gcm"].asString(); gcmタグの仕様が不明
+        if (resJson.size() <= 0) return -2;
+        for( int i=0; i< resJson.size(); i++) {
+            uint8_t *buffer;
+            int buffer_size = StringToByteArray(Base64decode(resJson[i]["gps"].asString()), &buffer);
+            encryptedGeoData.insert(encryptedGeoData.end(), &buffer[0], &buffer[buffer_size]);
+        }
+        data = &encryptedGeoData[0];
+        *data_size = (size_t) encryptedGeoData.size();
+        std::cout << *data_size << std::endl;
+    } else {
+        Log("[loadDataFromBlockChain] invalid data format.");
+        return -1;
+    }
+
+    return 0;
+}
+
+int PsiService::storeInfectedData(){
     return 0;
 }

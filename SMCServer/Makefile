@@ -76,10 +76,10 @@ else
 endif
 
 App_Cpp_Files := isv_app/isv_app.cpp ../Util/LogBase.cpp \
-../Util/UtilityFunctions.cpp ../Enclave/Enclave.cpp ../Util/Base64.cpp Service/PsiService.cpp isv_app/sha256.cpp
+../Util/UtilityFunctions.cpp ../Enclave/Enclave.cpp ../Util/Base64.cpp Middleware/AuthMiddleware.cpp Controller/PsiController.cpp Controller/DemoController.cpp Service/PsiService.cpp
 
 App_Include_Paths := -I../Util -Iservice_provider -I$(SGX_SDK)/include -I$(CUSTOM_EDL_PATH) -Iheaders -Iisv_app -I/usr/local/include -I../Enclave \
--Isample_libcrypto -IService
+-IService -IController -IMiddleware
 
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fPIC -Wno-attributes -D_EDL_STAT_H $(App_Include_Paths)
 
@@ -96,7 +96,7 @@ else
 endif
 
 App_Cpp_Flags := $(App_C_Flags) -std=c++11 -DEnableServer
-App_Link_Flags := -L$(SGX_LIBRARY_PATH) -l$(Urts_Library_Name) -L. -L./lib -lsample_libcrypto -Lsample_libcrypto -lsgx_ukey_exchange -lpthread -Wl,-rpath=$(CURDIR)/sample_libcrypto -Wl,-rpath=$(CURDIR) -llog4cpp -lboost_system -L/usr/lib -lssl -lcrypto -lboost_thread -lprotobuf -L /usr/local/lib -lsgx_ustdc -ljsoncpp -lcurl
+App_Link_Flags := -L$(SGX_LIBRARY_PATH) -l$(Urts_Library_Name) -L. -L./lib -lsgx_ukey_exchange -lpthread -Wl,-rpath=$(CURDIR)/sample_libcrypto -Wl,-rpath=$(CURDIR) -llog4cpp -lboost_system -L/usr/lib -lssl -lcrypto -lboost_thread -lprotobuf -L /usr/local/lib -lsgx_ustdc -ljsoncpp -lcurl
 
 ifneq ($(SGX_MODE), HW)
 	App_Link_Flags += -lsgx_uae_service_sim
@@ -191,11 +191,15 @@ isv_app/%.o: isv_app/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
 
-# ../MessageHandler/%.o: ../MessageHandler/%.cpp ../GeneralSettings.h
-# 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
-# 	@echo "CXX  <=  $<"
+Controller/%.o: Controller/%.cpp
+	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
+	@echo "CXX  <=  $<"
 
 Service/%.o: Service/%.cpp
+	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
+	@echo "CXX  <=  $<"
+
+Middleware/%.o: Middleware/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
 

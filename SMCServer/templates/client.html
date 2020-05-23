@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<title>Client</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<body>
+
+<div class="jumbotron text-center">
+    <h1>Infection Judege</h1>
+    </div>
+    
+    <div class="row">
+        <div class="container col-sm-2">
+
+        </div>
+        <div class="container col-sm-4">
+            <div class="container">
+                <button id="ajax_ra" class="btn btn-danger">REMOTE ATTESTATION</button>
+                <div class="loading" style="display: none;">
+                    verification...                   
+                </div>
+                <div class="request_ias_done" style="display: none;">
+                    Request IAS... Done
+                </div>
+                <strong><p id="session_key"></p></strong>
+            </div>
+        
+            <div class="container">
+                <div class="form-group">
+                    <h2>User Id</h2>
+                    <input type="text" id="user_id" name="uesr_id" class="form-control">
+                    <h2>Encrypted secret key</h2>
+                    <input type="text" id="sKey" name="secret" class="form-control">
+                    <h2>GCM_MAC</h2>
+                    <input type="text" name="mac" class="form-control">
+                </div>
+                <button id="ajax" class="btn btn-primary" disabled>INFECTION JUEGE</button>
+            </div>
+        </div>
+
+        <div class="container col-sm-6">
+            <div id="result">
+
+            </div>
+        </div>
+        <div class="container col-sm-2">
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        $(function(){
+            // Ajax button click
+            $('#ajax').on('click',function(){
+                $("#result").empty();
+                
+                $.ajax({
+                    url:'https://133.3.250.176/mock_api/judge_user?auth_token=B0702B28101BFCAA36965C6338688530',
+                    type:'GET',
+                    data:{
+                        'user_id':$('#user_id').val()
+                    }
+                })
+                // Ajaxリクエストが成功した時発動
+                .done( (data) => {
+                    if (data.result) {
+                        $("#result").append('<strong>decrypted</strong> result: <h2 style="color: red;">Positive</h2>');
+                        data.geo_result.forEach(r =>
+                            $("#result").append(`<p> suspicious geo data: <strong>${r}</strong> </p>`)
+                        )
+                    } else {
+                        $("#result").append('<strong>decrypted</strong> result: <h2 style="color: red;">Negative</h2>');
+                    }
+                })
+                // Ajaxリクエストが失敗した時発動
+                .fail( (data) => {
+                    console.log(data);
+                })
+                
+            });
+
+            $('#ajax_ra').on('click',function(){
+                $(".loading").show();
+                $.ajax({
+                    url:'https://133.3.250.176/mock_api/remote_attestation?auth_token=B0702B28101BFCAA36965C6338688530',
+                    type:'GET',
+                    data:{}
+                })
+                // Ajaxリクエストが成功した時発動
+                .done( (data) => {
+                    $("#ajax_ra").text("ATTESTATION DONE");
+                    $("#ajax_ra").prop("disabled", true);
+                    $("#ajax").prop("disabled", false);               
+                    $(".request_ias_done").show();
+                    $("#session_key").text(`session key: ${data.session_key}`);
+                    $(".loading").hide(); 
+                })
+                // Ajaxリクエストが失敗した時発動
+                .fail( (data) => {
+                    console.log(data);
+                    $(".loading").hide();
+                })
+                
+            });
+        });
+
+    </script>
+
+</body>
+</html>

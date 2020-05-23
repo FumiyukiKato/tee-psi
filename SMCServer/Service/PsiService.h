@@ -15,11 +15,6 @@
 #include "UtilityFunctions.h"
 #include "../GeneralSettings.h"
 
-enum ClientMode {
-    P2P,
-    CENTRAL
-};
-
 #define SESSIONTOKEN_SIZE 32
 #define SESSIONKEY_SIZE 16
 #define SALT_SIZE 32
@@ -49,13 +44,17 @@ public:
         string user_id,
         uint8_t *session_token,
         uint8_t *gcm_tag,
-        uint8_t *sKey
+        uint8_t *sKey,
+        uint8_t *data,
+        size_t *data_size
+    );
+    int storeInfectedData(
+
     );
     
 private:
     sgx_status_t initEnclave();
     uint32_t getExtendedEPID_GID();
-    int loadHashedData(const string file_path, string psi_salt);
 
 protected:
     Enclave *enclave = NULL;
