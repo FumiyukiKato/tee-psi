@@ -114,12 +114,13 @@ typedef struct ms_get_central_intersection_t {
 typedef struct ms_judge_contact_t {
 	sgx_status_t ms_retval;
 	uint8_t* ms_session_token;
+	uint8_t* ms_secret_key;
 	uint8_t* ms_gcm_tag;
-	uint8_t* ms_encrypted_history_data;
-	size_t ms_data_size;
+	uint8_t** ms_encrypted_history_data;
+	size_t ms_max_geo_data_size;
+	uint8_t** ms_geo_mac;
+	size_t ms_data_num;
 	uint8_t* ms_risk_level;
-	uint8_t* ms_result;
-	size_t ms_history_num;
 	uint8_t* ms_result_mac;
 } ms_judge_contact_t;
 
@@ -1269,29 +1270,33 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 	uint8_t* _tmp_session_token = ms->ms_session_token;
 	size_t _len_session_token = 32 * sizeof(uint8_t);
 	uint8_t* _in_session_token = NULL;
+	uint8_t* _tmp_secret_key = ms->ms_secret_key;
+	size_t _len_secret_key = 16 * sizeof(uint8_t);
+	uint8_t* _in_secret_key = NULL;
 	uint8_t* _tmp_gcm_tag = ms->ms_gcm_tag;
 	size_t _len_gcm_tag = 16 * sizeof(uint8_t);
 	uint8_t* _in_gcm_tag = NULL;
-	uint8_t* _tmp_encrypted_history_data = ms->ms_encrypted_history_data;
-	size_t _tmp_data_size = ms->ms_data_size;
-	size_t _len_encrypted_history_data = _tmp_data_size;
-	uint8_t* _in_encrypted_history_data = NULL;
+	uint8_t** _tmp_encrypted_history_data = ms->ms_encrypted_history_data;
+	size_t _tmp_max_geo_data_size = ms->ms_max_geo_data_size;
+	size_t _len_encrypted_history_data = _tmp_max_geo_data_size;
+	uint8_t** _in_encrypted_history_data = NULL;
+	uint8_t** _tmp_geo_mac = ms->ms_geo_mac;
+	size_t _tmp_data_num = ms->ms_data_num;
+	size_t _len_geo_mac = _tmp_data_num;
+	uint8_t** _in_geo_mac = NULL;
 	uint8_t* _tmp_risk_level = ms->ms_risk_level;
 	size_t _len_risk_level = 1 * sizeof(uint8_t);
 	uint8_t* _in_risk_level = NULL;
-	uint8_t* _tmp_result = ms->ms_result;
-	size_t _tmp_history_num = ms->ms_history_num;
-	size_t _len_result = _tmp_history_num;
-	uint8_t* _in_result = NULL;
 	uint8_t* _tmp_result_mac = ms->ms_result_mac;
 	size_t _len_result_mac = 16 * sizeof(uint8_t);
 	uint8_t* _in_result_mac = NULL;
 
 	CHECK_UNIQUE_POINTER(_tmp_session_token, _len_session_token);
+	CHECK_UNIQUE_POINTER(_tmp_secret_key, _len_secret_key);
 	CHECK_UNIQUE_POINTER(_tmp_gcm_tag, _len_gcm_tag);
 	CHECK_UNIQUE_POINTER(_tmp_encrypted_history_data, _len_encrypted_history_data);
+	CHECK_UNIQUE_POINTER(_tmp_geo_mac, _len_geo_mac);
 	CHECK_UNIQUE_POINTER(_tmp_risk_level, _len_risk_level);
-	CHECK_UNIQUE_POINTER(_tmp_result, _len_result);
 	CHECK_UNIQUE_POINTER(_tmp_result_mac, _len_result_mac);
 
 	//
@@ -1312,6 +1317,24 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 		}
 
 		if (memcpy_s(_in_session_token, _len_session_token, _tmp_session_token, _len_session_token)) {
+			status = SGX_ERROR_UNEXPECTED;
+			goto err;
+		}
+
+	}
+	if (_tmp_secret_key != NULL && _len_secret_key != 0) {
+		if ( _len_secret_key % sizeof(*_tmp_secret_key) != 0)
+		{
+			status = SGX_ERROR_INVALID_PARAMETER;
+			goto err;
+		}
+		_in_secret_key = (uint8_t*)malloc(_len_secret_key);
+		if (_in_secret_key == NULL) {
+			status = SGX_ERROR_OUT_OF_MEMORY;
+			goto err;
+		}
+
+		if (memcpy_s(_in_secret_key, _len_secret_key, _tmp_secret_key, _len_secret_key)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
@@ -1341,13 +1364,31 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 			status = SGX_ERROR_INVALID_PARAMETER;
 			goto err;
 		}
-		_in_encrypted_history_data = (uint8_t*)malloc(_len_encrypted_history_data);
+		_in_encrypted_history_data = (uint8_t**)malloc(_len_encrypted_history_data);
 		if (_in_encrypted_history_data == NULL) {
 			status = SGX_ERROR_OUT_OF_MEMORY;
 			goto err;
 		}
 
 		if (memcpy_s(_in_encrypted_history_data, _len_encrypted_history_data, _tmp_encrypted_history_data, _len_encrypted_history_data)) {
+			status = SGX_ERROR_UNEXPECTED;
+			goto err;
+		}
+
+	}
+	if (_tmp_geo_mac != NULL && _len_geo_mac != 0) {
+		if ( _len_geo_mac % sizeof(*_tmp_geo_mac) != 0)
+		{
+			status = SGX_ERROR_INVALID_PARAMETER;
+			goto err;
+		}
+		_in_geo_mac = (uint8_t**)malloc(_len_geo_mac);
+		if (_in_geo_mac == NULL) {
+			status = SGX_ERROR_OUT_OF_MEMORY;
+			goto err;
+		}
+
+		if (memcpy_s(_in_geo_mac, _len_geo_mac, _tmp_geo_mac, _len_geo_mac)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
@@ -1366,19 +1407,6 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 
 		memset((void*)_in_risk_level, 0, _len_risk_level);
 	}
-	if (_tmp_result != NULL && _len_result != 0) {
-		if ( _len_result % sizeof(*_tmp_result) != 0)
-		{
-			status = SGX_ERROR_INVALID_PARAMETER;
-			goto err;
-		}
-		if ((_in_result = (uint8_t*)malloc(_len_result)) == NULL) {
-			status = SGX_ERROR_OUT_OF_MEMORY;
-			goto err;
-		}
-
-		memset((void*)_in_result, 0, _len_result);
-	}
 	if (_tmp_result_mac != NULL && _len_result_mac != 0) {
 		if ( _len_result_mac % sizeof(*_tmp_result_mac) != 0)
 		{
@@ -1393,15 +1421,9 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 		memset((void*)_in_result_mac, 0, _len_result_mac);
 	}
 
-	ms->ms_retval = judge_contact(_in_session_token, _in_gcm_tag, _in_encrypted_history_data, _tmp_data_size, _in_risk_level, _in_result, _tmp_history_num, _in_result_mac);
+	ms->ms_retval = judge_contact(_in_session_token, _in_secret_key, _in_gcm_tag, _in_encrypted_history_data, _tmp_max_geo_data_size, _in_geo_mac, _tmp_data_num, _in_risk_level, _in_result_mac);
 	if (_in_risk_level) {
 		if (memcpy_s(_tmp_risk_level, _len_risk_level, _in_risk_level, _len_risk_level)) {
-			status = SGX_ERROR_UNEXPECTED;
-			goto err;
-		}
-	}
-	if (_in_result) {
-		if (memcpy_s(_tmp_result, _len_result, _in_result, _len_result)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
@@ -1415,10 +1437,11 @@ static sgx_status_t SGX_CDECL sgx_judge_contact(void* pms)
 
 err:
 	if (_in_session_token) free(_in_session_token);
+	if (_in_secret_key) free(_in_secret_key);
 	if (_in_gcm_tag) free(_in_gcm_tag);
 	if (_in_encrypted_history_data) free(_in_encrypted_history_data);
+	if (_in_geo_mac) free(_in_geo_mac);
 	if (_in_risk_level) free(_in_risk_level);
-	if (_in_result) free(_in_result);
 	if (_in_result_mac) free(_in_result_mac);
 	return status;
 }

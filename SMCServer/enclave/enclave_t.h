@@ -34,7 +34,7 @@ sgx_status_t add_hash_data(uint32_t id, sgx_ra_context_t context, uint32_t mode,
 sgx_status_t get_result_size(uint32_t id, uint32_t mode, size_t* len);
 sgx_status_t get_result(uint32_t id, sgx_ra_context_t context, uint8_t* result, size_t result_size, uint8_t result_mac[16]);
 sgx_status_t get_central_intersection(uint32_t id, sgx_ra_context_t context, uint8_t* result, size_t result_size, uint8_t result_mac[16]);
-sgx_status_t judge_contact(uint8_t session_token[32], uint8_t gcm_tag[16], uint8_t* encrypted_history_data, size_t data_size, uint8_t risk_level[1], uint8_t* result, size_t history_num, uint8_t result_mac[16]);
+sgx_status_t judge_contact(uint8_t session_token[32], uint8_t secret_key[16], uint8_t gcm_tag[16], uint8_t** encrypted_history_data, size_t max_geo_data_size, uint8_t** geo_mac, size_t data_num, uint8_t risk_level[1], uint8_t result_mac[16]);
 sgx_status_t sgx_ra_get_ga(sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t sgx_ra_proc_msg2_trusted(sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
 sgx_status_t sgx_ra_get_msg3_trusted(sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size);

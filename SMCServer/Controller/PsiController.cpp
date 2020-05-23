@@ -21,7 +21,7 @@ crow::response PsiController::dispatch_remote_attestation_mock(const crow::reque
     
     uint8_t sk[SESSIONKEY_SIZE];
     uint8_t token[SESSIONTOKEN_SIZE];
-    int status = this->service->remoteAttestationMock(token, sk);
+    int status = service->remoteAttestationMock(token, sk);
     if (status < 0) {
         res["error"] = "internal server error";
         return crow::response(500, res);
@@ -51,9 +51,9 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         return crow::response(400, res);
     };
 
-    uint8_t *sKey = NULL;
-    auto sKey_str = json_req["secret_key"].s();
-    if (GCMTAG_SIZE != StringToByteArray(Base64decode(sKey_str), &sKey)) {
+    uint8_t *secret_key = NULL;
+    auto secret_key_str = json_req["secret_key"].s();
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(secret_key_str), &secret_key)) {
         res["error"] = "invalid format secret_key";
         return crow::response(400, res);
     };
@@ -65,34 +65,14 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         return crow::response(400, res);
     };
 
-    uint8_t *data;
-    size_t data_size;
-    uint8_t *load_data_gcm_tag;
-    int status = this->service->loadDataFromBlockChain(
-        user_id,
-        session_token,
-        load_data_gcm_tag,
-        sKey,
-        data,
-        &data_size
-    );
-    if (status < 0) {
-        res["error"] = "curl error";
-        return crow::response(500, res);
-    }
-    
-    uint8_t result[data_size];
-    size_t history_num = data_size / 19; // data size
     uint8_t risk_level[E_RISKLEVEL_SIZE];
     uint8_t result_mac[GCMTAG_SIZE] = {0};
-    status = this->service->judgeContact(
+    int status = service->judgeContact(
+        user_id,
         session_token,
+        secret_key,
         gcm_tag,
-        data,
-        data_size,
         risk_level,
-        result,
-        history_num,
         result_mac
     );
     if (status < 0) {
@@ -114,7 +94,7 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
     
     if (!json_req || !json_req.has("user_id")
         ||!json_req.has("session_token") || !json_req.has("gcm_tag")
-        ||!json_req.has("sKey")) {
+        ||!json_req.has("secret_key")) {
         res["error"] = "invalid json format";
         return crow::response(400, res);
     }
@@ -128,10 +108,10 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
         return crow::response(400, res);
     };
 
-    uint8_t *sKey = NULL;
-    auto sKey_str = json_req["sKey"].s();
-    if (GCMTAG_SIZE != StringToByteArray(Base64decode(sKey_str), &sKey)) {
-        res["error"] = "invalid format sKey";
+    uint8_t *secret_key = NULL;
+    auto secret_key_str = json_req["secret_key"].s();
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(secret_key_str), &secret_key)) {
+        res["error"] = "invalid format secret_key";
         return crow::response(400, res);
     };
 
@@ -142,21 +122,12 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
         return crow::response(400, res);
     };
 
-    uint8_t *data;
-    size_t data_size;
-    int status = this->service->loadDataFromBlockChain(
+    int status = service->loadAndStoreInfectedData(
         user_id,
         session_token,
-        gcm_tag,
-        sKey,
-        data,
-        &data_size
+        secret_key,
+        gcm_tag
     );
-
-    status = this->service->storeInfectedData(
-
-    );
-
 
     // モックのためにログを吐き出す
     this->logs->push_back(getNow() + string("[Private Contact Judegment] Loading user's encrypted data from Blockchain"));

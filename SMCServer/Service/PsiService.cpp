@@ -1,8 +1,6 @@
 #include "PsiService.h"
 
 PsiService::PsiService() {
-    Clocker clocker = Clocker("Total Request clocker");
-    this->clocker = clocker;
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
@@ -10,10 +8,8 @@ PsiService::~PsiService() {
     delete this->enclave;
 }
 
-
 void PsiService::start(string path) {
     Log("[Service] enclave init");
-    this->data_path = path;
 
     sgx_status_t ret = this->initEnclave();
     if (SGX_SUCCESS != ret) {
@@ -73,29 +69,36 @@ int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
 }
 
 int PsiService::judgeContact(
-    uint8_t *session_token, 
-    uint8_t *gcm_tag, 
-    uint8_t *encrypted_history_data,
-    size_t data_size,
+    string user_id,
+    uint8_t *session_token,
+    uint8_t *secret_key,
+    uint8_t *gcm_tag,
     uint8_t *risk_level,
-    uint8_t *result,
-    size_t history_num,
     uint8_t *result_mac
 ) {
     Log("[Service] judge contact start");
+    
+    HistoryData history;
+    int l_ret = loadDataFromBlockChain(user_id, &history);
+    if (l_ret < 0) {
+        return -1;
+    }
+    
     sgx_status_t status;
     sgx_status_t ret = judge_contact(
         this->enclave->getID(),
         &status,
         session_token,
+        secret_key,
         gcm_tag,
-        encrypted_history_data,
-        data_size,
+        &history.encrypted_data[0].data, // TODO;
+        history.max_data_size,
+        &history.encrypted_data[0].gcm_tag,
+        history.data_num,
         risk_level,
-        result,
-        history_num,
         result_mac
     );
+    
     if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
         Log("[Service] judge contact failed, %d, %d!", ret, status);
         return -1;
@@ -103,9 +106,8 @@ int PsiService::judgeContact(
     return 0;
 }
 
-
 // for parsing curl request
-size_t jsonParseCallback(
+size_t _jsonParseCallback(
     const char* in,
     std::size_t size,
     std::size_t num,
@@ -116,13 +118,12 @@ size_t jsonParseCallback(
     return totalBytes;
 }
 
+// params:
+//   data: 暗号化されたデータのリストを受け取る
+//   
 int PsiService::loadDataFromBlockChain(
     string user_id,
-    uint8_t *session_token,
-    uint8_t *gcm_tag,
-    uint8_t *sKey,
-    uint8_t *data,
-    size_t *data_size
+    HistoryData *history
 ) {
     CURLcode res = CURLE_OK;
     CURL *curl = curl_easy_init();
@@ -147,7 +148,7 @@ int PsiService::loadDataFromBlockChain(
     // response data
     long httpCode(0);
     std::unique_ptr<std::string> httpData(new std::string());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, jsonParseCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _jsonParseCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
 
     // request
@@ -166,7 +167,6 @@ int PsiService::loadDataFromBlockChain(
     
     Json::Value jsonResponse;
     Json::Reader jsonReader;
-    std::vector<uint8_t> encryptedGeoData;
 
     // response例
     // {
@@ -182,14 +182,22 @@ int PsiService::loadDataFromBlockChain(
         std::cout << resJson[0]["gps"] << std::endl;
 //        gcm_tag = resJson[0]["gcm"].asString(); gcmタグの仕様が不明
         if (resJson.size() <= 0) return -2;
+        size_t max_data_size = 0;
         for( int i=0; i< resJson.size(); i++) {
-            uint8_t *buffer;
-            int buffer_size = StringToByteArray(Base64decode(resJson[i]["gps"].asString()), &buffer);
-            encryptedGeoData.insert(encryptedGeoData.end(), &buffer[0], &buffer[buffer_size]);
+            uint8_t *geo_buffer;
+            int geo_buffer_size = StringToByteArray(Base64decode(resJson[i]["gps"].asString()), &geo_buffer);
+            
+            // SGXにロードする際に使うので最大のデータサイズを求めておく
+            if(geo_buffer_size > max_data_size) max_data_size = geo_buffer_size;
+
+            uint8_t *gcm_tag_buffer;
+            StringToByteArray(Base64decode(resJson[i]["id"].asString()), &gcm_tag_buffer); // TODO; gcm_tagの代わりにidを構造体に入れとく
+
+            GeoData geo_data = { geo_buffer, gcm_tag_buffer };
+            history->encrypted_data.push_back(geo_data);
         }
-        data = &encryptedGeoData[0];
-        *data_size = (size_t) encryptedGeoData.size();
-        std::cout << *data_size << std::endl;
+        history->data_num = history->encrypted_data.size();
+        history->max_data_size = max_data_size;
     } else {
         Log("[loadDataFromBlockChain] invalid data format.");
         return -1;
@@ -198,6 +206,17 @@ int PsiService::loadDataFromBlockChain(
     return 0;
 }
 
-int PsiService::storeInfectedData(){
+int PsiService::loadAndStoreInfectedData(
+    string user_id,
+    uint8_t *session_token,
+    uint8_t *gcm_tag,
+    uint8_t *secret_key
+){
+    HistoryData history;
+    int status = loadDataFromBlockChain(user_id, &history);
+    if(status < 0) {
+        return -1;
+    }
+
     return 0;
 }

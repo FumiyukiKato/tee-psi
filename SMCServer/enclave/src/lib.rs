@@ -78,6 +78,8 @@ const GEOHASH_DIDIT: usize = 10;
 const U8_GEODATA_SIZE: usize = 9;
 const U8_TIMESTAMP_SIZE: usize = 10;
 
+const CLIENT_SECRET_KEY_SIZE: usize = 16;
+
 #[derive(Clone, Default)]
 struct SetIntersection {
     salt: [u8; SGX_SALT_SIZE],
@@ -736,12 +738,13 @@ fn get_result(id: u32,
 pub extern "C"
 fn judge_contact( 
     session_token         : &[u8; SESSIONTOKEN_SIZE],
+    secret_key            : &[u8; CLIENT_SECRET_KEY_SIZE],
     gcm_tag               : &[u8; SGX_MAC_SIZE],
-    encrypted_history_data: * const u8,
-    data_size             : usize,
+    encrypted_history_data: Vec<*const u8>,
+    max_geo_data_size     : usize,
+    geo_mac               : Vec<[u8; SGX_MAC_SIZE]>,
+    data_num              : usize,
     risk_level            : &mut [u8; RISKLEVEL_RESULT],
-    result                : * mut u8,
-    history_num           : usize,
     result_mac            : &mut [u8; SGX_MAC_SIZE]
 ) -> sgx_status_t {
 
@@ -754,37 +757,42 @@ fn judge_contact(
     let intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
     
     let MERGED_DATA_SIZE: usize = U8_GEODATA_SIZE + U8_TIMESTAMP_SIZE;
-    let array_size: usize = history_num * MERGED_DATA_SIZE;
-
-    let history_data_slice = unsafe {
-        slice::from_raw_parts(encrypted_history_data, array_size as usize)
-    };
-    if history_data_slice.len() != array_size {
-        return sgx_status_t::SGX_ERROR_UNEXPECTED;
-    }
-
-    let mut decrypted: Vec<u8> = vec![0; array_size];
     let iv = [0; SGX_AESGCM_IV_SIZE];
     let aad:[u8; 0] = [0; 0];
-    let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
-                                          &history_data_slice,
-                                          &iv,
-                                          &aad,
-                                          gcm_tag,
-                                          decrypted.as_mut_slice());
-    match ret {
-        Ok(()) => {},
-        Err(x) => return x,
-    };
+    
+    let mut buffer: Vec<SpatialData> = Vec::with_capacity(10000);
+    
+    for i in 0_usize..(data_num) {
+        let array_size: usize = max_geo_data_size;
 
-    let mut buffer: Vec<SpatialData> = Vec::with_capacity(1000);
-    for i in 0_usize..(history_num) {
-        let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
-        let mut geoHash = [0_u8; U8_GEODATA_SIZE];
-        timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
-        geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
-        let data = SpatialData::new(geoHash, timestamp);
-        buffer.push(data);
+        let history_data_slice = unsafe {
+            slice::from_raw_parts(encrypted_history_data[i], array_size as usize)
+        };
+        if history_data_slice.len() != array_size {
+            return sgx_status_t::SGX_ERROR_UNEXPECTED;
+        }
+        let gcm_tag = geo_mac[i];
+
+        let mut decrypted: Vec<u8> = vec![0; array_size];
+        let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
+                                            &history_data_slice,
+                                            &iv,
+                                            &aad,
+                                            &gcm_tag,
+                                            decrypted.as_mut_slice());
+        match ret {
+            Ok(()) => {},
+            Err(x) => return x,
+        };
+
+        for i in 0_usize..(array_size/MERGED_DATA_SIZE) {
+            let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+            let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+            timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+            geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+            let data = SpatialData::new(geoHash, timestamp);
+            buffer.push(data);
+        }
     }
 
     let mock_risk_level: &[u8] = &[ sk_key[0] % 3 as u8 ]; // mock

@@ -22,6 +22,17 @@
 using namespace std;
 using namespace util;
 
+typedef struct GeoData {
+    uint8_t *data;
+    uint8_t *gcm_tag;
+} GeoData;
+
+typedef struct HistoryData {
+    vector<GeoData> encrypted_data;
+    size_t data_num;
+    size_t max_data_size;
+} HistoryData;
+
 class PsiService {
 
 public:
@@ -31,26 +42,15 @@ public:
     void start(string filepath);
     int remoteAttestationMock(uint8_t *token, uint8_t *sk);    
     int judgeContact(
-        uint8_t *session_token,
-        uint8_t *gcm_tag,
-        uint8_t *encrypted_history_data,
-        size_t data_size,
-        uint8_t *risk_level,
-        uint8_t *result,
-        size_t history_num,
-        uint8_t *result_mac
-    );
-    int loadDataFromBlockChain(
         string user_id,
         uint8_t *session_token,
+        uint8_t *secret_key,
         uint8_t *gcm_tag,
-        uint8_t *sKey,
-        uint8_t *data,
-        size_t *data_size
+        uint8_t *risk_level,
+        uint8_t *result_mac
     );
-    int storeInfectedData(
-
-    );
+    int loadDataFromBlockChain(string user_id, HistoryData *encryptedGeoData);
+    int loadAndStoreInfectedData(string user_id, uint8_t *session_token, uint8_t *secret_key, uint8_t *gcm_tag);
     
 private:
     sgx_status_t initEnclave();
@@ -58,13 +58,6 @@ private:
 
 protected:
     Enclave *enclave = NULL;
-
-private:
-    int busy_retry_time = 4;
-    string data_path;
-    std::vector<string> hash_vector;
-    std::map<string, string> data_map;
-    Clocker clocker;
 
 };
 
