@@ -40,8 +40,6 @@ public:
     virtual ~Enclave();
     sgx_status_t createEnclave();
     sgx_enclave_id_t getID();
-    sgx_status_t raInit(sgx_ra_context_t *ra_context);
-    void raClose(sgx_ra_context_t ra_context);
 
 private:
     Enclave();
