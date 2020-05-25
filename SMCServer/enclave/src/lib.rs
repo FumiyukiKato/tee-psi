@@ -258,7 +258,6 @@ fn remote_attestation_mock(
     rand.fill_bytes(sk);
     
     let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
-    println!("{}", get_key_from_vec(token));
     key_manager.map.insert(get_key_from_vec(token), *sk);
     
     sgx_status_t::SGX_SUCCESS
@@ -269,7 +268,7 @@ fn decrypt_secret_key(
     encrypted_secret_key  : &[u8],
     secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
     decrypted             : &mut Vec<u8>
-) {
+) -> i8 {
     let iv = [0; SGX_AESGCM_IV_SIZE];
     let aad:[u8; 0] = [0; 0];
     
@@ -283,58 +282,60 @@ fn decrypt_secret_key(
     );
 
     match ret {
-        Ok(()) => {},
-        Err(x) => { println!("decrypt_secret_key error {}", x) },
+        Ok(()) => { return 0 },
+        Err(x) => { println!("[SGX] decrypt_secret_key error {}", x); return -1 },
     };
 }
 
-// fn decrypt_encrypted_client_data(
-//     secret_key            : &[u8; CLIENT_SECRET_KEY_SIZE],
-//     encrypted_history_data: Vec<Vec<u8>>,
-//     geo_mac               : Vec<[u8; SGX_MAC_SIZE]>,
-//     data_num              : usize,
-//     target_history        : &mut Vec<SpatialData>
-// ) {
-//     let MERGED_DATA_SIZE: usize = U8_GEODATA_SIZE + U8_TIMESTAMP_SIZE;
-//     let iv = [0; SGX_AESGCM_IV_SIZE];
-//     let aad:[u8; 0] = [0; 0];
+fn decrypt_encrypted_client_data(
+    secret_key            : &[u8; CLIENT_SECRET_KEY_SIZE],
+    encrypted_history_data: &[u8],    
+    gcm_tag               : &[u8],    
+    size_list             : &[usize],
+    target_history        : &mut Vec<SpatialData>
+) -> i8 {
+    let MERGED_DATA_SIZE: usize = U8_GEODATA_SIZE + U8_TIMESTAMP_SIZE;
+    let iv = [0; SGX_AESGCM_IV_SIZE];
+    let aad:[u8; 0] = [0; 0];
     
-//     for i in 0_usize..(data_num) {
-//         println!("{}", i);
-//         let array_size: usize = encrypted_history_data[i].len();
+    let mut cursor = 0;
+    for i in 0_usize..(size_list.len()) {
+        // println!("[SGX] {} th data decryption", i);
+        let size: usize = size_list[i];
+        
+        let this_history_data = &encrypted_history_data[cursor..cursor+size];
+        cursor = cursor+size; // 忘れないようにここで更新
+        let mut this_gcm_tag: [u8; SGX_MAC_SIZE] = [0; SGX_MAC_SIZE];
+        this_gcm_tag.copy_from_slice(&gcm_tag[i*SGX_MAC_SIZE..(i+1)*SGX_MAC_SIZE]);
+        
+        // println!("[SGX] this_history_data {:?}", this_history_data);
+        // println!("[SGX] this_gcm_tag {:?}", this_gcm_tag);
 
-//         let history_data_slice = unsafe {
-//             slice::from_raw_parts(encrypted_history_data[i], array_size as usize)
-//         };
-//         if history_data_slice.len() != array_size {
-//             return sgx_status_t::SGX_ERROR_UNEXPECTED;
-//         }
-//         let gcm_tag = geo_mac[i];
+        let mut decrypted: Vec<u8> = vec![0; size];
+        let ret = rsgx_rijndael128GCM_decrypt(
+            secret_key,
+            &this_history_data,
+            &iv,
+            &aad,
+            &this_gcm_tag,
+            decrypted.as_mut_slice()
+        );
+        match ret {
+            Ok(()) => {},
+            Err(x) => { println!("[SGX] decrypt_encrypted_client_data error {}", x); return -1 },
+        };
 
-//         let mut decrypted: Vec<u8> = vec![0; array_size];
-//         let ret = rsgx_rijndael128GCM_decrypt(
-//             secret_key,
-//             &history_data_slice,
-//             &iv,
-//             &aad,
-//             &gcm_tag,
-//             decrypted.as_mut_slice()
-//         );
-//         match ret {
-//             Ok(()) => {},
-//             Err(x) => { println!("decrypt_encrypted_client_data error {}", x) },
-//         };
-
-//         for i in 0_usize..(array_size/MERGED_DATA_SIZE) {
-//             let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
-//             let mut geoHash = [0_u8; U8_GEODATA_SIZE];
-//             timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
-//             geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
-//             let data = SpatialData::new(geoHash, timestamp);
-//             target_history.push(data);
-//         }
-//     }
-// }
+        for i in 0_usize..(size/MERGED_DATA_SIZE) {
+            let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+            let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+            timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+            geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+            let data = SpatialData::new(geoHash, timestamp);
+            target_history.push(data);
+        }
+    }
+    return 0;
+}
 
 #[no_mangle]
 pub extern "C"
@@ -350,7 +351,6 @@ fn store_infected_data(
     data_num              : usize
 ) -> sgx_status_t {
 
-    println!("start sgx");
     let history_data_slice = unsafe {
         slice::from_raw_parts(encrypted_history_data, toal_size as usize)
     };
@@ -373,7 +373,7 @@ fn store_infected_data(
     }
 
     
-    // session key
+    // get session key
     let key_manager = get_ref_key_manager().unwrap().borrow_mut();
     let session_key: &sgx_aes_gcm_128bit_key_t = 
         match key_manager.map.get(&get_key_from_vec(session_token)) {
@@ -381,27 +381,35 @@ fn store_infected_data(
             None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
         };
     
-    println!("{:?}", encrypted_secret_key);
-    println!("{:?}", secret_key_gcm_tag);
-    println!("{:?}", session_key);
-    let mut secret_key: Vec<u8> = vec![0; CLIENT_SECRET_KEY_SIZE];
-    decrypt_secret_key(session_key, encrypted_secret_key, secret_key_gcm_tag, &mut secret_key);
-    println!("{:?}", secret_key);
+    // decrypt secret key
+    let mut tmp_secret_key: Vec<u8> = vec![0; CLIENT_SECRET_KEY_SIZE];
+    let mut ret = decrypt_secret_key(
+        session_key,
+        encrypted_secret_key,
+        secret_key_gcm_tag,
+        &mut tmp_secret_key
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    let mut secret_key: [u8; CLIENT_SECRET_KEY_SIZE] = [0; CLIENT_SECRET_KEY_SIZE];
+    secret_key.copy_from_slice(&tmp_secret_key.as_slice());
+    // println!("[SGX] secret key: {:?}", secret_key);
 
-    // let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
-    // println!("{:?}", encrypted_history_data);
-    // decrypt_encrypted_client_data(
-    //     secret_key,
-    //     encrypted_history_data,
-    //     geo_mac,
-    //     data_num
-    //     &target_history
-    // );
+    // decrypt client data
+    let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
+    ret = decrypt_encrypted_client_data(
+        &secret_key, history_data_slice,
+        gcm_tag_slice,
+        size_list_slice,
+        &mut target_history
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    // println!("[SGX] timestamp {:?}", target_history[0].timestamp);
+    // println!("[SGX] geohash {:?}", target_history[0].geoHash);
 
-    // let mut central_data = get_ref_central_data().unwrap().borrow_mut();
-    // central_data.data.append(&mut target_history);
-    // // 追加のたびにソートする
-    // sort_by_geohash(&mut central_data.data);
+    let mut central_data = get_ref_central_data().unwrap().borrow_mut();
+    central_data.data.append(&mut target_history);
+    // 追加のたびにソートする
+    sort_by_geohash(&mut central_data.data);
     
     sgx_status_t::SGX_SUCCESS
 }

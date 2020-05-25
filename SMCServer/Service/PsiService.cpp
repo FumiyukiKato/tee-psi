@@ -247,18 +247,6 @@ int PsiService::loadAndStoreInfectedData(
     size_t size_list_buffer[total_num];
     history.size_list_as_array(size_list_buffer, total_num);
 
-    std::cout << total_size << std::endl;
-    std::cout << ByteArrayToString(geo_data_buffer, total_size) << std::endl;
-    std::cout << gcm_tag_total_size << std::endl;
-    std::cout << ByteArrayToString(gcm_tag_buffer, gcm_tag_total_size) << std::endl;
-    std::cout << total_num << std::endl;
-    for (int i=0; i < total_num; i++ ) { 
-        std::cout << size_list_buffer[i] << std::endl;
-    }
-
-    std::cout << ByteArrayToString(encrypted_secret_key, 16) << std::endl;
-    std::cout << ByteArrayToString(secret_key_gcm_tag, 16) << std::endl;
-
     sgx_status_t status;
     sgx_status_t ret = store_infected_data(
         this->enclave->getID(),
