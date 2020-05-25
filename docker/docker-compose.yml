@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: baiduxlab/sgx-rust
+    build: .
     devices:
       - /dev/isgx
     volumes:
@@ -13,3 +13,5 @@ services:
     env_file: ${TEE_PSI}/.env
     command: /root/sgx/init.sh
     working_dir: /root/sgx/samplecode/tee-psi
+    ports:
+      - "50001:8080"

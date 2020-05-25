@@ -44,6 +44,9 @@ use std::vec::Vec;
 use std::cell::RefCell;
 use std::sync::atomic::{AtomicPtr, Ordering};
 use std::boxed::Box;
+use std::collections::HashMap;
+use std::string::String;
+use std::string::ToString;
 
 const G_SP_PUB_KEY: sgx_ec256_public_t = sgx_ec256_public_t {
     gx : [0x72, 0x12, 0x8a, 0x7a, 0x17, 0x52, 0x6e, 0xbf,
@@ -68,34 +71,63 @@ const CLIENT_ID: u32 = 1;
 const CLIENT_IDX: usize = 0;
 const CENTRAL_IDX: usize = 1;
 
-#[derive(Clone, Default)]
-struct SetIntersection {
-    salt: [u8; SGX_SALT_SIZE],
-    data: [HashDataBuffer; CLIENT_MAX_NUMBER],
-    number: u32,
-}
+const SESSIONTOKEN_SIZE: usize = 32;
+const RISKLEVEL_RESULT: usize = 1;
+
+const GEOHASH_DIDIT: usize = 10;
+const U8_GEODATA_SIZE: usize = 9;
+const U8_TIMESTAMP_SIZE: usize = 10;
+
+const CLIENT_SECRET_KEY_SIZE: usize = 16;
 
 #[derive(Clone, Default)]
-struct HashDataBuffer {
-    hashdata: Vec<[u8; SGX_HASH_SIZE]>,
-    result: Vec<u8>,
-    state: u32,
+struct KeyManager {
+    map: HashMap<String, sgx_aes_gcm_128bit_key_t>
 }
 
-impl SetIntersection {
+impl KeyManager {
     pub fn new() -> Self {
-        SetIntersection::default()
+        KeyManager::default()
     }
 }
 
-// for PSP PSI
-static P2P_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
-// for Central PSI
-static CENTRAL_GLOBAL_HASH_BUFFER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+#[derive(Clone, Default)]
+struct CentralData {
+    data: Vec<SpatialData>
+}
 
-fn get_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
+impl CentralData {
+    pub fn new() -> Self {
+        CentralData::default()
+    }
+}
+
+#[derive(Debug, Clone, Default, Eq, Ord, PartialEq, PartialOrd, Copy)]
+struct SpatialData {
+    geoHash  : [u8; U8_GEODATA_SIZE], // 普通にu8配列の方が良さそう
+    timestamp: u64     // unix epochは本来u32で表現できるけど
+}
+
+impl SpatialData {
+    pub fn new(u_geoHash: [u8; U8_GEODATA_SIZE], u_timestamp: [u8; U8_TIMESTAMP_SIZE]) -> Self {
+        SpatialData {
+            geoHash: u_geoHash,
+            timestamp: parse_timestamp_from_u8(u_timestamp)
+        }
+    }
+}
+
+// 昇順ソート
+fn sort_by_geohash(sp_data: &mut Vec<SpatialData>) {
+    sp_data.sort_by(|a, b| a.geoHash.cmp(&b.geoHash));
+}
+
+static KEY_MANAGER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+static CENTRAL_DATA: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+
+fn get_ref_key_manager() -> Option<&'static RefCell<KeyManager>>
 {
-    let ptr = P2P_GLOBAL_HASH_BUFFER.load(Ordering::SeqCst) as * mut RefCell<SetIntersection>;
+    let ptr = KEY_MANAGER.load(Ordering::SeqCst) as * mut RefCell<KeyManager>;
     if ptr.is_null() {
         None
     } else {
@@ -103,9 +135,9 @@ fn get_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
     }
 }
 
-fn get_central_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
+fn get_ref_central_data() -> Option<&'static RefCell<CentralData>>
 {
-    let ptr = CENTRAL_GLOBAL_HASH_BUFFER.load(Ordering::SeqCst) as * mut RefCell<SetIntersection>;
+    let ptr = CENTRAL_DATA.load(Ordering::SeqCst) as * mut RefCell<CentralData>;
     if ptr.is_null() {
         None
     } else {
@@ -113,34 +145,30 @@ fn get_central_ref_hash_buffer() -> Option<&'static RefCell<SetIntersection>>
     }
 }
 
+// 使わないことにした
+fn parse_geohash_from_u8(u_geoHash: [u8; U8_GEODATA_SIZE]) -> String {
+    return String::from_utf8(u_geoHash.to_vec()).unwrap();
+}
+
+fn parse_timestamp_from_u8(u_timestamp: [u8; U8_TIMESTAMP_SIZE]) -> u64 {
+    let s_timestamp = String::from_utf8(u_timestamp.to_vec()).unwrap();
+    let num: u64 = (&s_timestamp).parse().unwrap();
+    num
+}
 
 // TODO; 初期化と解放の関数をモードで分ける
 #[no_mangle]
 pub extern "C"
 fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
+    let key_manager = KeyManager::new();
+    let key_manager_box = Box::new(RefCell::<KeyManager>::new(key_manager));
+    let key_manager_ptr = Box::into_raw(key_manager_box);
+    KEY_MANAGER.store(key_manager_ptr as *mut (), Ordering::SeqCst);
 
-    // for P2P
-    let mut data = SetIntersection::new();
-    let mut rand = match StdRng::new() {
-        Ok(rng) => rng,
-        Err(_) => { return sgx_status_t::SGX_ERROR_UNEXPECTED; },
-    };
-    rand.fill_bytes(&mut data.salt);
-
-    let data_box = Box::new(RefCell::<SetIntersection>::new(data));
-    let ptr = Box::into_raw(data_box);
-    P2P_GLOBAL_HASH_BUFFER.store(ptr as *mut (), Ordering::SeqCst);
-    
-    // for Central
-    // id = 2つまり，data[1]がサーバーのデータとして扱う
-    let mut central_data = SetIntersection::new();
-    central_data.data[CENTRAL_IDX].hashdata = Vec::with_capacity(22000);
-    rand.fill_bytes(&mut central_data.salt);
-    *salt = central_data.salt;
-    
-    let central_data_box = Box::new(RefCell::<SetIntersection>::new(central_data));
-    let central_ptr = Box::into_raw(central_data_box);
-    CENTRAL_GLOBAL_HASH_BUFFER.store(central_ptr as *mut (), Ordering::SeqCst);
+    let central_data = CentralData::new();
+    let central_data_box = Box::new(RefCell::<CentralData>::new(central_data));
+    let central_data_ptr = Box::into_raw(central_data_box);
+    CENTRAL_DATA.store(central_data_ptr as *mut (), Ordering::SeqCst);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -148,453 +176,414 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
 #[no_mangle]
 pub extern "C"
 fn uninitialize() {
-
-    let ptr = P2P_GLOBAL_HASH_BUFFER.swap(0 as * mut (), Ordering::SeqCst) as * mut RefCell<SetIntersection>;
-    if ptr.is_null() {
-       return;
-    }
-    let _ = unsafe { Box::from_raw(ptr) };
-
-    let central_ptr = CENTRAL_GLOBAL_HASH_BUFFER.swap(0 as * mut (), Ordering::SeqCst) as * mut RefCell<SetIntersection>;
-    if central_ptr.is_null() {
+    let key_manager_ptr = KEY_MANAGER.swap(0 as * mut (), Ordering::SeqCst) as * mut RefCell<KeyManager>;
+    if key_manager_ptr.is_null() {
         return;
     }
-    let _ = unsafe { Box::from_raw(central_ptr) };
+    let _ = unsafe { Box::from_raw(key_manager_ptr) };
+
+    let central_data_ptr = CENTRAL_DATA.swap(0 as * mut (), Ordering::SeqCst) as * mut RefCell<CentralData>;
+    if central_data_ptr.is_null() {
+        return;
+    }
+    let _ = unsafe { Box::from_raw(central_data_ptr) };
 }
 
 #[no_mangle]
 pub extern "C"
 fn uploadCentralData(
-    hashdata: * const u8,
-    hash_size: usize,
+    spdata: * const u8,
+    spdata_size: usize,
 ) -> sgx_status_t {
 
-    let hash_slice = unsafe {
-        slice::from_raw_parts(hashdata, hash_size as usize)
+    let sp_slice = unsafe {
+        slice::from_raw_parts(spdata, spdata_size as usize)
     };
 
-    if hash_slice.len() != hash_size {
+    if sp_slice.len() != spdata_size {
         return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
     }
 
-    let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
-    
-    for i in 0_usize..(hash_size/SGX_HASH_SIZE) {
-        let mut hash = [0_u8; SGX_HASH_SIZE];
-        hash.copy_from_slice(&hash_slice[i*SGX_HASH_SIZE..(i + 1)*SGX_HASH_SIZE]);
-        intersection.data[CENTRAL_IDX].hashdata.push(hash);
+    let mut central_data = get_ref_central_data().unwrap().borrow_mut();
+    let MERGED_DATA_SIZE = U8_GEODATA_SIZE+U8_TIMESTAMP_SIZE;
+    for i in 0_usize..(spdata_size/MERGED_DATA_SIZE) {
+        let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+        let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+        timestamp.copy_from_slice(&sp_slice[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+        geoHash.copy_from_slice(&sp_slice[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+        let data = SpatialData::new(geoHash, timestamp);
+        central_data.data.push(data);
     }
-    // maxまで確保してここでshrinkする
-    intersection.data[CENTRAL_IDX].hashdata.shrink_to_fit();
-    intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
+    sort_by_geohash(&mut central_data.data);
     
     sgx_status_t::SGX_SUCCESS
 }
 
-#[no_mangle]
-pub extern "C"
-fn enclave_init_ra(b_pse: i32, p_context: &mut sgx_ra_context_t) -> sgx_status_t {
-    let ret: sgx_status_t;
-    match rsgx_ra_init(&G_SP_PUB_KEY, b_pse) {
-        Ok(p) => {
-            *p_context = p;
-            ret = sgx_status_t::SGX_SUCCESS;
-        },
-        Err(x) => {
-            ret = x;
-            return ret;
-        }
+fn get_key_from_vec(token: &[u8; SESSIONTOKEN_SIZE]) -> String {
+    const CHARS: &'static str = "0123456789ABCDEF";
+    let mut key: String = "".to_string();
+    for i in 0_usize..(SESSIONTOKEN_SIZE) {
+        let high: u8 = token[i] / 16;
+        let low : u8  = token[i] % 16;
+        key.push(CHARS.chars().nth(high as usize).unwrap());
+        key.push(CHARS.chars().nth(low as usize).unwrap());
     }
-    ret
+    key
+}
+
+fn geo_hash_encode(token: &[u8; U8_GEODATA_SIZE]) -> String {
+    const CHARS: &'static str = "0123456789bcdefghjkmnpqrstuvwxyz";
+    let mut key: String = "".to_string();
+    for i in 0_usize..(SESSIONTOKEN_SIZE) {
+        let high: u8 = token[i] / 16;
+        let low : u8  = token[i] % 16;
+        key.push(CHARS.chars().nth(high as usize).unwrap());
+        key.push(CHARS.chars().nth(low as usize).unwrap());
+    }
+    key
 }
 
 #[no_mangle]
 pub extern "C"
-fn enclave_ra_close(context: sgx_ra_context_t) -> sgx_status_t {
-    match rsgx_ra_close(context) {
-        Ok(()) => sgx_status_t::SGX_SUCCESS,
-        Err(x) => x
-    }
-}
+fn remote_attestation_mock(
+    token: &mut [u8; SESSIONTOKEN_SIZE],
+    sk   : &mut sgx_aes_gcm_128bit_key_t
+) -> sgx_status_t {
 
-#[no_mangle]
-pub extern "C"
-fn verify_att_result_mac(context: sgx_ra_context_t,
-                         message: * const u8,
-                         msg_size: size_t,
-                         mac: &[u8; SGX_MAC_SIZE]) -> sgx_status_t {
-
-    if msg_size > u32::max_value as usize {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-    }
-
-    let message_slice = unsafe {
-        slice::from_raw_parts(message, msg_size as usize)
+    let mut rand = match StdRng::new() {
+        Ok(rng) => rng,
+        Err(_) => { return sgx_status_t::SGX_ERROR_UNEXPECTED; },
     };
-    if message_slice.len() != msg_size as usize {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-    }
-
-    let mk_key: sgx_ec_key_128bit_t = match rsgx_ra_get_keys(context, sgx_ra_key_type_t::SGX_RA_KEY_MK) {
-        Ok(k) => k,
-        Err(x) => return x,
-    };
-
-    let mac_result: sgx_cmac_128bit_tag_t = match rsgx_rijndael128_cmac_slice(&mk_key, message_slice) {
-        Ok(tag) => tag,
-        Err(x) => return x,
-    };
-
-    if mac.consttime_memeq(&mac_result) == false {
-        return sgx_status_t::SGX_ERROR_MAC_MISMATCH;
-    }
-
+    rand.fill_bytes(token);
+    rand.fill_bytes(sk);
+    
+    let mut key_manager = get_ref_key_manager().unwrap().borrow_mut();
+    key_manager.map.insert(get_key_from_vec(token), *sk);
+    
     sgx_status_t::SGX_SUCCESS
 }
 
-#[no_mangle]
-pub extern "C"
-fn verify_secret_data(context: sgx_ra_context_t,
-                      secret: * const u8,
-                      sec_size: u32,
-                      gcm_mac: &[u8; SGX_MAC_SIZE],
-                      max_vlen: u32,
-                      mode: u32,
-                      salt: &mut [u8; SGX_SALT_SIZE],
-                      salt_mac: &mut [u8; SGX_MAC_SIZE],
-                      id: &mut u32) -> sgx_status_t {
-
-    let mut data = match mode {
-        P2P_MODE     => get_ref_hash_buffer().unwrap().borrow_mut(),
-        CENTRAL_MODE => get_central_ref_hash_buffer().unwrap().borrow_mut(),
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
-
-    let is_ok: bool = match mode { 
-        P2P_MODE => { data.number < CLIENT_MAX_NUMBER as u32 },
-        CENTRAL_MODE => { data.number == 0 },
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
-    if is_ok {
-        data.number +=1;
-    } else {
-        return sgx_status_t::SGX_ERROR_UNEXPECTED;
-    }
-
-    let sk_key: sgx_ec_key_128bit_t = match rsgx_ra_get_keys(context, sgx_ra_key_type_t::SGX_RA_KEY_SK) {
-        Ok(key) => key,
-        Err(x) => return x,
-    };
-
-    let secret_slice = unsafe {
-        slice::from_raw_parts(secret, sec_size as usize)
-    };
-
-    if secret_slice.len() != sec_size as usize {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-    }
-
-    let mut decrypted_vec: Vec<u8> = vec![0; sec_size as usize];
-    let decrypted_slice = &mut decrypted_vec[..];
+fn decrypt_secret_key(
+    session_key           : &sgx_aes_gcm_128bit_key_t,
+    encrypted_secret_key  : &[u8],
+    secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
+    decrypted             : &mut Vec<u8>
+) -> i8 {
     let iv = [0; SGX_AESGCM_IV_SIZE];
     let aad:[u8; 0] = [0; 0];
+    
+    let ret = rsgx_rijndael128GCM_decrypt(
+        session_key,
+        encrypted_secret_key,
+        &iv,
+        &aad,
+        secret_key_gcm_tag,
+        decrypted.as_mut_slice()
+    );
 
-    let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
-                                          &secret_slice,
-                                          &iv,
-                                          &aad,
-                                          gcm_mac,
-                                          decrypted_slice);
     match ret {
-        Ok(()) => {
-            if decrypted_slice[0] == 0 && decrypted_slice[1] != 1 {
-                return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE;
-            }
-            else {
-                let ret = rsgx_rijndael128GCM_encrypt(&sk_key,
-                                                      &data.salt,
-                                                      &iv,
-                                                      &aad,
-                                                      salt,
-                                                      salt_mac);
-                match ret {
-                    Ok(()) => {
-                        *id = data.number; // When CENTRAL_MODE, data.number is always 1
-                        return sgx_status_t::SGX_SUCCESS;
-                    },
-                    Err(_) => { return sgx_status_t::SGX_ERROR_UNEXPECTED; },
-                }
-            }
-        },
-        Err(_) => {
-            return sgx_status_t::SGX_ERROR_UNEXPECTED;
-        }
-    }
+        Ok(()) => { return 0 },
+        Err(x) => { println!("[SGX] decrypt_secret_key error {}", x); return -1 },
+    };
 }
 
+fn decrypt_encrypted_client_data(
+    secret_key            : &[u8; CLIENT_SECRET_KEY_SIZE],
+    encrypted_history_data: &[u8],    
+    gcm_tag               : &[u8],    
+    size_list             : &[usize],
+    target_history        : &mut Vec<SpatialData>
+) -> i8 {
+    let MERGED_DATA_SIZE: usize = U8_GEODATA_SIZE + U8_TIMESTAMP_SIZE;
+    let iv = [0; SGX_AESGCM_IV_SIZE];
+    let aad:[u8; 0] = [0; 0];
+    
+    let mut cursor = 0;
+    for i in 0_usize..(size_list.len()) {
+        // println!("[SGX] {} th data decryption", i);
+        let size: usize = size_list[i];
+        
+        let this_history_data = &encrypted_history_data[cursor..cursor+size];
+        cursor = cursor+size; // 忘れないようにここで更新
+        let mut this_gcm_tag: [u8; SGX_MAC_SIZE] = [0; SGX_MAC_SIZE];
+        this_gcm_tag.copy_from_slice(&gcm_tag[i*SGX_MAC_SIZE..(i+1)*SGX_MAC_SIZE]);
+        
+        // println!("[SGX] this_history_data {:?}", this_history_data);
+        // println!("[SGX] this_gcm_tag {:?}", this_gcm_tag);
+
+        let mut decrypted: Vec<u8> = vec![0; size];
+        let ret = rsgx_rijndael128GCM_decrypt(
+            secret_key,
+            &this_history_data,
+            &iv,
+            &aad,
+            &this_gcm_tag,
+            decrypted.as_mut_slice()
+        );
+        match ret {
+            Ok(()) => {},
+            Err(x) => { println!("[SGX] decrypt_encrypted_client_data error {}", x); return -1 },
+        };
+
+        for i in 0_usize..(size/MERGED_DATA_SIZE) {
+            let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+            let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+            timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+            geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+            let data = SpatialData::new(geoHash, timestamp);
+            target_history.push(data);
+        }
+    }
+    return 0;
+}
 
 #[no_mangle]
 pub extern "C"
-fn add_hash_data(id: u32,
-                 context: sgx_ra_context_t,
-                 mode: u32,
-                 hashdata: * const u8,
-                 hash_size: usize,
-                 mac: &[u8; SGX_MAC_SIZE]) -> sgx_status_t {
-    
-    match mode {
-        P2P_MODE => if (id == 0) || (id > CLIENT_MAX_NUMBER as u32) {
-            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-        },
-        CENTRAL_MODE => if id != CLIENT_ID {
-            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-        },
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
+fn store_infected_data( 
+    session_token         : &[u8; SESSIONTOKEN_SIZE],
+    encrypted_secret_key  : &[u8; CLIENT_SECRET_KEY_SIZE],
+    secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
+    encrypted_history_data: * const u8,
+    toal_size             : usize,
+    gcm_tag               : * const u8,
+    gcm_tag_total_size    : usize,
+    size_list             : * const usize,
+    data_num              : usize
+) -> sgx_status_t {
 
-    let sk_key: sgx_ec_key_128bit_t = match rsgx_ra_get_keys(context, sgx_ra_key_type_t::SGX_RA_KEY_SK) {
-        Ok(key) => key,
-        Err(x) => return x
+    let history_data_slice = unsafe {
+        slice::from_raw_parts(encrypted_history_data, toal_size as usize)
     };
-
-    let hash_slice = unsafe {
-        slice::from_raw_parts(hashdata, hash_size as usize)
-    };
-
-    if hash_slice.len() != hash_size {
+    if history_data_slice.len() != toal_size {
         return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
     }
 
-    let mut decrypted: Vec<u8> = vec![0; hash_size];
+    let gcm_tag_slice = unsafe {
+        slice::from_raw_parts(gcm_tag, gcm_tag_total_size as usize)
+    };
+    if gcm_tag_slice.len() != gcm_tag_total_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let size_list_slice = unsafe {
+        slice::from_raw_parts(size_list, data_num as usize)
+    };
+    if size_list_slice.len() != data_num {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    
+    // get session key
+    let key_manager = get_ref_key_manager().unwrap().borrow_mut();
+    let session_key: &sgx_aes_gcm_128bit_key_t = 
+        match key_manager.map.get(&get_key_from_vec(session_token)) {
+            Some(key) => key,
+            None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
+        };
+    
+    // decrypt secret key
+    let mut tmp_secret_key: Vec<u8> = vec![0; CLIENT_SECRET_KEY_SIZE];
+    let mut ret = decrypt_secret_key(
+        session_key,
+        encrypted_secret_key,
+        secret_key_gcm_tag,
+        &mut tmp_secret_key
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    let mut secret_key: [u8; CLIENT_SECRET_KEY_SIZE] = [0; CLIENT_SECRET_KEY_SIZE];
+    secret_key.copy_from_slice(&tmp_secret_key.as_slice());
+    // println!("[SGX] secret key: {:?}", secret_key);
+
+    // decrypt client data
+    let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
+    ret = decrypt_encrypted_client_data(
+        &secret_key, history_data_slice,
+        gcm_tag_slice,
+        size_list_slice,
+        &mut target_history
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    // println!("[SGX] timestamp {:?}", target_history[0].timestamp);
+    // println!("[SGX] geohash {:?}", target_history[0].geoHash);
+
+    let mut central_data = get_ref_central_data().unwrap().borrow_mut();
+    central_data.data.append(&mut target_history);
+    // 追加のたびにソートする
+    sort_by_geohash(&mut central_data.data);
+    
+    sgx_status_t::SGX_SUCCESS
+}
+
+#[no_mangle]
+pub extern "C"
+fn judge_contact( 
+    session_token         : &[u8; SESSIONTOKEN_SIZE],
+    encrypted_secret_key  : &[u8; CLIENT_SECRET_KEY_SIZE],
+    secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
+    encrypted_history_data: * const u8,
+    toal_size             : usize,
+    gcm_tag               : * const u8,
+    gcm_tag_total_size    : usize,
+    size_list             : * const usize,
+    data_num              : usize,
+    risk_level            : &mut [u8; RISKLEVEL_RESULT],
+    result_mac            : &mut [u8; SGX_MAC_SIZE]
+) -> sgx_status_t {
+    
+    /*   ここからstore_infected_dataと同じロジック   */
+    let history_data_slice = unsafe {
+        slice::from_raw_parts(encrypted_history_data, toal_size as usize)
+    };
+    if history_data_slice.len() != toal_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let gcm_tag_slice = unsafe {
+        slice::from_raw_parts(gcm_tag, gcm_tag_total_size as usize)
+    };
+    if gcm_tag_slice.len() != gcm_tag_total_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let size_list_slice = unsafe {
+        slice::from_raw_parts(size_list, data_num as usize)
+    };
+    if size_list_slice.len() != data_num {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    // get session key
+    let key_manager = get_ref_key_manager().unwrap().borrow_mut();
+    let session_key: &sgx_aes_gcm_128bit_key_t = 
+        match key_manager.map.get(&get_key_from_vec(session_token)) {
+            Some(key) => key,
+            None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
+        };
+    
+    // decrypt secret key
+    let mut tmp_secret_key: Vec<u8> = vec![0; CLIENT_SECRET_KEY_SIZE];
+    let mut ret = decrypt_secret_key(
+        session_key,
+        encrypted_secret_key,
+        secret_key_gcm_tag,
+        &mut tmp_secret_key
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    let mut secret_key: [u8; CLIENT_SECRET_KEY_SIZE] = [0; CLIENT_SECRET_KEY_SIZE];
+    secret_key.copy_from_slice(&tmp_secret_key.as_slice());
+    // println!("[SGX] secret key: {:?}", secret_key);
+
+    // decrypt client data
+    let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
+    ret = decrypt_encrypted_client_data(
+        &secret_key, history_data_slice,
+        gcm_tag_slice,
+        size_list_slice,
+        &mut target_history
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    /*   ここまでstore_infected_dataと同じロジック  */
+
+    
+    let central_data = get_ref_central_data().unwrap().borrow_mut();
+    println!("[SGX] sort_by_geohash: {:?}", central_data.data);
+    let result = judge(&central_data.data, &target_history);
+    
+    // return with encryption
     let iv = [0; SGX_AESGCM_IV_SIZE];
     let aad:[u8; 0] = [0; 0];
-
-    let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
-                                          &hash_slice,
-                                          &iv,
-                                          &aad,
-                                          mac,
-                                          decrypted.as_mut_slice());
-
+    let raw_risk_level: &[u8; RISKLEVEL_RESULT] = &[result as u8];
+    let ret = rsgx_rijndael128GCM_encrypt(
+        session_key,
+        raw_risk_level,
+        &iv,
+        &aad,
+        risk_level,
+        result_mac
+    );
+    println!("{}", risk_level[0]);
     match ret {
         Ok(()) => {},
         Err(x) => return x,
     };
 
-    let mut intersection = match mode {
-        P2P_MODE     => get_ref_hash_buffer().unwrap().borrow_mut(),
-        CENTRAL_MODE => get_central_ref_hash_buffer().unwrap().borrow_mut(),
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
-    let buffer = &mut intersection.data[id as usize - 1].hashdata;
-
-    for i in 0_usize..(hash_size/SGX_HASH_SIZE) {
-        let mut hash = [0_u8; SGX_HASH_SIZE];
-        hash.copy_from_slice(&decrypted[i*SGX_HASH_SIZE..(i + 1)*SGX_HASH_SIZE]);
-        buffer.push(hash);
-    }
-
     sgx_status_t::SGX_SUCCESS
 }
 
-#[no_mangle]
-pub extern "C"
-fn get_result_size(id:   u32,
-                   mode: u32,
-                   len:  &mut usize) -> sgx_status_t {
-
-    match mode {
-        P2P_MODE => if (id == 0) || (id > CLIENT_MAX_NUMBER as u32) {
-            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-        },
-        CENTRAL_MODE => if id != CLIENT_ID {
-            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-        },
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
-
-    let cid: usize = match mode {
-        P2P_MODE     => id as usize - 1,
-        CENTRAL_MODE => CLIENT_IDX,
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
-
-    let other = match mode {
-        P2P_MODE     => if cid == 0 { CLIENT_MAX_NUMBER - 1 } else { 0 },
-        CENTRAL_MODE => CENTRAL_IDX,
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
-
-    let mut intersection = match mode {
-        P2P_MODE     => get_ref_hash_buffer().unwrap().borrow_mut(),
-        CENTRAL_MODE => get_central_ref_hash_buffer().unwrap().borrow_mut(),
-        _ => return sgx_status_t::SGX_ERROR_INVALID_SIGNATURE
-    };
-
-    if intersection.data[cid].state == 0 {
-        intersection.data[cid].state = HASH_DATA_FINISH;
-    }
-
-    let state1 = intersection.data[cid].state;
-    let state2 = intersection.data[other].state;
-
-    let result_len = if (state1 == 0) || (state2 == 0) {
-        return sgx_status_t::SGX_ERROR_INVALID_STATE;
-    } else if (state1 == HASH_DATA_FINISH) && (state2 == HASH_DATA_FINISH) {
-
-        let mut v_cid: Vec<u8> = vec![0; intersection.data[cid].hashdata.len()];
-        let mut v_other: Vec<u8> = vec![0; intersection.data[other].hashdata.len()];
-
-        oget_intersection(&intersection.data[cid].hashdata,
-                          &intersection.data[other].hashdata,
-                          &mut v_cid,
-                          &mut v_other);
-
-        intersection.data[cid].result = v_cid;
-        intersection.data[other].result = v_other;
-        intersection.data[cid].state = RESULT_FINISH;
-        intersection.data[other].state = RESULT_FINISH;
-        intersection.data[cid].result.len()
-    } else if (state1 == RESULT_FINISH) && (state2 == RESULT_FINISH) {
-        intersection.data[cid].result.len()
-    } else {
-        return sgx_status_t::SGX_ERROR_UNEXPECTED;
-    };
-
-    *len = result_len;
-    sgx_status_t::SGX_SUCCESS
+fn judge(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>) -> bool {
+    let mut result: Vec<SpatialData> = Vec::with_capacity(100); // なんとなく100，特に意味はない
+    naive_matching(central_data, target_history, &mut result);
+    result.is_empty()
 }
 
-#[no_mangle]
-pub extern "C"
-fn get_result(id: u32,
-              context: sgx_ra_context_t,
-              result: * mut u8,
-              result_size: usize,
-              result_mac: &mut [u8; SGX_MAC_SIZE]) -> sgx_status_t {
+// ナイーブなアルゴリズム
+// O(mlogn)
 
-    if (id == 0) || (id > CLIENT_MAX_NUMBER as u32) {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+fn naive_matching(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>, matched_vec: &mut Vec<SpatialData>) {
+    let n = target_history.len();
+    for i in 0..n {
+        // geohashでバイナリサーチしてできるだけ早く絞る
+        let result: Vec<SpatialData> = binary_search(central_data, &(target_history[i].geoHash));
+        
+        // timestampで判定
+        // 本来ならば，ここもソート済み配列に対して行うべきだけど無視
+        result.iter().for_each(|sp_data| {
+            if timestamp_matching(target_history[i].timestamp, sp_data.timestamp) {
+                matched_vec.push(*sp_data);
+            }
+        })
     }
+}
 
-    let cid: usize = id as usize - 1;
-    let other = if cid == 0 {
-        CLIENT_MAX_NUMBER - 1
-    } else {
-        0
+// geohashの距離感 
+// 9桁目が一致していれば，だいたい5m以内
+// 参考: https://www.fuzina.com/blog/2019/12/10/geohash%E3%81%A7%E7%AF%84%E5%9B%B2%E6%A4%9C%E7%B4%A2%E3%82%92%E8%A1%8C%E3%81%86.html
+// when digit = 9, accuracy is 5m
+// digit = 8 , about 20m
+// https://doc.rust-lang.org/std/cmp/enum.Ordering.html#examples ここを元に return Orderingを実装すれば良さそう
+fn geohash_matching(digit: usize, geohash1: [u8; U8_GEODATA_SIZE], geohash2: [u8; U8_GEODATA_SIZE]) -> bool {
+    if geohash1[0..digit] != geohash2[0..digit] {
+        return false;
+    }
+    return true
+}
+
+// timestampはUNIX epochなので最小単位が1秒
+// だから HIGH_RISK_PERIOD = 600 = 10分
+// 前後で判定するから ±10分だけど，マイナスはいらない気もする
+const HIGH_RISK_PERIOD: i64 = 600;
+fn timestamp_matching(timestamp1: u64, timestamp2: u64) -> bool {
+    if (timestamp1 as i64 - timestamp2 as i64).abs() > HIGH_RISK_PERIOD {
+        return true
+    }
+    return false
+}
+
+// args
+//   sp_vecがソート済みであることは呼び出し元の責任で呼ぶ
+// return 
+//    result: Vec<SpatialData>
+// https://doc.rust-lang.org/std/cmp/enum.Ordering.html#examples このあたりを見てbinary_search_byの引数を変える？
+fn binary_search(sp_vec: &Vec<SpatialData>, target: &[u8; U8_GEODATA_SIZE]) -> Vec<SpatialData> {
+    let mut index: i64 = match sp_vec.binary_search_by(|sp_data| sp_data.geoHash.cmp(&target)) {
+        Ok(i) => i as i64,
+        Err(_) => return Vec::new(),
     };
-
-    let sk_key: sgx_ec_key_128bit_t = match rsgx_ra_get_keys(context, sgx_ra_key_type_t::SGX_RA_KEY_SK) {
-        Ok(key) => key,
-        Err(x) => return x,
-    };
-
-    let mut intersection = get_ref_hash_buffer().unwrap().borrow_mut();
-
-    let state1 = intersection.data[cid].state;
-    let state2 = intersection.data[other].state;
-    if (state1 != RESULT_FINISH) && (state2 != RESULT_FINISH) {
-        return sgx_status_t::SGX_ERROR_INVALID_STATE;
-    }
-
-    let len = intersection.data[cid].result.len();
-    if len > 0 {
-        if result_size != len {
-            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-        }
-
-        let result_slice = unsafe {
-            slice::from_raw_parts_mut(result, result_size)
-        };
-
-        let iv = [0; SGX_AESGCM_IV_SIZE];
-        let aad:[u8; 0] = [0; 0];
-        let ret = rsgx_rijndael128GCM_encrypt(&sk_key,
-                                              intersection.data[cid].result.as_slice(),
-                                              &iv,
-                                              &aad,
-                                              result_slice,
-                                              result_mac);
-        match ret {
-            Ok(()) => {},
-            Err(x) => return x,
-        };
-    }
-
-    intersection.number -= 1;
-    if intersection.number == 0 {
-        for i in 0..CLIENT_MAX_NUMBER {
-            intersection.data[i].hashdata = Vec::new();
-            intersection.data[i].result = Vec::new();
-            intersection.data[i].state = 0;
+    // 10はなんとなくの数字
+    let mut result_vec: Vec<SpatialData> = Vec::with_capacity(10);
+    // Vec<>のバイナリサーチは最も後ろのインデックスを返してくるので
+    while index >= 0 {
+        result_vec.push(sp_vec[index as usize]);
+        index = index - 1;
+        if index <= 0 || sp_vec[index as usize].geoHash != *target {
+            break;
         }
     }
-
-    sgx_status_t::SGX_SUCCESS
+    result_vec
 }
 
-// TODO; 上のメソッドと統合しても全然よい
-#[no_mangle]
-pub extern "C"
-fn get_central_intersection(id: u32,
-              context: sgx_ra_context_t,
-              result: * mut u8,
-              result_size: usize,
-              result_mac: &mut [u8; SGX_MAC_SIZE]) -> sgx_status_t {
 
-    if id != CLIENT_ID {
-        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-    }
-
-    let sk_key: sgx_ec_key_128bit_t = match rsgx_ra_get_keys(context, sgx_ra_key_type_t::SGX_RA_KEY_SK) {
-        Ok(key) => key,
-        Err(x) => return x,
-    };
-    
-    let mut intersection = get_central_ref_hash_buffer().unwrap().borrow_mut();
-
-    // TODO; 状態管理する必要ない?クライアントが複数いれば必要あるかもしれないので残す 
-    // Rust側が勝手にロックしてくれるの？
-    let state1 = intersection.data[CLIENT_IDX].state;
-    let state2 = intersection.data[CLIENT_IDX].state;
-    if (state1 != RESULT_FINISH) && (state2 != RESULT_FINISH) {
-        return sgx_status_t::SGX_ERROR_INVALID_STATE;
-    }
-
-    let len = intersection.data[CLIENT_IDX].result.len();
-    if len > 0 {
-        if result_size != len {
-            return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
-        }
-
-        let result_slice = unsafe {
-            slice::from_raw_parts_mut(result, result_size)
-        };
-
-        let iv = [0; SGX_AESGCM_IV_SIZE];
-        let aad:[u8; 0] = [0; 0];
-        let ret = rsgx_rijndael128GCM_encrypt(&sk_key,
-                                              intersection.data[CLIENT_IDX].result.as_slice(),
-                                              &iv,
-                                              &aad,
-                                              result_slice,
-                                              result_mac);
-        match ret {
-            Ok(()) => {},
-            Err(x) => return x,
-        };
-    }
-
-    intersection.number = 0;
-    intersection.data[CLIENT_IDX].hashdata = Vec::new();
-    intersection.data[CLIENT_IDX].result = Vec::new();
-    intersection.data[CLIENT_IDX].state = 0;
-    
-    intersection.data[CENTRAL_IDX].state = HASH_DATA_FINISH;
-
-    sgx_status_t::SGX_SUCCESS
-}
-
+// oblivious functions
 fn oget_intersection(a: &Vec<[u8; SGX_HASH_SIZE]>, b: &Vec<[u8; SGX_HASH_SIZE]>, v1: &mut Vec<u8>, v2: &mut Vec<u8>) {
 
     let n = a.len();
@@ -659,6 +648,8 @@ fn ge(a: &[u8; SGX_HASH_SIZE], b: &[u8; SGX_HASH_SIZE]) -> isize {
     (ret >= 0) as isize
 }
 
+
+// oblivious primitives
 fn oequal(x: usize, y: usize) -> bool {
 
     let ret: bool;

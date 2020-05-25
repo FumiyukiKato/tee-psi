@@ -84,3 +84,9 @@ $ ./app [-f file path] [-m mode]
 ```
 $ python script/geohash_data_generator.py [ --num data_size ] [ --mode (random|order) ]
 ```
+
+### https curl
+
+```
+$ curl  -X GET --cacert ./server.crt  'https://localhost:50001/remote_attestation_mock?auth_token=B0702B28101BFCAA36965C6338688530' -H 'Content-Type:application/json' -d '{"id": 44}'
+```

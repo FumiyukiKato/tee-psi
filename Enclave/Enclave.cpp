@@ -63,52 +63,6 @@ sgx_status_t Enclave::createEnclave() {
     return ret;
 }
 
-sgx_status_t Enclave::raInit(sgx_ra_context_t *ra_context) {
-    sgx_status_t ret;
-    sgx_status_t status;
-    sgx_ra_context_t context = INT_MAX;
-    int enclave_lost_retry_time = 1;
-
-    if (ra_context == NULL) {
-        Log("Error, call raInit fail", log::error);
-        return SGX_ERROR_INVALID_PARAMETER;
-    }
-
-    do {
-        ret = enclave_init_ra(this->enclave_id,
-                              &status,
-                              false,
-                              &context);
-    } while (SGX_ERROR_ENCLAVE_LOST == ret && enclave_lost_retry_time--);
-
-    if (SGX_SUCCESS != ret || status) {
-        Log("Error, call enclave_ra_init fail", log::error);
-    } else {
-        Log("Call enclave_ra_init success");
-        *ra_context = context;
-    }
-    return ret;
-}
-
-void Enclave::raClose(sgx_ra_context_t ra_context) {
-    int ret = -1;
-
-    if (INT_MAX != ra_context) {
-        int ret_save = -1;
-        sgx_status_t status;
-        ret = enclave_ra_close(enclave_id, &status, ra_context);
-        if (SGX_SUCCESS != ret || status) {
-            ret = -1;
-            Log("Error, call enclave_ra_close fail", log::error);
-        } else {
-            // enclave_ra_close was successful, let's restore the value that
-            // led us to this point in the code.
-            ret = ret_save;
-            Log("Call enclave_ra_close success");
-        }
-    }
-}
-
 sgx_enclave_id_t Enclave::getID() {
     return this->enclave_id;
 }

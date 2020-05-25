@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<title>log</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<body>
+
+<div class="jumbotron text-center">
+    <h1>SGX LOG</h1>
+    </div>
+    
+    <div class="row">
+        <div class="container col-sm-1">
+
+        </div>
+        <div class="container col-sm-3">
+            <div class="container">
+                <button id="ajax" class="btn btn-primary">UPDATE LOG</button>
+            </div>
+        </br>
+            <div class="container">
+                <button id="ajax_del" class="btn btn-warning">DELETE LOG</button>
+            </div>
+        </br>
+        </br>
+        </br>
+            <div class="container">
+                <h5>Encrypted Infected People Data inside SGX</h5>
+                <p>2.3GB (in experiment)</p>
+                
+            </div>
+        </div>
+
+        <div class="container col-sm-6" style="background-color: #EEEEEE;">
+            <div id="result">
+
+            </div>
+        </div>
+        <div class="container col-sm-2">
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        $(function(){
+            index = 0
+            // Ajax button click
+            $('#ajax').on('click',function(){
+                $.ajax({
+                    url:'https://133.3.250.176/mock_api/next_log?auth_token=B0702B28101BFCAA36965C6338688530',
+                    type:'GET',
+                    data:{
+                        index: index
+                    }
+                })
+                // Ajaxリクエストが成功した時発動
+                .done( (data) => {
+                    data.logs.forEach(log => 
+                        $("#result").prepend(`<p>${log}</p>`)
+                    )
+                    index = data.next
+                })
+                // Ajaxリクエストが失敗した時発動
+                .fail( (data) => {
+                    console.log(data);
+                })
+                
+            });
+
+            $('#ajax_del').on('click',function(){
+                $.ajax({
+                    url:'https://133.3.250.176/mock_api/delete_log?auth_token=B0702B28101BFCAA36965C6338688530',
+                    type:'GET',
+                    data:{
+    
+                    }
+                })
+                // Ajaxリクエストが成功した時発動
+                .done( (data) => {
+                    $("#result").empty();
+                    index = 0
+                })
+                // Ajaxリクエストが失敗した時発動
+                .fail( (data) => {
+                    console.log(data);
+                })
+                
+            });
+        });
+
+    </script>
+</body>
+</html>
