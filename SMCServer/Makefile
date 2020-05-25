@@ -207,10 +207,6 @@ Middleware/%.o: Middleware/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
 
-# ../Networking/%.o: ../Networking/%.cpp ../GeneralSettings.h
-# 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
-# 	@echo "CXX  <=  $<"
-
 ../Enclave/%.o: ../Enclave/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
