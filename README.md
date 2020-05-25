@@ -10,6 +10,8 @@ TEE-based Private Set Intersection
 #### high level architecture
   - https://medium.com/baiduxlab/private-set-intersection-technology-a-hot-topic-in-multi-party-computing-f560cf3bf6cb
 
+#### sdk
+  - https://download.01.org/intel-sgx/sgx-linux/2.8/docs/Intel_SGX_Developer_Reference_Linux_2.8_Open_Source.pdf
 ### Setup
 
 Clone rust sgx sdk and set environment variables
