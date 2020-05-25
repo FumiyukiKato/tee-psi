@@ -102,7 +102,7 @@ impl CentralData {
     }
 }
 
-#[derive(Clone, Default, Eq, Ord, PartialEq, PartialOrd, Copy)]
+#[derive(Debug, Clone, Default, Eq, Ord, PartialEq, PartialOrd, Copy)]
 struct SpatialData {
     geoHash  : [u8; U8_GEODATA_SIZE], // 普通にu8配列の方が良さそう
     timestamp: u64     // unix epochは本来u32で表現できるけど
@@ -418,7 +418,7 @@ fn store_infected_data(
 pub extern "C"
 fn judge_contact( 
     session_token         : &[u8; SESSIONTOKEN_SIZE],
-    secret_key            : &[u8; CLIENT_SECRET_KEY_SIZE],
+    encrypted_secret_key  : &[u8; CLIENT_SECRET_KEY_SIZE],
     secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
     encrypted_history_data: * const u8,
     toal_size             : usize,
@@ -429,62 +429,78 @@ fn judge_contact(
     risk_level            : &mut [u8; RISKLEVEL_RESULT],
     result_mac            : &mut [u8; SGX_MAC_SIZE]
 ) -> sgx_status_t {
+    
+    /*   ここからstore_infected_dataと同じロジック   */
+    let history_data_slice = unsafe {
+        slice::from_raw_parts(encrypted_history_data, toal_size as usize)
+    };
+    if history_data_slice.len() != toal_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
 
+    let gcm_tag_slice = unsafe {
+        slice::from_raw_parts(gcm_tag, gcm_tag_total_size as usize)
+    };
+    if gcm_tag_slice.len() != gcm_tag_total_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let size_list_slice = unsafe {
+        slice::from_raw_parts(size_list, data_num as usize)
+    };
+    if size_list_slice.len() != data_num {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    // get session key
     let key_manager = get_ref_key_manager().unwrap().borrow_mut();
-    let sk_key: sgx_aes_gcm_128bit_key_t = 
+    let session_key: &sgx_aes_gcm_128bit_key_t = 
         match key_manager.map.get(&get_key_from_vec(session_token)) {
-            Some(key) => *key,
+            Some(key) => key,
             None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
         };
-    let central_data = get_ref_central_data().unwrap().borrow_mut();
     
-    let MERGED_DATA_SIZE: usize = U8_GEODATA_SIZE + U8_TIMESTAMP_SIZE;
+    // decrypt secret key
+    let mut tmp_secret_key: Vec<u8> = vec![0; CLIENT_SECRET_KEY_SIZE];
+    let mut ret = decrypt_secret_key(
+        session_key,
+        encrypted_secret_key,
+        secret_key_gcm_tag,
+        &mut tmp_secret_key
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    let mut secret_key: [u8; CLIENT_SECRET_KEY_SIZE] = [0; CLIENT_SECRET_KEY_SIZE];
+    secret_key.copy_from_slice(&tmp_secret_key.as_slice());
+    // println!("[SGX] secret key: {:?}", secret_key);
+
+    // decrypt client data
+    let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
+    ret = decrypt_encrypted_client_data(
+        &secret_key, history_data_slice,
+        gcm_tag_slice,
+        size_list_slice,
+        &mut target_history
+    );
+    if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
+    /*   ここまでstore_infected_dataと同じロジック  */
+
+    
+    let central_data = get_ref_central_data().unwrap().borrow_mut();
+    println!("[SGX] sort_by_geohash: {:?}", central_data.data);
+    let result = judge(&central_data.data, &target_history);
+    
+    // return with encryption
     let iv = [0; SGX_AESGCM_IV_SIZE];
     let aad:[u8; 0] = [0; 0];
-    
-    let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
-    
-    // for i in 0_usize..(data_num) {
-    //     let array_size: usize = max_geo_data_size;
-
-    //     let history_data_slice = unsafe {
-    //         slice::from_raw_parts(encrypted_history_data[i], array_size as usize)
-    //     };
-    //     if history_data_slice.len() != array_size {
-    //         return sgx_status_t::SGX_ERROR_UNEXPECTED;
-    //     }
-    //     let gcm_tag = geo_mac[i];
-
-    //     let mut decrypted: Vec<u8> = vec![0; array_size];
-    //     let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
-    //                                         &history_data_slice,
-    //                                         &iv,
-    //                                         &aad,
-    //                                         &gcm_tag,
-    //                                         decrypted.as_mut_slice());
-    //     match ret {
-    //         Ok(()) => {},
-    //         Err(x) => return x,
-    //     };
-
-    //     for i in 0_usize..(array_size/MERGED_DATA_SIZE) {
-    //         let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
-    //         let mut geoHash = [0_u8; U8_GEODATA_SIZE];
-    //         timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
-    //         geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
-    //         let data = SpatialData::new(geoHash, timestamp);
-    //         target_history.push(data);
-    //     }
-    // }
-
-    let result = judge(&central_data.data, &target_history);
     let raw_risk_level: &[u8; RISKLEVEL_RESULT] = &[result as u8];
-    let ret = rsgx_rijndael128GCM_encrypt(&sk_key,
-                                            raw_risk_level,
-                                            &iv,
-                                            &aad,
-                                            risk_level,
-                                            result_mac);
+    let ret = rsgx_rijndael128GCM_encrypt(
+        session_key,
+        raw_risk_level,
+        &iv,
+        &aad,
+        risk_level,
+        result_mac
+    );
     println!("{}", risk_level[0]);
     match ret {
         Ok(()) => {},
@@ -496,22 +512,23 @@ fn judge_contact(
 
 fn judge(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>) -> bool {
     let mut result: Vec<SpatialData> = Vec::with_capacity(100); // なんとなく100，特に意味はない
-    naive_matching(central_data, central_data, &mut result);
+    naive_matching(central_data, target_history, &mut result);
     result.is_empty()
 }
 
 // ナイーブなアルゴリズム
 // O(mlogn)
-fn naive_matching(a: &Vec<SpatialData>, b: &Vec<SpatialData>, matched_vec: &mut Vec<SpatialData>) {
-    let n = a.len();
+
+fn naive_matching(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>, matched_vec: &mut Vec<SpatialData>) {
+    let n = target_history.len();
     for i in 0..n {
         // geohashでバイナリサーチしてできるだけ早く絞る
-        let result: Vec<SpatialData> = binary_search(b, &(a[i].geoHash));
+        let result: Vec<SpatialData> = binary_search(central_data, &(target_history[i].geoHash));
         
         // timestampで判定
         // 本来ならば，ここもソート済み配列に対して行うべきだけど無視
         result.iter().for_each(|sp_data| {
-            if timestamp_matching(a[i].timestamp, sp_data.timestamp) {
+            if timestamp_matching(target_history[i].timestamp, sp_data.timestamp) {
                 matched_vec.push(*sp_data);
             }
         })
@@ -542,21 +559,23 @@ fn timestamp_matching(timestamp1: u64, timestamp2: u64) -> bool {
     return false
 }
 
+// args
+//   sp_vecがソート済みであることは呼び出し元の責任で呼ぶ
 // return 
 //    result: Vec<SpatialData>
 // https://doc.rust-lang.org/std/cmp/enum.Ordering.html#examples このあたりを見てbinary_search_byの引数を変える？
 fn binary_search(sp_vec: &Vec<SpatialData>, target: &[u8; U8_GEODATA_SIZE]) -> Vec<SpatialData> {
-    let mut index = match sp_vec.binary_search_by(|sp_data| sp_data.geoHash.cmp(&target)) {
-        Ok(i) => i,
+    let mut index: i64 = match sp_vec.binary_search_by(|sp_data| sp_data.geoHash.cmp(&target)) {
+        Ok(i) => i as i64,
         Err(_) => return Vec::new(),
     };
     // 10はなんとなくの数字
     let mut result_vec: Vec<SpatialData> = Vec::with_capacity(10);
     // Vec<>のバイナリサーチは最も後ろのインデックスを返してくるので
     while index >= 0 {
-        result_vec.push(sp_vec[index]);
+        result_vec.push(sp_vec[index as usize]);
         index = index - 1;
-        if !(sp_vec[index].geoHash == *target) {
+        if index <= 0 || sp_vec[index as usize].geoHash != *target {
             break;
         }
     }
