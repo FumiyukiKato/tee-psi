@@ -329,3 +329,11 @@ void Clocker::stop() {
     auto elapsed = chrono::duration_cast< chrono::milliseconds >(end - this->start_clock).count();
     printf("[Clocker] %s: time %ld[ms]\n", this->name.c_str(), elapsed);
 }
+
+string getNow() {
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+    std::stringstream ss;
+    ss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S(UTC): ");
+    return ss.str();
+}

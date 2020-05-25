@@ -26,54 +26,47 @@ enclave {
 
     trusted {
 
-        public sgx_status_t initialize([out] uint8_t salt[32]);
+        public sgx_status_t initialize(
+            [out] uint8_t salt[32]
+        );
 
-        public sgx_status_t uploadCentralData([in, size=hash_size] uint8_t* hashdata,
-											    size_t hash_size);
+        public sgx_status_t uploadCentralData(
+            [in, size=file_size] uint8_t* filedata,
+			size_t file_size
+        );
 
         public void uninitialize();
 
-        public sgx_status_t enclave_init_ra(int b_pse, [out] sgx_ra_context_t *p_context);
+        public sgx_status_t remote_attestation_mock(
+            [out] uint8_t token[32],
+            [out] uint8_t sk[16]
+        );
 
-        public sgx_status_t enclave_ra_close(sgx_ra_context_t context);
+        public sgx_status_t judge_contact(
+            [in] uint8_t session_token[32],
+            [in] uint8_t encrypted_secret_key[16],
+            [in] uint8_t secret_key_gcm_tag[16],
+            [in, size=toal_size] uint8_t* encrypted_history_data,
+            size_t toal_size,
+            [in, size=gcm_tag_total_size] uint8_t* gcm_tag,
+            size_t gcm_tag_total_size,
+            [in, count=data_num] size_t* size_list,
+            size_t data_num,
+            [out] uint8_t risk_level[1],
+            [out] uint8_t result_mac[16]
+        );
 
-        public sgx_status_t verify_att_result_mac(sgx_ra_context_t context,
-												  [in, size=message_size] uint8_t* message,
-												  size_t message_size,
-												  [in] uint8_t mac[16]);
-
-        public sgx_status_t verify_secret_data(sgx_ra_context_t context,
-											   [in,size=secret_size] uint8_t* secret,
-											   uint32_t secret_size,
-											   [in] uint8_t gcm_mac[16],
-											   uint32_t max_verification_length,
-                                               uint32_t mode,
-											   [out] uint8_t salt[32],
-                                               [out] uint8_t salt_mac[16],
-                                               [out] uint32_t *id);
-
-        public sgx_status_t add_hash_data(uint32_t id,
-                                          sgx_ra_context_t context,
-                                          uint32_t mode,
-                                          [in, size=hash_size] uint8_t* hashdata,
-                                          size_t hash_size,
-                                          [in] uint8_t mac[16]);
-
-        public sgx_status_t get_result_size(uint32_t id,
-                                            uint32_t mode,
-                                            [out] size_t *len);
-
-        public sgx_status_t get_result(uint32_t id,
-                                       sgx_ra_context_t context,
-                                       [out, size=result_size] uint8_t* result,
-                                       size_t result_size,
-                                       [out] uint8_t result_mac[16]);
-
-        public sgx_status_t get_central_intersection(uint32_t id,
-                                       sgx_ra_context_t context,
-                                       [out, size=result_size] uint8_t* result,
-                                       size_t result_size,
-                                       [out] uint8_t result_mac[16]);
+        public sgx_status_t store_infected_data(
+            [in] uint8_t session_token[32],
+            [in] uint8_t encrypted_secret_key[16],
+            [in] uint8_t secret_key_gcm_tag[16],
+            [in, size=toal_size] uint8_t* encrypted_history_data,
+            size_t toal_size,
+            [in, size=gcm_tag_total_size] uint8_t* gcm_tag,
+            size_t gcm_tag_total_size,
+            [in, count=data_num] size_t* size_list,
+            size_t data_num
+        );
     };
 
 };
