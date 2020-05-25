@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 import hashlib
 import random
+import datetime
 
 def gen_rand_geohash(length):
     geohash = [''] * 32
@@ -16,15 +17,15 @@ def gen_rand_geohash(length):
     return ''.join(geohash)
 
 def gen_rand_timestamp():
-    date = random.randint(1, 31)
-    hour = random.randint(0, 24)
-    minute = random.randint(0, 60)
-    return "202005%sT%s%s00" % (str(date).zfill(2), str(hour).zfill(2), str(minute).zfill(2))
+    start = datetime.datetime(2020, 3, 1)
+    end = datetime.datetime(2020, 5, 30)
+    dt = random.random() * (end - start) + start
+    return str(int(dt.timestamp()))
 
-def generateMergeByteData(geohash, timestamp):
-    geohash = geohash.encode()
+def generateMergeByteData(timestamp, geohash):
     timestamp = timestamp.encode()
-    return geohash + timestamp
+    geohash = geohash.encode()
+    return timestamp + geohash
 
 def aesgcmEncrypt(byte, key, nonce):
     mac_len = 16
@@ -34,25 +35,24 @@ def aesgcmEncrypt(byte, key, nonce):
 
 
 def main():
-    input_key = input("input key as hex string (16bytes): ")
-    key = bytes.fromhex(input_key) # key
-    print("key   is %s" % input_key)
+    input_secret_key = input("input Secret key as hex string (16bytes): ")
+    secret_key = bytes.fromhex(input_secret_key)
     print("iv is (12bytes) => 000000000000")
     nonce = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # initial vector
-    num = 3
+    num = 10
     print("generate %d data" % num)
     data_list = []
     for i in range(num):
-        geohash = gen_rand_geohash(10)
         timestamp = gen_rand_timestamp()
-        mergedData = generateMergeByteData(geohash, timestamp)
+        geohash = gen_rand_geohash(9)
+        mergedData = generateMergeByteData(timestamp, geohash)
         data_list.append(mergedData)
 
     print(data_list)
     
     byte = b''.join(data_list)
     print(byte)
-    ciphertext, tag = aesgcmEncrypt(byte, key, nonce)
+    ciphertext, tag = aesgcmEncrypt(byte, secret_key, nonce)
     print("ciphertext hex: ", ciphertext.hex())
     print("tag hex: ", tag.hex())
     
@@ -60,9 +60,5 @@ def main():
     b_tag = str(b64encode(tag).decode('utf-8'))
     print("base64 ciphertext: ", b_ciphertext)
     print("base64 tag: ", b_tag)
-
-#    tmpFileName = 'client-data.txt'
-#    with open(tmpFileName, 'w') as f:
-#        f.write(b_ciphertext)
 
 main()

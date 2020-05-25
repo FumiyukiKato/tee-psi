@@ -92,6 +92,7 @@ int Main(char *filepath) {
     CROW_ROUTE(app, "/report_infection")
         .methods("GET"_method)
         ([psi_controller, &logs](const crow::request& req){
+        Log("saisyo");
         return psi_controller->dispatch_report_infection(req);
     });
 

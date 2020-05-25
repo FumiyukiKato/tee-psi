@@ -264,15 +264,159 @@ fn remote_attestation_mock(
     sgx_status_t::SGX_SUCCESS
 }
 
+fn decrypt_secret_key(
+    session_key           : &sgx_aes_gcm_128bit_key_t,
+    encrypted_secret_key  : &[u8],
+    secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
+    decrypted             : &mut Vec<u8>
+) {
+    let iv = [0; SGX_AESGCM_IV_SIZE];
+    let aad:[u8; 0] = [0; 0];
+    
+    let ret = rsgx_rijndael128GCM_decrypt(
+        session_key,
+        encrypted_secret_key,
+        &iv,
+        &aad,
+        secret_key_gcm_tag,
+        decrypted.as_mut_slice()
+    );
+
+    match ret {
+        Ok(()) => {},
+        Err(x) => { println!("decrypt_secret_key error {}", x) },
+    };
+}
+
+// fn decrypt_encrypted_client_data(
+//     secret_key            : &[u8; CLIENT_SECRET_KEY_SIZE],
+//     encrypted_history_data: Vec<Vec<u8>>,
+//     geo_mac               : Vec<[u8; SGX_MAC_SIZE]>,
+//     data_num              : usize,
+//     target_history        : &mut Vec<SpatialData>
+// ) {
+//     let MERGED_DATA_SIZE: usize = U8_GEODATA_SIZE + U8_TIMESTAMP_SIZE;
+//     let iv = [0; SGX_AESGCM_IV_SIZE];
+//     let aad:[u8; 0] = [0; 0];
+    
+//     for i in 0_usize..(data_num) {
+//         println!("{}", i);
+//         let array_size: usize = encrypted_history_data[i].len();
+
+//         let history_data_slice = unsafe {
+//             slice::from_raw_parts(encrypted_history_data[i], array_size as usize)
+//         };
+//         if history_data_slice.len() != array_size {
+//             return sgx_status_t::SGX_ERROR_UNEXPECTED;
+//         }
+//         let gcm_tag = geo_mac[i];
+
+//         let mut decrypted: Vec<u8> = vec![0; array_size];
+//         let ret = rsgx_rijndael128GCM_decrypt(
+//             secret_key,
+//             &history_data_slice,
+//             &iv,
+//             &aad,
+//             &gcm_tag,
+//             decrypted.as_mut_slice()
+//         );
+//         match ret {
+//             Ok(()) => {},
+//             Err(x) => { println!("decrypt_encrypted_client_data error {}", x) },
+//         };
+
+//         for i in 0_usize..(array_size/MERGED_DATA_SIZE) {
+//             let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+//             let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+//             timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+//             geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+//             let data = SpatialData::new(geoHash, timestamp);
+//             target_history.push(data);
+//         }
+//     }
+// }
+
+#[no_mangle]
+pub extern "C"
+fn store_infected_data( 
+    session_token         : &[u8; SESSIONTOKEN_SIZE],
+    encrypted_secret_key  : &[u8; CLIENT_SECRET_KEY_SIZE],
+    secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
+    encrypted_history_data: * const u8,
+    toal_size             : usize,
+    gcm_tag               : * const u8,
+    gcm_tag_total_size    : usize,
+    size_list             : * const usize,
+    data_num              : usize
+) -> sgx_status_t {
+
+    println!("start sgx");
+    let history_data_slice = unsafe {
+        slice::from_raw_parts(encrypted_history_data, toal_size as usize)
+    };
+    if history_data_slice.len() != toal_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let gcm_tag_slice = unsafe {
+        slice::from_raw_parts(gcm_tag, gcm_tag_total_size as usize)
+    };
+    if gcm_tag_slice.len() != gcm_tag_total_size {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    let size_list_slice = unsafe {
+        slice::from_raw_parts(size_list, data_num as usize)
+    };
+    if size_list_slice.len() != data_num {
+        return sgx_status_t::SGX_ERROR_INVALID_PARAMETER;
+    }
+
+    
+    // session key
+    let key_manager = get_ref_key_manager().unwrap().borrow_mut();
+    let session_key: &sgx_aes_gcm_128bit_key_t = 
+        match key_manager.map.get(&get_key_from_vec(session_token)) {
+            Some(key) => key,
+            None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
+        };
+    
+    println!("{:?}", encrypted_secret_key);
+    println!("{:?}", secret_key_gcm_tag);
+    println!("{:?}", session_key);
+    let mut secret_key: Vec<u8> = vec![0; CLIENT_SECRET_KEY_SIZE];
+    decrypt_secret_key(session_key, encrypted_secret_key, secret_key_gcm_tag, &mut secret_key);
+    println!("{:?}", secret_key);
+
+    // let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
+    // println!("{:?}", encrypted_history_data);
+    // decrypt_encrypted_client_data(
+    //     secret_key,
+    //     encrypted_history_data,
+    //     geo_mac,
+    //     data_num
+    //     &target_history
+    // );
+
+    // let mut central_data = get_ref_central_data().unwrap().borrow_mut();
+    // central_data.data.append(&mut target_history);
+    // // 追加のたびにソートする
+    // sort_by_geohash(&mut central_data.data);
+    
+    sgx_status_t::SGX_SUCCESS
+}
+
 #[no_mangle]
 pub extern "C"
 fn judge_contact( 
     session_token         : &[u8; SESSIONTOKEN_SIZE],
     secret_key            : &[u8; CLIENT_SECRET_KEY_SIZE],
-    gcm_tag               : &[u8; SGX_MAC_SIZE],
-    encrypted_history_data: Vec<*const u8>,
-    max_geo_data_size     : usize,
-    geo_mac               : Vec<[u8; SGX_MAC_SIZE]>,
+    secret_key_gcm_tag    : &[u8; SGX_MAC_SIZE],
+    encrypted_history_data: * const u8,
+    toal_size             : usize,
+    gcm_tag               : * const u8,
+    gcm_tag_total_size    : usize,
+    size_list             : * const usize,
     data_num              : usize,
     risk_level            : &mut [u8; RISKLEVEL_RESULT],
     result_mac            : &mut [u8; SGX_MAC_SIZE]
@@ -292,38 +436,38 @@ fn judge_contact(
     
     let mut target_history: Vec<SpatialData> = Vec::with_capacity(10000);
     
-    for i in 0_usize..(data_num) {
-        let array_size: usize = max_geo_data_size;
+    // for i in 0_usize..(data_num) {
+    //     let array_size: usize = max_geo_data_size;
 
-        let history_data_slice = unsafe {
-            slice::from_raw_parts(encrypted_history_data[i], array_size as usize)
-        };
-        if history_data_slice.len() != array_size {
-            return sgx_status_t::SGX_ERROR_UNEXPECTED;
-        }
-        let gcm_tag = geo_mac[i];
+    //     let history_data_slice = unsafe {
+    //         slice::from_raw_parts(encrypted_history_data[i], array_size as usize)
+    //     };
+    //     if history_data_slice.len() != array_size {
+    //         return sgx_status_t::SGX_ERROR_UNEXPECTED;
+    //     }
+    //     let gcm_tag = geo_mac[i];
 
-        let mut decrypted: Vec<u8> = vec![0; array_size];
-        let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
-                                            &history_data_slice,
-                                            &iv,
-                                            &aad,
-                                            &gcm_tag,
-                                            decrypted.as_mut_slice());
-        match ret {
-            Ok(()) => {},
-            Err(x) => return x,
-        };
+    //     let mut decrypted: Vec<u8> = vec![0; array_size];
+    //     let ret = rsgx_rijndael128GCM_decrypt(&sk_key,
+    //                                         &history_data_slice,
+    //                                         &iv,
+    //                                         &aad,
+    //                                         &gcm_tag,
+    //                                         decrypted.as_mut_slice());
+    //     match ret {
+    //         Ok(()) => {},
+    //         Err(x) => return x,
+    //     };
 
-        for i in 0_usize..(array_size/MERGED_DATA_SIZE) {
-            let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
-            let mut geoHash = [0_u8; U8_GEODATA_SIZE];
-            timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
-            geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
-            let data = SpatialData::new(geoHash, timestamp);
-            target_history.push(data);
-        }
-    }
+    //     for i in 0_usize..(array_size/MERGED_DATA_SIZE) {
+    //         let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+    //         let mut geoHash = [0_u8; U8_GEODATA_SIZE];
+    //         timestamp.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE..i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE]);
+    //         geoHash.copy_from_slice(&decrypted[i*MERGED_DATA_SIZE+U8_TIMESTAMP_SIZE..(i + 1)*MERGED_DATA_SIZE]);
+    //         let data = SpatialData::new(geoHash, timestamp);
+    //         target_history.push(data);
+    //     }
+    // }
 
     let result = judge(&central_data.data, &target_history);
     let raw_risk_level: &[u8; RISKLEVEL_RESULT] = &[result as u8];

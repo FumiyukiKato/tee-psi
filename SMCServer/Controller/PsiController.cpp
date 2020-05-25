@@ -58,9 +58,9 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         return crow::response(400, res);
     };
 
-    uint8_t *gcm_tag = NULL;
+    uint8_t *secret_key_gcm_tag = NULL;
     auto gcm_tag_str = json_req["gcm_tag"].s();
-    if (GCMTAG_SIZE != StringToByteArray(Base64decode(gcm_tag_str), &gcm_tag)) {
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(gcm_tag_str), &secret_key_gcm_tag)) {
         res["error"] = "invalid format gcm_tag";
         return crow::response(400, res);
     };
@@ -71,7 +71,7 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         user_id,
         session_token,
         secret_key,
-        gcm_tag,
+        secret_key_gcm_tag,
         risk_level,
         result_mac
     );
@@ -91,6 +91,7 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
 crow::response PsiController::dispatch_report_infection(const crow::request& req) {
     auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
+    Log("dispatch");
     
     if (!json_req || !json_req.has("user_id")
         ||!json_req.has("session_token") || !json_req.has("gcm_tag")
@@ -108,25 +109,25 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
         return crow::response(400, res);
     };
 
-    uint8_t *secret_key = NULL;
+    uint8_t *encrypted_secret_key = NULL;
     auto secret_key_str = json_req["secret_key"].s();
-    if (GCMTAG_SIZE != StringToByteArray(Base64decode(secret_key_str), &secret_key)) {
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(secret_key_str), &encrypted_secret_key)) {
         res["error"] = "invalid format secret_key";
         return crow::response(400, res);
     };
 
-    uint8_t *gcm_tag = NULL;
+    uint8_t *secret_key_gcm_tag = NULL;
     auto gcm_tag_str = json_req["gcm_tag"].s();
-    if (GCMTAG_SIZE != StringToByteArray(Base64decode(gcm_tag_str), &gcm_tag)) {
+    if (GCMTAG_SIZE != StringToByteArray(Base64decode(gcm_tag_str), &secret_key_gcm_tag)) {
         res["error"] = "invalid format gcm_tag";
         return crow::response(400, res);
     };
-
+    
     int status = service->loadAndStoreInfectedData(
         user_id,
         session_token,
-        secret_key,
-        gcm_tag
+        encrypted_secret_key,
+        secret_key_gcm_tag
     );
 
     // モックのためにログを吐き出す

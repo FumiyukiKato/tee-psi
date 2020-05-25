@@ -26,26 +26,47 @@ enclave {
 
     trusted {
 
-        public sgx_status_t initialize([out] uint8_t salt[32]);
+        public sgx_status_t initialize(
+            [out] uint8_t salt[32]
+        );
 
-        public sgx_status_t uploadCentralData([in, size=file_size] uint8_t* filedata,
-											    size_t file_size);
+        public sgx_status_t uploadCentralData(
+            [in, size=file_size] uint8_t* filedata,
+			size_t file_size
+        );
 
         public void uninitialize();
 
-        public sgx_status_t remote_attestation_mock([out] uint8_t token[32],
-                                                    [out] uint8_t sk[16]);
+        public sgx_status_t remote_attestation_mock(
+            [out] uint8_t token[32],
+            [out] uint8_t sk[16]
+        );
 
-        public sgx_status_t judge_contact([in] uint8_t session_token[32],
-                                        [in] uint8_t secret_key[16],
-                                        [in] uint8_t gcm_tag[16],
-                                        [in, size=max_geo_data_size] uint8_t** encrypted_history_data,
-                                        size_t max_geo_data_size,
-                                        [in, size=data_num] uint8_t** geo_mac,
-                                        size_t data_num,
-                                        [out] uint8_t risk_level[1],
-                                        [out] uint8_t result_mac[16]
-                                        );
+        public sgx_status_t judge_contact(
+            [in] uint8_t session_token[32],
+            [in] uint8_t encrypted_secret_key[16],
+            [in] uint8_t secret_key_gcm_tag[16],
+            [in, size=toal_size] uint8_t* encrypted_history_data,
+            size_t toal_size,
+            [in, size=gcm_tag_total_size] uint8_t* gcm_tag,
+            size_t gcm_tag_total_size,
+            [in, count=data_num] size_t* size_list,
+            size_t data_num,
+            [out] uint8_t risk_level[1],
+            [out] uint8_t result_mac[16]
+        );
+
+        public sgx_status_t store_infected_data(
+            [in] uint8_t session_token[32],
+            [in] uint8_t encrypted_secret_key[16],
+            [in] uint8_t secret_key_gcm_tag[16],
+            [in, size=toal_size] uint8_t* encrypted_history_data,
+            size_t toal_size,
+            [in, size=gcm_tag_total_size] uint8_t* gcm_tag,
+            size_t gcm_tag_total_size,
+            [in, count=data_num] size_t* size_list,
+            size_t data_num
+        );
     };
 
 };

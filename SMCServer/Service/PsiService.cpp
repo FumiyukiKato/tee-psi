@@ -68,44 +68,6 @@ int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
     return 0;
 }
 
-int PsiService::judgeContact(
-    string user_id,
-    uint8_t *session_token,
-    uint8_t *secret_key,
-    uint8_t *gcm_tag,
-    uint8_t *risk_level,
-    uint8_t *result_mac
-) {
-    Log("[Service] judge contact start");
-    
-    HistoryData history;
-    int l_ret = loadDataFromBlockChain(user_id, &history);
-    if (l_ret < 0) {
-        return -1;
-    }
-    
-    sgx_status_t status;
-    sgx_status_t ret = judge_contact(
-        this->enclave->getID(),
-        &status,
-        session_token,
-        secret_key,
-        gcm_tag,
-        &history.encrypted_data[0].data, // TODO;
-        history.max_data_size,
-        &history.encrypted_data[0].gcm_tag,
-        history.data_num,
-        risk_level,
-        result_mac
-    );
-    
-    if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
-        Log("[Service] judge contact failed, %d, %d!", ret, status);
-        return -1;
-    }
-    return 0;
-}
-
 // for parsing curl request
 size_t _jsonParseCallback(
     const char* in,
@@ -174,30 +136,29 @@ int PsiService::loadDataFromBlockChain(
     //    "[
     //       {"createTime":20200510054040,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089780627","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510054141,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089841402","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510110606,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109246280","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510114545,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109405481","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"}
     //    ]"
-    // }
-    if (jsonReader.parse(*httpData.get(), jsonResponse)) {
+    // }    
+    string responseMock = R"({"response":"[{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
+    // if (jsonReader.parse(*httpData.get(), jsonResponse)) {
+    if (jsonReader.parse(responseMock, jsonResponse)) {
         Json::Value resJson;
         Json::Reader resReader;
         resReader.parse(jsonResponse["response"].asString(), resJson);
-        std::cout << resJson[0]["gps"] << std::endl;
-//        gcm_tag = resJson[0]["gcm"].asString(); gcmタグの仕様が不明
-        if (resJson.size() <= 0) return -2;
-        size_t max_data_size = 0;
+        if (resJson.size() <= 0 ) return -2;
+        
         for( int i=0; i< resJson.size(); i++) {
+            if (!resJson[i].isMember("gps") || !resJson[i].isMember("gcm_tag")) return -3;
+            
             uint8_t *geo_buffer;
             int geo_buffer_size = StringToByteArray(Base64decode(resJson[i]["gps"].asString()), &geo_buffer);
+            if (geo_buffer_size % RECORD_SIZE != 0) return -4; // RECORD_SIZEをサーバサイドで意識するのは避けたいが，，，
             
-            // SGXにロードする際に使うので最大のデータサイズを求めておく
-            if(geo_buffer_size > max_data_size) max_data_size = geo_buffer_size;
-
             uint8_t *gcm_tag_buffer;
-            StringToByteArray(Base64decode(resJson[i]["id"].asString()), &gcm_tag_buffer); // TODO; gcm_tagの代わりにidを構造体に入れとく
+            StringToByteArray(Base64decode(resJson[i]["gcm_tag"].asString()), &gcm_tag_buffer);
 
-            GeoData geo_data = { geo_buffer, gcm_tag_buffer };
-            history->encrypted_data.push_back(geo_data);
+            history->geo_data_vec.push_back(geo_buffer);
+            history->gcm_tag_vec.push_back(gcm_tag_buffer);
+            history->size_list_vec.push_back(geo_buffer_size);
         }
-        history->data_num = history->encrypted_data.size();
-        history->max_data_size = max_data_size;
     } else {
         Log("[loadDataFromBlockChain] invalid data format.");
         return -1;
@@ -206,17 +167,118 @@ int PsiService::loadDataFromBlockChain(
     return 0;
 }
 
-int PsiService::loadAndStoreInfectedData(
+int PsiService::judgeContact(
     string user_id,
     uint8_t *session_token,
-    uint8_t *gcm_tag,
-    uint8_t *secret_key
-){
+    uint8_t *encrypted_secret_key,
+    uint8_t *secret_key_gcm_tag,
+    uint8_t *risk_level,
+    uint8_t *result_mac
+) {
+    Log("[Service] judge contact start");
+    
     HistoryData history;
-    int status = loadDataFromBlockChain(user_id, &history);
-    if(status < 0) {
+    int l_ret = loadDataFromBlockChain(user_id, &history);
+    if (l_ret < 0) {
+        Log("loadDataFromBlockChain error, %s", l_ret);
         return -1;
     }
 
+    size_t total_size = history.total_geo_data_size();
+    uint8_t geo_data_buffer[total_size];
+    history.geo_data_as_array(geo_data_buffer);
+
+    size_t gcm_tag_total_size = history.total_gcm_tag_size();
+    uint8_t gcm_tag_buffer[gcm_tag_total_size];
+    history.gcm_tag_as_array(gcm_tag_buffer);
+    
+    size_t total_num = history.total_num();
+    size_t size_list_buffer[total_num];
+    history.size_list_as_array(size_list_buffer, total_num);
+
+    
+    sgx_status_t status;
+    sgx_status_t ret = judge_contact(
+        this->enclave->getID(),
+        &status,
+        session_token,
+        encrypted_secret_key,
+        secret_key_gcm_tag,
+        geo_data_buffer,
+        total_size,
+        gcm_tag_buffer,
+        gcm_tag_total_size,
+        size_list_buffer,
+        total_num,
+        risk_level,
+        result_mac
+    );
+    
+    if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
+        Log("[Service] judge contact failed, %d, %d!", ret, status);
+        return -1;
+    }
+    return 0;
+}
+
+int PsiService::loadAndStoreInfectedData(
+    string user_id,
+    uint8_t *session_token,
+    uint8_t *encrypted_secret_key,
+    uint8_t *secret_key_gcm_tag
+){
+    Log("[Service] loadAndStoreInfectedData start");
+    HistoryData history;
+    int l_ret = loadDataFromBlockChain(user_id, &history);
+    if (l_ret < 0) {
+        Log("loadDataFromBlockChain error, %s", l_ret);
+        return -1;
+    }
+
+    size_t total_size = history.total_geo_data_size();
+    uint8_t geo_data_buffer[total_size];
+    history.geo_data_as_array(geo_data_buffer);
+
+    size_t gcm_tag_total_size = history.total_gcm_tag_size();
+    uint8_t gcm_tag_buffer[gcm_tag_total_size];
+    history.gcm_tag_as_array(gcm_tag_buffer);
+    
+    size_t total_num = history.total_num();
+    size_t size_list_buffer[total_num];
+    history.size_list_as_array(size_list_buffer, total_num);
+
+    std::cout << total_size << std::endl;
+    std::cout << ByteArrayToString(geo_data_buffer, total_size) << std::endl;
+    std::cout << gcm_tag_total_size << std::endl;
+    std::cout << ByteArrayToString(gcm_tag_buffer, gcm_tag_total_size) << std::endl;
+    std::cout << total_num << std::endl;
+    for (int i=0; i < total_num; i++ ) { 
+        std::cout << size_list_buffer[i] << std::endl;
+    }
+
+    std::cout << ByteArrayToString(encrypted_secret_key, 16) << std::endl;
+    std::cout << ByteArrayToString(secret_key_gcm_tag, 16) << std::endl;
+
+    sgx_status_t status;
+    sgx_status_t ret = store_infected_data(
+        this->enclave->getID(),
+        &status,
+        session_token,
+        encrypted_secret_key,
+        secret_key_gcm_tag,
+        geo_data_buffer,
+        total_size,
+        gcm_tag_buffer,
+        gcm_tag_total_size,
+        size_list_buffer,
+        total_num
+    );
+    
+    if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
+        Log("[Service] loadAndStoreInfectedData failed, %d, %d!", ret, status);
+        return -1;
+    }
+
+    Log("[Service] store_infected_data success");
     return 0;
 }

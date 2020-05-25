@@ -8,7 +8,6 @@
 #include "crow_all.h"
 
 #define E_RISKLEVEL_SIZE 1
-#define GCMTAG_SIZE 16
 
 using namespace std;
 using namespace util;

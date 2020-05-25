@@ -21,15 +21,30 @@ typedef struct ms_remote_attestation_mock_t {
 typedef struct ms_judge_contact_t {
 	sgx_status_t ms_retval;
 	uint8_t* ms_session_token;
-	uint8_t* ms_secret_key;
+	uint8_t* ms_encrypted_secret_key;
+	uint8_t* ms_secret_key_gcm_tag;
+	uint8_t* ms_encrypted_history_data;
+	size_t ms_toal_size;
 	uint8_t* ms_gcm_tag;
-	uint8_t** ms_encrypted_history_data;
-	size_t ms_max_geo_data_size;
-	uint8_t** ms_geo_mac;
+	size_t ms_gcm_tag_total_size;
+	size_t* ms_size_list;
 	size_t ms_data_num;
 	uint8_t* ms_risk_level;
 	uint8_t* ms_result_mac;
 } ms_judge_contact_t;
+
+typedef struct ms_store_infected_data_t {
+	sgx_status_t ms_retval;
+	uint8_t* ms_session_token;
+	uint8_t* ms_encrypted_secret_key;
+	uint8_t* ms_secret_key_gcm_tag;
+	uint8_t* ms_encrypted_history_data;
+	size_t ms_toal_size;
+	uint8_t* ms_gcm_tag;
+	size_t ms_gcm_tag_total_size;
+	size_t* ms_size_list;
+	size_t ms_data_num;
+} ms_store_infected_data_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
 	sgx_status_t ms_retval;
@@ -1001,20 +1016,40 @@ sgx_status_t remote_attestation_mock(sgx_enclave_id_t eid, sgx_status_t* retval,
 	return status;
 }
 
-sgx_status_t judge_contact(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t secret_key[16], uint8_t gcm_tag[16], uint8_t** encrypted_history_data, size_t max_geo_data_size, uint8_t** geo_mac, size_t data_num, uint8_t risk_level[1], uint8_t result_mac[16])
+sgx_status_t judge_contact(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t encrypted_secret_key[16], uint8_t secret_key_gcm_tag[16], uint8_t* encrypted_history_data, size_t toal_size, uint8_t* gcm_tag, size_t gcm_tag_total_size, size_t* size_list, size_t data_num, uint8_t risk_level[1], uint8_t result_mac[16])
 {
 	sgx_status_t status;
 	ms_judge_contact_t ms;
 	ms.ms_session_token = (uint8_t*)session_token;
-	ms.ms_secret_key = (uint8_t*)secret_key;
-	ms.ms_gcm_tag = (uint8_t*)gcm_tag;
+	ms.ms_encrypted_secret_key = (uint8_t*)encrypted_secret_key;
+	ms.ms_secret_key_gcm_tag = (uint8_t*)secret_key_gcm_tag;
 	ms.ms_encrypted_history_data = encrypted_history_data;
-	ms.ms_max_geo_data_size = max_geo_data_size;
-	ms.ms_geo_mac = geo_mac;
+	ms.ms_toal_size = toal_size;
+	ms.ms_gcm_tag = gcm_tag;
+	ms.ms_gcm_tag_total_size = gcm_tag_total_size;
+	ms.ms_size_list = size_list;
 	ms.ms_data_num = data_num;
 	ms.ms_risk_level = (uint8_t*)risk_level;
 	ms.ms_result_mac = (uint8_t*)result_mac;
 	status = sgx_ecall(eid, 4, &ocall_table_enclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
+	return status;
+}
+
+sgx_status_t store_infected_data(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t encrypted_secret_key[16], uint8_t secret_key_gcm_tag[16], uint8_t* encrypted_history_data, size_t toal_size, uint8_t* gcm_tag, size_t gcm_tag_total_size, size_t* size_list, size_t data_num)
+{
+	sgx_status_t status;
+	ms_store_infected_data_t ms;
+	ms.ms_session_token = (uint8_t*)session_token;
+	ms.ms_encrypted_secret_key = (uint8_t*)encrypted_secret_key;
+	ms.ms_secret_key_gcm_tag = (uint8_t*)secret_key_gcm_tag;
+	ms.ms_encrypted_history_data = encrypted_history_data;
+	ms.ms_toal_size = toal_size;
+	ms.ms_gcm_tag = gcm_tag;
+	ms.ms_gcm_tag_total_size = gcm_tag_total_size;
+	ms.ms_size_list = size_list;
+	ms.ms_data_num = data_num;
+	status = sgx_ecall(eid, 5, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -1025,7 +1060,7 @@ sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_co
 	ms_sgx_ra_get_ga_t ms;
 	ms.ms_context = context;
 	ms.ms_g_a = g_a;
-	status = sgx_ecall(eid, 5, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 6, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -1039,7 +1074,7 @@ sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval
 	ms.ms_p_qe_target = p_qe_target;
 	ms.ms_p_report = p_report;
 	ms.ms_p_nonce = p_nonce;
-	status = sgx_ecall(eid, 6, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -1053,7 +1088,7 @@ sgx_status_t sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval,
 	ms.ms_qe_report = qe_report;
 	ms.ms_p_msg3 = p_msg3;
 	ms.ms_msg3_size = msg3_size;
-	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 8, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -1065,14 +1100,14 @@ sgx_status_t t_global_init_ecall(sgx_enclave_id_t eid, uint64_t id, const uint8_
 	ms.ms_id = id;
 	ms.ms_path = path;
 	ms.ms_len = len;
-	status = sgx_ecall(eid, 8, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 9, &ocall_table_enclave, &ms);
 	return status;
 }
 
 sgx_status_t t_global_exit_ecall(sgx_enclave_id_t eid)
 {
 	sgx_status_t status;
-	status = sgx_ecall(eid, 9, &ocall_table_enclave, NULL);
+	status = sgx_ecall(eid, 10, &ocall_table_enclave, NULL);
 	return status;
 }
 
