@@ -27,7 +27,7 @@ void PsiService::start(string path) {
     if (file_size <= 0) {
         return ;
     }
-    
+    Log("[Service] loading central data");
     ret = uploadCentralData(this->enclave->getID(), &status, filedata, file_size);
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
         Log("[Error] uploadCentralData failed, %d, %d", ret, status);
@@ -137,7 +137,11 @@ int PsiService::loadDataFromBlockChain(
     //       {"createTime":20200510054040,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089780627","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510054141,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089841402","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510110606,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109246280","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510114545,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109405481","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"}
     //    ]"
     // }    
-    string responseMock = R"({"response":"[{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
+    // string responseMock = R"({"response":"[{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
+    
+    string responseMock = R"({"response":"[{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
+    // [b'15892711516881f7rhq', b'1584074006zmzxes79j', b'15846945186u3hmyrz1', b'158861399401cn2x98s', b'15846288412nt4q579t']
+
     // if (jsonReader.parse(*httpData.get(), jsonResponse)) {
     if (jsonReader.parse(responseMock, jsonResponse)) {
         Json::Value resJson;
@@ -163,7 +167,6 @@ int PsiService::loadDataFromBlockChain(
         Log("[loadDataFromBlockChain] invalid data format.");
         return -1;
     }
-
     return 0;
 }
 

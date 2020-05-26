@@ -80,9 +80,6 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         return crow::response(500, res);
     }
     
-    
-    std::cout << risk_level << std::endl;
-    std::cout << result_mac << std::endl;
     res["risk_level"] = Base64encodeUint8(risk_level, E_RISKLEVEL_SIZE);
     res["gcm_tag"] = Base64encodeUint8(result_mac, GCMTAG_SIZE);
     return crow::response(200, res);

@@ -148,7 +148,7 @@ int main( int argc, char **argv ) {
     
     int opt;
     char *filepath = NULL;
-    filepath = "../data/sample.txt";
+    filepath = "../data/central_data.txt";
 
     while ((opt = getopt(argc, argv, "f:")) != -1) {
         switch (opt) {

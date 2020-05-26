@@ -486,13 +486,14 @@ fn judge_contact(
 
     
     let central_data = get_ref_central_data().unwrap().borrow_mut();
-    println!("[SGX] sort_by_geohash: {:?}", central_data.data);
+    // println!("[SGX] target data: {:?}", target_history);
+    // println!("[SGX] sort_by_geohash: {:?}", central_data.data);
     let result = judge(&central_data.data, &target_history);
     
     // return with encryption
     let iv = [0; SGX_AESGCM_IV_SIZE];
     let aad:[u8; 0] = [0; 0];
-    let raw_risk_level: &[u8; RISKLEVEL_RESULT] = &[result as u8];
+    let raw_risk_level: &[u8; RISKLEVEL_RESULT] = &[!result as u8];
     let ret = rsgx_rijndael128GCM_encrypt(
         session_key,
         raw_risk_level,
@@ -501,7 +502,7 @@ fn judge_contact(
         risk_level,
         result_mac
     );
-    println!("{}", risk_level[0]);
+    // println!("{}", risk_level[0]);
     match ret {
         Ok(()) => {},
         Err(x) => return x,
@@ -523,6 +524,7 @@ fn naive_matching(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialD
     let n = target_history.len();
     for i in 0..n {
         // geohashでバイナリサーチしてできるだけ早く絞る
+        
         let result: Vec<SpatialData> = binary_search(central_data, &(target_history[i].geoHash));
         
         // timestampで判定
@@ -553,7 +555,7 @@ fn geohash_matching(digit: usize, geohash1: [u8; U8_GEODATA_SIZE], geohash2: [u8
 // 前後で判定するから ±10分だけど，マイナスはいらない気もする
 const HIGH_RISK_PERIOD: i64 = 600;
 fn timestamp_matching(timestamp1: u64, timestamp2: u64) -> bool {
-    if (timestamp1 as i64 - timestamp2 as i64).abs() > HIGH_RISK_PERIOD {
+    if (timestamp1 as i64 - timestamp2 as i64).abs() < HIGH_RISK_PERIOD {
         return true
     }
     return false
