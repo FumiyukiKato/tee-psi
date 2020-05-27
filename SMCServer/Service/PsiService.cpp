@@ -85,7 +85,8 @@ size_t _jsonParseCallback(
 //   
 int PsiService::loadDataFromBlockChain(
     string user_id,
-    HistoryData *history
+    HistoryData *history,
+    string mock_file
 ) {
     CURLcode res = CURLE_OK;
     CURL *curl = curl_easy_init();
@@ -138,34 +139,41 @@ int PsiService::loadDataFromBlockChain(
     //    ]"
     // }    
     // string responseMock = R"({"response":"[{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
-    
-    string responseMock = R"({"response":"[{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
     // [b'15892711516881f7rhq', b'1584074006zmzxes79j', b'15846945186u3hmyrz1', b'158861399401cn2x98s', b'15846288412nt4q579t']
 
-    // if (jsonReader.parse(*httpData.get(), jsonResponse)) {
-    if (jsonReader.parse(responseMock, jsonResponse)) {
-        Json::Value resJson;
-        Json::Reader resReader;
-        resReader.parse(jsonResponse["response"].asString(), resJson);
-        if (resJson.size() <= 0 ) return -2;
-        
-        for( int i=0; i< resJson.size(); i++) {
-            if (!resJson[i].isMember("gps") || !resJson[i].isMember("gcm_tag")) return -3;
+    // TODO; mock up here
+    string responseData;
+    if (mock_file.empty()) {
+        responseData = *httpData.get();
+        // responseData = ClientDataMock("../data/client-ini.json");
+        Json::Value interJson;
+        Json::Reader interReader;
+        interReader.parse(responseData, interJson);
+        if (!jsonReader.parse(interJson["response"].asString(), jsonResponse)) return -1;
+        std::cout << jsonResponse << std::endl;
+    } else {
+        responseData = ClientDataMock(mock_file);
+        if (!jsonReader.parse(responseData, jsonResponse)) return -1;
+        jsonResponse = jsonResponse["response"];
+    }
+    if (jsonResponse.size() >= 0) {
+        for( int i=0; i< jsonResponse.size(); i++) {
+            if (!jsonResponse[i].isMember("gps") || !jsonResponse[i].isMember("gcm_tag")) return -3;
             
             uint8_t *geo_buffer;
-            int geo_buffer_size = StringToByteArray(Base64decode(resJson[i]["gps"].asString()), &geo_buffer);
+            int geo_buffer_size = StringToByteArray(Base64decode(jsonResponse[i]["gps"].asString()), &geo_buffer);
             if (geo_buffer_size % RECORD_SIZE != 0) return -4; // RECORD_SIZEをサーバサイドで意識するのは避けたいが，，，
             
             uint8_t *gcm_tag_buffer;
-            StringToByteArray(Base64decode(resJson[i]["gcm_tag"].asString()), &gcm_tag_buffer);
+            StringToByteArray(Base64decode(jsonResponse[i]["gcm_tag"].asString()), &gcm_tag_buffer);
 
             history->geo_data_vec.push_back(geo_buffer);
             history->gcm_tag_vec.push_back(gcm_tag_buffer);
             history->size_list_vec.push_back(geo_buffer_size);
         }
     } else {
-        Log("[loadDataFromBlockChain] invalid data format.");
-        return -1;
+        Log("[loadDataFromBlockChain] zero size.");
+        return -2;
     }
     return 0;
 }
@@ -176,12 +184,13 @@ int PsiService::judgeContact(
     uint8_t *encrypted_secret_key,
     uint8_t *secret_key_gcm_tag,
     uint8_t *risk_level,
-    uint8_t *result_mac
+    uint8_t *result_mac,
+    string mock_file
 ) {
     Log("[Service] judge contact start");
     
     HistoryData history;
-    int l_ret = loadDataFromBlockChain(user_id, &history);
+    int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
     if (l_ret < 0) {
         Log("loadDataFromBlockChain error, %s", l_ret);
         return -1;
@@ -228,11 +237,12 @@ int PsiService::loadAndStoreInfectedData(
     string user_id,
     uint8_t *session_token,
     uint8_t *encrypted_secret_key,
-    uint8_t *secret_key_gcm_tag
+    uint8_t *secret_key_gcm_tag,
+    string mock_file
 ){
     Log("[Service] loadAndStoreInfectedData start");
     HistoryData history;
-    int l_ret = loadDataFromBlockChain(user_id, &history);
+    int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
     if (l_ret < 0) {
         Log("loadDataFromBlockChain error, %s", l_ret);
         return -1;
@@ -272,4 +282,12 @@ int PsiService::loadAndStoreInfectedData(
 
     Log("[Service] store_infected_data success");
     return 0;
+}
+
+string PsiService::ClientDataMock(string path) {
+    char * filedata = NULL;
+    int file_size = 0;
+    file_size = ReadFileToBuffer(path, &filedata);
+
+    return string(filedata);
 }

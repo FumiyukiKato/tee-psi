@@ -76,19 +76,22 @@ public:
         uint8_t *encrypted_secret_key,
         uint8_t *secret_key_gcm_tag,
         uint8_t *risk_level,
-        uint8_t *result_mac
+        uint8_t *result_mac,
+        string mock_file
     );
-    int loadDataFromBlockChain(string user_id, HistoryData *encryptedGeoData);
+    int loadDataFromBlockChain(string user_id, HistoryData *encryptedGeoData, string mock_file);
     int loadAndStoreInfectedData(
         string user_id,
         uint8_t *session_token,
         uint8_t *encrypted_secret_key,
-        uint8_t *secret_key_gcm_tag
+        uint8_t *secret_key_gcm_tag,
+        string mock_file
 );
     
 private:
     sgx_status_t initEnclave();
     uint32_t getExtendedEPID_GID();
+    string ClientDataMock(string path);
 
 protected:
     Enclave *enclave = NULL;

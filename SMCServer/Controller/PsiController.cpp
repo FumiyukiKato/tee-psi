@@ -65,6 +65,11 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         return crow::response(400, res);
     };
 
+    string mock_file;
+    if (json_req.has("mock_file")) {
+        mock_file = json_req["mock_file"].s();
+    }
+
     uint8_t risk_level[E_RISKLEVEL_SIZE];
     uint8_t result_mac[GCMTAG_SIZE] = {0};
     int status = service->judgeContact(
@@ -73,7 +78,8 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         secret_key,
         secret_key_gcm_tag,
         risk_level,
-        result_mac
+        result_mac,
+        mock_file
     );
     if (status < 0) {
         res["error"] = "internal server error";
@@ -119,19 +125,25 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
         res["error"] = "invalid format gcm_tag";
         return crow::response(400, res);
     };
+
+    string mock_file;
+    if (json_req.has("mock_file")) {
+        mock_file = json_req["mock_file"].s();
+    }
     
     int status = service->loadAndStoreInfectedData(
         user_id,
         session_token,
         encrypted_secret_key,
-        secret_key_gcm_tag
+        secret_key_gcm_tag,
+        mock_file
     );
 
     // モックのためにログを吐き出す
-    this->logs->push_back(getNow() + string("[Private Contact Judegment] Loading user's encrypted data from Blockchain"));
-    this->logs->push_back(getNow() + string("STFMZ0ZxWXdjbTBRWTFKTmEwU0IrcDJBNWhXQWxuSSt1VHpuSkZ0blBRND0sVjIzVEVU..."));
-    this->logs->push_back(getNow() + string("[Private Contact Judegment] [INSIDE SGX] using Client session key and decrypt Client's secret key."));
-    this->logs->push_back(getNow() + string("[Private Contact Judegment] [INSIDE SGX] store DB inside enclave."));
+    // this->logs->push_back(getNow() + string("[Private Contact Judegment] Loading user's encrypted data from Blockchain"));
+    // this->logs->push_back(getNow() + string("STFMZ0ZxWXdjbTBRWTFKTmEwU0IrcDJBNWhXQWxuSSt1VHpuSkZ0blBRND0sVjIzVEVU..."));
+    // this->logs->push_back(getNow() + string("[Private Contact Judegment] [INSIDE SGX] using Client session key and decrypt Client's secret key."));
+    // this->logs->push_back(getNow() + string("[Private Contact Judegment] [INSIDE SGX] store DB inside enclave."));
     res["message"] = "ok";
     return crow::response(200, res);
 }
