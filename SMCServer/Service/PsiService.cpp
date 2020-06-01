@@ -1,5 +1,7 @@
 #include "PsiService.h"
 
+Clocker clocker;
+
 PsiService::PsiService() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
@@ -10,7 +12,8 @@ PsiService::~PsiService() {
 
 void PsiService::start(string path) {
     Log("[Service] enclave init");
-
+    clocker = Clocker("Initialize SGX");
+    clocker.start();
     sgx_status_t ret = this->initEnclave();
     if (SGX_SUCCESS != ret) {
         Log("Error, call initEnclave fail", log::error);
@@ -20,20 +23,26 @@ void PsiService::start(string path) {
     sgx_status_t status;
     uint8_t salt[SALT_SIZE];
     ret = initialize(this->enclave->getID(), &status, salt);
-
+    clocker.stop();
     uint8_t * filedata = NULL;
     int file_size = 0;
+    clocker = Clocker("Read central data");
+    clocker.start();
     file_size = ReadFileToBuffer(path, &filedata);
     if (file_size <= 0) {
         return ;
     }
+    clocker.stop();
     Log("[Service] loading central data");
+    clocker = Clocker("Uploading central data");
+    clocker.start();
     ret = uploadCentralData(this->enclave->getID(), &status, filedata, file_size);
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
         Log("[Error] uploadCentralData failed, %d, %d", ret, status);
         Log("Error, loading central data into sgx fail", log::error);
         return;
     }
+    clocker.stop();
     Log("[Service] Call initEnclave success");
 }
 
@@ -48,7 +57,7 @@ uint32_t PsiService::getExtendedEPID_GID() {
 
     if (SGX_SUCCESS != ret) {
         ret = -1;
-        Log("Error, call sgx_get_extended_epid_group_id fail");
+        Log("[Service] Error, call sgx_get_extended_epid_group_id fail");
         return ret;
     }
 
@@ -61,7 +70,7 @@ int PsiService::remoteAttestationMock(uint8_t *token, uint8_t *sk) {
     int ret = remote_attestation_mock(this->enclave->getID(), &status, token, sk);
     if ((SGX_SUCCESS != ret) || (SGX_SUCCESS != status)) {
         ret = -1;
-        Log("Error, call remote_attestation_mock fail");
+        Log("[Service] Error, call remote_attestation_mock fail");
         return ret;
     }
     
@@ -190,11 +199,14 @@ int PsiService::judgeContact(
     Log("[Service] judge contact start");
     
     HistoryData history;
+    clocker = Clocker("Load data block chain");
+    clocker.start();
     int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
     if (l_ret < 0) {
-        Log("loadDataFromBlockChain error, %s", l_ret);
+        Log("[Service] loadDataFromBlockChain error, %s", l_ret);
         return -1;
     }
+    clocker.stop();
 
     size_t total_size = history.total_geo_data_size();
     uint8_t geo_data_buffer[total_size];
@@ -208,7 +220,8 @@ int PsiService::judgeContact(
     size_t size_list_buffer[total_num];
     history.size_list_as_array(size_list_buffer, total_num);
 
-    
+    clocker = Clocker("Judge contact");
+    clocker.start();
     sgx_status_t status;
     sgx_status_t ret = judge_contact(
         this->enclave->getID(),
@@ -230,6 +243,7 @@ int PsiService::judgeContact(
         Log("[Service] judge contact failed, %d, %d!", ret, status);
         return -1;
     }
+    clocker.stop();
     return 0;
 }
 
@@ -242,11 +256,14 @@ int PsiService::loadAndStoreInfectedData(
 ){
     Log("[Service] loadAndStoreInfectedData start");
     HistoryData history;
+    clocker = Clocker("Load data block chain");
+    clocker.start();
     int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
     if (l_ret < 0) {
-        Log("loadDataFromBlockChain error, %s", l_ret);
+        Log("[Service] loadDataFromBlockChain error, %s", l_ret);
         return -1;
     }
+    clocker.stop();
 
     size_t total_size = history.total_geo_data_size();
     uint8_t geo_data_buffer[total_size];
@@ -260,6 +277,8 @@ int PsiService::loadAndStoreInfectedData(
     size_t size_list_buffer[total_num];
     history.size_list_as_array(size_list_buffer, total_num);
 
+    clocker = Clocker("Store infected data");
+    clocker.start();
     sgx_status_t status;
     sgx_status_t ret = store_infected_data(
         this->enclave->getID(),
@@ -279,6 +298,7 @@ int PsiService::loadAndStoreInfectedData(
         Log("[Service] loadAndStoreInfectedData failed, %d, %d!", ret, status);
         return -1;
     }
+    clocker.stop();
 
     Log("[Service] store_infected_data success");
     return 0;

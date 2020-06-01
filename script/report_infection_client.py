@@ -6,6 +6,8 @@ from base64 import b64encode
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 import hashlib
+import getopt
+import sys
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -15,8 +17,24 @@ def aesgcmEncrypt(byte, key, nonce):
     ciphertext, tag = cipher.encrypt_and_digest(byte)
     return ciphertext, tag
 
-# ra_mock
+def usage(o, a):
+    print("Usage: %s [-f, --file]" % ((o, a),))
 
+# option analysis
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "f:", ["file="])
+except getopt.GetoptError as err:
+    # print help information and exit:
+    print(err)  # will print something like "option -a not recognized"
+    usage("", "")
+    sys.exit(2)
+
+filedata = ""
+for o, arg in opts:
+    if o in ("-f", "--file"):
+        filedata = arg
+
+# ra_mock
 ra_mock_url = 'https://133.3.250.176/remote_attestation_mock?auth_token=B0702B28101BFCAA36965C6338688530'
 headers = {
     'Content-Type': 'application/json',
@@ -58,7 +76,8 @@ data = {
     'user_id': 'katokato',
     'secret_key': b_secret_key,
     'gcm_tag': b_secret_key_tag,
-    'session_token': session_token
+    'session_token': session_token,
+    'mock_file': filedata
 }
 req = urllib.request.Request(report_infection_url, json.dumps(data).encode(), headers, method='GET')
 with urllib.request.urlopen(req) as res:

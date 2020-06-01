@@ -66,7 +66,7 @@ def main():
             mergedData = generateMergeStrData(timestamp, geohash)
             data_list.append(mergedData)
         
-        # 99%のデータを100倍して高速化する
+        # 99%のデータを99倍して高速化する
         dense_data_list = []
         for i in range(newNum):
             timestamp = gen_rand_timestamp()

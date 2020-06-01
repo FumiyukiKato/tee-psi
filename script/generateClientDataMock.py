@@ -39,7 +39,7 @@ def main():
     input_secret_key = input("input Secret key as hex string (16bytes): ")
     secret_key = bytes.fromhex(input_secret_key)
     nonce = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # initial vector
-    list_num = 100
+    list_num = 1000
     data_num = 100
     json_data = cl.OrderedDict()
     total_data_list = []
@@ -60,7 +60,8 @@ def main():
 
     json_data["response"] = total_data_list
 
-    with open('./data/client-data.json', 'w') as f:
+    filename = './data/client-data-%d.json' % (list_num*data_num)
+    with open(filename, 'w') as f:
         json.dump(json_data, f, indent=4)
 
 main()
