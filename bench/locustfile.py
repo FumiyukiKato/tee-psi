@@ -39,12 +39,13 @@ class QuickstartUser(HttpUser):
             'mock_file': '../data/client-data-4000.json'
         }
         with self.client.get("/judge_contact?auth_token=B0702B28101BFCAA36965C6338688530", catch_response = True, verify=False, json=data) as response:
+            if response.status_code != 200:
+                response.failure("failed")
             body = response.json()
             print(body)
             session_key = bytes.fromhex(shared_key)
             result = aesgcmDecrypt(b64decode(body['risk_level']), b64decode(body['gcm_tag']), session_key, nonce)
             print("decrypted result: %s" % result.hex())
-
 
 def encrypt(secret_key, shared_key, nonce, session_key):
     input_secret_key = secret_key
