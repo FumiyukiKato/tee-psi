@@ -39,7 +39,7 @@ def main():
     input_secret_key = input("input Secret key as hex string (16bytes): ")
     secret_key = bytes.fromhex(input_secret_key)
     nonce = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # initial vector
-    list_num = 1000
+    list_num = 450
     data_num = 100
     json_data = cl.OrderedDict()
     total_data_list = []
