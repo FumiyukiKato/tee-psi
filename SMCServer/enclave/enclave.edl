@@ -52,8 +52,10 @@ enclave {
             size_t gcm_tag_total_size,
             [in, count=data_num] size_t* size_list,
             size_t data_num,
-            [out] uint8_t risk_level[1],
-            [out] uint8_t result_mac[16]
+            [out] uint8_t result[27],
+            [out] uint8_t result_mac[16],
+            [out] uint8_t signature[64],
+            [in] uint8_t user_id[16]
         );
 
         public sgx_status_t store_infected_data(
@@ -66,6 +68,12 @@ enclave {
             size_t gcm_tag_total_size,
             [in, count=data_num] size_t* size_list,
             size_t data_num
+        );
+
+        public sgx_status_t get_public_key(
+            [in] uint8_t session_token[32],
+            [out] uint8_t public_key[64],
+            [out] uint8_t gcm_tag[16]
         );
     };
 

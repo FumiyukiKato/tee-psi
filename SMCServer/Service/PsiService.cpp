@@ -165,7 +165,7 @@ int PsiService::loadDataFromBlockChain(
         if (!jsonReader.parse(responseData, jsonResponse)) return -1;
         jsonResponse = jsonResponse["response"];
     }
-    if (jsonResponse.size() >= 0) {
+    if (jsonResponse.size() > 0) {
         for( int i=0; i< jsonResponse.size(); i++) {
             if (!jsonResponse[i].isMember("gps") || !jsonResponse[i].isMember("gcm_tag")) return -3;
             
@@ -180,6 +180,10 @@ int PsiService::loadDataFromBlockChain(
             history->gcm_tag_vec.push_back(gcm_tag_buffer);
             history->size_list_vec.push_back(geo_buffer_size);
         }
+        // uint8_t *user_id = HexStringToByteArray(jsonResponse[0]["user_id"]);
+        uint8_t *user_id;
+        HexStringToByteArray(string("936DA01F9ABD4d9d80C702AF85C822A8"), &user_id); // 128bit
+        memcpy(history->user_id, user_id, UUID_SIZE);
     } else {
         Log("[loadDataFromBlockChain] zero size.");
         return -2;
@@ -192,8 +196,9 @@ int PsiService::judgeContact(
     uint8_t *session_token,
     uint8_t *encrypted_secret_key,
     uint8_t *secret_key_gcm_tag,
-    uint8_t *risk_level,
+    uint8_t *result,
     uint8_t *result_mac,
+    uint8_t *signature,
     string mock_file
 ) {
     Log("[Service] judge contact start");
@@ -235,8 +240,10 @@ int PsiService::judgeContact(
         gcm_tag_total_size,
         size_list_buffer,
         total_num,
-        risk_level,
-        result_mac
+        result,
+        result_mac,
+        signature,
+        history.user_id
     );
     
     if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
@@ -310,4 +317,21 @@ string PsiService::ClientDataMock(string path) {
     file_size = ReadFileToBuffer(path, &filedata);
 
     return string(filedata);
+}
+
+int PsiService::getPublicKey(uint8_t *session_token, uint8_t *public_key, uint8_t *gcm_tag) {
+    sgx_status_t status;
+    sgx_status_t ret = get_public_key(
+        this->enclave->getID(),
+        &status,
+        session_token,
+        public_key,
+        gcm_tag
+    );    
+    if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
+        Log("[Service] getPublicKey failed, %d, %d!", ret, status);
+        return -1;
+    }
+
+    return 0;  
 }

@@ -60,7 +60,8 @@ with urllib.request.urlopen(req) as res:
 print("session_token: ", session_token)
 print("shared_key: ", shared_key)
 
-input_secret_key = input("input Secret key as hex string (16bytes): ")
+#input_secret_key = input("input Secret key as hex string (16bytes): ")
+input_secret_key = 'B0702B28101BFCAA36965C6338688530'
 secret_key = bytes.fromhex(input_secret_key)
 print("iv is (12bytes) => 000000000000")
 nonce = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # initial vector
@@ -95,6 +96,10 @@ req = urllib.request.Request(report_infection_url, json.dumps(data).encode(), he
 with urllib.request.urlopen(req) as res:
     body = json.load(res)
     print(body)
-
-result = aesgcmDecrypt(b64decode(body['risk_level']), b64decode(body['gcm_tag']), session_key, nonce)
-print("decrypted result: %s" % result.hex())
+    result = aesgcmDecrypt(b64decode(body['risk_level']), b64decode(body['gcm_tag']), session_key, nonce)
+    print("decrypted risk_level:")
+    print("user_id %s" % result[:16].hex())
+    print("timestamp %s" % result[16:26].decode())
+    print("risk_level %s" % result[26])
+    signature_x_and_y = b64decode(body['signature_x_and_y'])
+    print("signature_x_and_y: ===  x: %s, y: %s" % (signature_x_and_y.hex()[:64], signature_x_and_y.hex()[64:]))

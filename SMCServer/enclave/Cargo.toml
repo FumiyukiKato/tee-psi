@@ -19,6 +19,9 @@ sgx_tcrypto = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 sgx_tkey_exchange = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 sgx_rand = { git = "https://github.com/apache/teaclave-sgx-sdk.git" }
 
+[dependencies]
+num-bigint      = { git = "https://github.com/mesalock-linux/num-bigint-sgx" }
+
 [patch.'https://github.com/apache/teaclave-sgx-sdk.git']
 sgx_alloc = { path = "../../../../sgx_alloc" }
 sgx_backtrace = { path = "../../../../sgx_backtrace" }

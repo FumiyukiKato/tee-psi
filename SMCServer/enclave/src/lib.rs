@@ -33,6 +33,7 @@ extern crate sgx_tdh;
 extern crate sgx_tcrypto;
 extern crate sgx_tkey_exchange;
 extern crate sgx_rand;
+extern crate num_bigint;
 
 use sgx_types::*;
 use sgx_trts::memeq::ConsttimeMemEq;
@@ -47,6 +48,10 @@ use std::boxed::Box;
 use std::collections::HashMap;
 use std::string::String;
 use std::string::ToString;
+use std::time::*;
+use std::untrusted::time::SystemTimeEx;
+use core::convert::TryInto;
+use num_bigint::BigUint;
 
 const G_SP_PUB_KEY: sgx_ec256_public_t = sgx_ec256_public_t {
     gx : [0x72, 0x12, 0x8a, 0x7a, 0x17, 0x52, 0x6e, 0xbf,
@@ -79,6 +84,10 @@ const U8_GEODATA_SIZE: usize = 9;
 const U8_TIMESTAMP_SIZE: usize = 10;
 
 const CLIENT_SECRET_KEY_SIZE: usize = 16;
+
+const DEIGITAL_SIGNATURE_SIZE: usize = 32*2;
+
+const UUID_SIZE: usize = 16;
 
 #[derive(Clone, Default)]
 struct KeyManager {
@@ -116,6 +125,17 @@ impl SpatialData {
         }
     }
 }
+#[derive(Default, Clone, Copy)]
+struct SignatureKey {
+    private_key: sgx_ec256_private_t,
+    public_key: sgx_ec256_public_t
+}
+
+impl SignatureKey {
+    pub fn new() -> Self {
+        SignatureKey::default()
+    }
+}
 
 // 昇順ソート
 fn sort_by_geohash(sp_data: &mut Vec<SpatialData>) {
@@ -124,9 +144,9 @@ fn sort_by_geohash(sp_data: &mut Vec<SpatialData>) {
 
 static KEY_MANAGER: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 static CENTRAL_DATA: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
+static SIGNATURE_KEY: AtomicPtr<()> = AtomicPtr::new(0 as * mut ());
 
-fn get_ref_key_manager() -> Option<&'static RefCell<KeyManager>>
-{
+fn get_ref_key_manager() -> Option<&'static RefCell<KeyManager>> {
     let ptr = KEY_MANAGER.load(Ordering::SeqCst) as * mut RefCell<KeyManager>;
     if ptr.is_null() {
         None
@@ -135,14 +155,36 @@ fn get_ref_key_manager() -> Option<&'static RefCell<KeyManager>>
     }
 }
 
-fn get_ref_central_data() -> Option<&'static RefCell<CentralData>>
-{
+fn get_ref_central_data() -> Option<&'static RefCell<CentralData>> {
     let ptr = CENTRAL_DATA.load(Ordering::SeqCst) as * mut RefCell<CentralData>;
     if ptr.is_null() {
         None
     } else {
         Some(unsafe { &* ptr })
     }
+}
+
+fn get_ref_signature_key() -> Option<&'static RefCell<SignatureKey>> {
+    let ptr = SIGNATURE_KEY.load(Ordering::SeqCst) as * mut RefCell<SignatureKey>;
+    if ptr.is_null() {
+        None
+    } else {
+        Some(unsafe { &* ptr })
+    }
+}
+
+fn key_provision(signature_key: &mut SignatureKey) {
+    let ecc_handle = SgxEccHandle::new();
+    let _result = ecc_handle.open();
+    let (mut prv_k, mut pub_k) = ecc_handle.create_key_pair().unwrap();
+    signature_key.private_key = prv_k;
+    let mut a = prv_k.r.clone();
+    a.reverse();
+    // ここでリトルエンディアンを直しておく
+    pub_k.gx.reverse();
+    pub_k.gy.reverse();
+    signature_key.public_key = pub_k;
+    let _result = ecc_handle.close();
 }
 
 // 使わないことにした
@@ -156,7 +198,6 @@ fn parse_timestamp_from_u8(u_timestamp: [u8; U8_TIMESTAMP_SIZE]) -> u64 {
     num
 }
 
-// TODO; 初期化と解放の関数をモードで分ける
 #[no_mangle]
 pub extern "C"
 fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
@@ -169,6 +210,12 @@ fn initialize(salt: &mut [u8; SGX_SALT_SIZE]) -> sgx_status_t {
     let central_data_box = Box::new(RefCell::<CentralData>::new(central_data));
     let central_data_ptr = Box::into_raw(central_data_box);
     CENTRAL_DATA.store(central_data_ptr as *mut (), Ordering::SeqCst);
+
+    let mut signature_key = SignatureKey::new();
+    key_provision(&mut signature_key);
+    let signature_key_box = Box::new(RefCell::<SignatureKey>::new(signature_key));
+    let signature_key_ptr = Box::into_raw(signature_key_box);
+    SIGNATURE_KEY.store(signature_key_ptr as *mut (), Ordering::SeqCst);
 
     sgx_status_t::SGX_SUCCESS
 }
@@ -426,11 +473,13 @@ fn judge_contact(
     gcm_tag_total_size    : usize,
     size_list             : * const usize,
     data_num              : usize,
-    risk_level            : &mut [u8; RISKLEVEL_RESULT],
-    result_mac            : &mut [u8; SGX_MAC_SIZE]
+    result                : &mut [u8; RISKLEVEL_RESULT + UUID_SIZE + U8_TIMESTAMP_SIZE],
+    result_mac            : &mut [u8; SGX_MAC_SIZE],
+    signature             : &mut [u8; DEIGITAL_SIGNATURE_SIZE],
+    user_id               : &mut [u8; UUID_SIZE],
 ) -> sgx_status_t {
     
-    /*   ここからstore_infected_dataと同じロジック   */
+    /* ここからstore_infected_dataと同じロジック   */
     let history_data_slice = unsafe {
         slice::from_raw_parts(encrypted_history_data, toal_size as usize)
     };
@@ -482,27 +531,62 @@ fn judge_contact(
         &mut target_history
     );
     if ret < 0 { return sgx_status_t::SGX_ERROR_INVALID_PARAMETER };
-    /*   ここまでstore_infected_dataと同じロジック  */
+    /* ここまでstore_infected_dataと同じロジック  */
 
-    
+    /* main logic */
     let central_data = get_ref_central_data().unwrap().borrow_mut();
-    // println!("[SGX] target data: {:?}", target_history);
-    // println!("[SGX] sort_by_geohash: {:?}", central_data.data);
-    let result = judge(&central_data.data, &target_history);
+    let juege_result = judge(&central_data.data, &target_history);
+    let raw_risk_level: &[u8; RISKLEVEL_RESULT] = &[!juege_result as u8];
     
-    // return with encryption
+    /* signature */
+    /* 生データ risk_level [u8; 1] + user_id [u8; 16] + UNIX epoch timestamp [u8; 10] に対して署名する*/
+    let signature_key = get_ref_signature_key().unwrap().borrow();
+    let ecc_handle = SgxEccHandle::new();
+
+    let mut timestamp = [0_u8; U8_TIMESTAMP_SIZE];
+    let now: String = SystemTime::now().duration_since(UNIX_EPOCH).expect("back to the future??").as_secs().to_string();
+    timestamp = now.as_bytes().try_into().expect("slice with incorrect length");
+
+    let mut will_signed_data: Vec<u8> = vec![];
+    will_signed_data.extend_from_slice(user_id);
+    will_signed_data.extend_from_slice(&timestamp);
+    will_signed_data.extend_from_slice(raw_risk_level);
+
+    let _result = ecc_handle.open();
+    let mut a = signature_key.private_key.r.clone();
+    a.reverse();
+    let mut sgx_signature = match ecc_handle.ecdsa_sign_slice(will_signed_data.as_slice(), &signature_key.private_key) {
+        Ok(sig) => sig,
+        Err(x) => return x,
+    };
+    
+    // この仕様はまじでくそ，これ4バイトに対してだからリトルエンディアンではなくないか？と思うのだけれども
+    let mut sig_x = sgx_signature.x.clone();
+    sig_x.reverse();
+    let mut sig_y = sgx_signature.y.clone();
+    sig_y.reverse();
+
+    let _result = ecc_handle.close();
+    let signature_u32_vec = [sig_x, sig_y].concat();
+    let n = signature_u32_vec.len();
+    for i in 0..n {
+        let buf: [u8; 4] = signature_u32_vec[i].to_be_bytes();
+        for j in 0..4 {
+            signature[4*i+j] = buf[j];
+        }
+    }
+    
+    /* encryption */
     let iv = [0; SGX_AESGCM_IV_SIZE];
     let aad:[u8; 0] = [0; 0];
-    let raw_risk_level: &[u8; RISKLEVEL_RESULT] = &[!result as u8];
     let ret = rsgx_rijndael128GCM_encrypt(
         session_key,
-        raw_risk_level,
+        will_signed_data.as_slice(),
         &iv,
         &aad,
-        risk_level,
+        result,
         result_mac
     );
-    // println!("{}", risk_level[0]);
     match ret {
         Ok(()) => {},
         Err(x) => return x,
@@ -519,7 +603,6 @@ fn judge(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>) -> 
 
 // ナイーブなアルゴリズム
 // O(mlogn)
-
 fn naive_matching(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>, matched_vec: &mut Vec<SpatialData>) {
     let n = target_history.len();
     for i in 0..n {
@@ -584,8 +667,42 @@ fn binary_search(sp_vec: &Vec<SpatialData>, target: &[u8; U8_GEODATA_SIZE]) -> V
     result_vec
 }
 
+#[no_mangle]
+pub extern "C"
+fn get_public_key( 
+    session_token: &[u8; SESSIONTOKEN_SIZE],
+    public_key   : &mut [u8; SGX_ECP256_KEY_SIZE*2],
+    gcm_tag      : &mut [u8; SGX_MAC_SIZE]
+) -> sgx_status_t {
+    
+    let key_manager = get_ref_key_manager().unwrap().borrow_mut();
+    let session_key: &sgx_aes_gcm_128bit_key_t = 
+        match key_manager.map.get(&get_key_from_vec(session_token)) {
+            Some(key) => key,
+            None => return sgx_status_t::SGX_ERROR_INVALID_PARAMETER,
+        };
+    let signature_key = get_ref_signature_key().unwrap().borrow();
+    let public_key_vec: Vec<u8> = [signature_key.public_key.gx, signature_key.public_key.gy].concat();
+    
+    let iv = [0; SGX_AESGCM_IV_SIZE];
+    let aad:[u8; 0] = [0; 0];
+    let ret = rsgx_rijndael128GCM_encrypt(
+        session_key,
+        public_key_vec.as_slice(),
+        &iv,
+        &aad,
+        public_key,
+        gcm_tag
+    );
+    
+    match ret {
+        Ok(()) => {},
+        Err(x) => return x,
+    };
+    sgx_status_t::SGX_SUCCESS
+}
 
-// oblivious functions
+/* oblivious functions */
 fn oget_intersection(a: &Vec<[u8; SGX_HASH_SIZE]>, b: &Vec<[u8; SGX_HASH_SIZE]>, v1: &mut Vec<u8>, v2: &mut Vec<u8>) {
 
     let n = a.len();

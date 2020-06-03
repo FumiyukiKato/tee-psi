@@ -21,6 +21,7 @@
 #define SALT_SIZE 32
 #define GCMTAG_SIZE 16
 #define RECORD_SIZE 19
+#define UUID_SIZE 16
 
 using namespace std;
 using namespace util;
@@ -29,6 +30,8 @@ typedef struct HistoryData {
     vector<uint8_t *> geo_data_vec;
     vector<uint8_t *> gcm_tag_vec;
     vector<size_t> size_list_vec;
+    uint8_t user_id[UUID_SIZE];
+
     size_t total_num() {
         return size_list_vec.size();
     }
@@ -75,8 +78,9 @@ public:
         uint8_t *session_token,
         uint8_t *encrypted_secret_key,
         uint8_t *secret_key_gcm_tag,
-        uint8_t *risk_level,
+        uint8_t *result,
         uint8_t *result_mac,
+        uint8_t *signature,
         string mock_file
     );
     int loadDataFromBlockChain(string user_id, HistoryData *encryptedGeoData, string mock_file);
@@ -86,7 +90,8 @@ public:
         uint8_t *encrypted_secret_key,
         uint8_t *secret_key_gcm_tag,
         string mock_file
-);
+    );
+    int getPublicKey(uint8_t *session_token, uint8_t *public_key, uint8_t *gcm_tag);
     
 private:
     sgx_status_t initEnclave();

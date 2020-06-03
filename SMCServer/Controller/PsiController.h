@@ -8,6 +8,9 @@
 #include "crow_all.h"
 
 #define E_RISKLEVEL_SIZE 1
+#define SGX_ECP256_KEY_SIZE 32
+#define SGX_ECP256_DS_SIZE 64
+#define TIMESTAMP_SIZE 10
 
 using namespace std;
 using namespace util;
@@ -21,6 +24,7 @@ public:
     crow::response dispatch_remote_attestation_mock(const crow::request& req);
     crow::response dispatch_judge_contact(const crow::request& req);
     crow::response dispatch_report_infection(const crow::request& req);
+    crow::response dispatch_get_public_key(const crow::request& req);
 
     
 private:

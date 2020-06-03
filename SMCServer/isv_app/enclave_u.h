@@ -248,8 +248,9 @@ sgx_status_t initialize(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t salt
 sgx_status_t uploadCentralData(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* filedata, size_t file_size);
 sgx_status_t uninitialize(sgx_enclave_id_t eid);
 sgx_status_t remote_attestation_mock(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t token[32], uint8_t sk[16]);
-sgx_status_t judge_contact(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t encrypted_secret_key[16], uint8_t secret_key_gcm_tag[16], uint8_t* encrypted_history_data, size_t toal_size, uint8_t* gcm_tag, size_t gcm_tag_total_size, size_t* size_list, size_t data_num, uint8_t risk_level[1], uint8_t result_mac[16]);
+sgx_status_t judge_contact(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t encrypted_secret_key[16], uint8_t secret_key_gcm_tag[16], uint8_t* encrypted_history_data, size_t toal_size, uint8_t* gcm_tag, size_t gcm_tag_total_size, size_t* size_list, size_t data_num, uint8_t result[27], uint8_t result_mac[16], uint8_t signature[64], uint8_t user_id[16]);
 sgx_status_t store_infected_data(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t encrypted_secret_key[16], uint8_t secret_key_gcm_tag[16], uint8_t* encrypted_history_data, size_t toal_size, uint8_t* gcm_tag, size_t gcm_tag_total_size, size_t* size_list, size_t data_num);
+sgx_status_t get_public_key(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t session_token[32], uint8_t public_key[64], uint8_t gcm_tag[16]);
 sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
 sgx_status_t sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size);

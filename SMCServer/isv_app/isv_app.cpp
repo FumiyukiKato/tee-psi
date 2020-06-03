@@ -92,8 +92,18 @@ int Main(char *filepath) {
     CROW_ROUTE(app, "/report_infection")
         .methods("GET"_method)
         ([psi_controller, &logs](const crow::request& req){
-        Log("saisyo");
         return psi_controller->dispatch_report_infection(req);
+    });
+
+    // - /get_public_key
+    //  - request parameter
+    //      { session_token: string }
+    //     - response parameter
+    //      { public_key: string, gcm_tag: string }
+    CROW_ROUTE(app, "/get_public_key")
+        .methods("GET"_method)
+        ([psi_controller, &logs](const crow::request& req){
+        return psi_controller->dispatch_get_public_key(req);
     });
 
 

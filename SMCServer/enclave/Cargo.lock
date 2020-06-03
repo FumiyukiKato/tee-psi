@@ -4,6 +4,7 @@
 name = "PSIenclave"
 version = "1.0.0"
 dependencies = [
+ "num-bigint",
  "sgx_rand",
  "sgx_tcrypto",
  "sgx_tdh",
@@ -12,6 +13,12 @@ dependencies = [
  "sgx_tstd",
  "sgx_types",
 ]
+
+[[package]]
+name = "autocfg"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d49d90015b3c36167a20fe2810c5cd875ad504b39cff3d4eae7977e6b7c1cb2"
 
 [[package]]
 name = "autocfg"
@@ -29,7 +36,37 @@ checksum = "7bbb73db36c1246e9034e307d0fba23f9a2e251faa47ade70c1bd252220c8311"
 name = "hashbrown_tstd"
 version = "0.7.1"
 dependencies = [
- "autocfg",
+ "autocfg 1.0.0",
+]
+
+[[package]]
+name = "num-bigint"
+version = "0.2.5"
+source = "git+https://github.com/mesalock-linux/num-bigint-sgx#377ecfb8bfac838418e80af9ed6cc74a627ca9c9"
+dependencies = [
+ "autocfg 1.0.0",
+ "num-integer",
+ "num-traits",
+ "sgx_tstd",
+]
+
+[[package]]
+name = "num-integer"
+version = "0.1.41"
+source = "git+https://github.com/mesalock-linux/num-integer-sgx#0ece2da7c01233749769a1574f61236d1569b2b9"
+dependencies = [
+ "autocfg 0.1.7",
+ "num-traits",
+ "sgx_tstd",
+]
+
+[[package]]
+name = "num-traits"
+version = "0.2.10"
+source = "git+https://github.com/mesalock-linux/num-traits-sgx#7551dca0b9f9fb86375bf1a84048d53f72d5ad79"
+dependencies = [
+ "autocfg 0.1.7",
+ "sgx_tstd",
 ]
 
 [[package]]

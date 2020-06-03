@@ -70,15 +70,18 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         mock_file = json_req["mock_file"].s();
     }
 
-    uint8_t risk_level[E_RISKLEVEL_SIZE];
-    uint8_t result_mac[GCMTAG_SIZE] = {0};
+    const size_t total_result_size = E_RISKLEVEL_SIZE + UUID_SIZE + TIMESTAMP_SIZE;
+    uint8_t result[total_result_size];
+    uint8_t signature[SGX_ECP256_DS_SIZE];
+    uint8_t result_mac[GCMTAG_SIZE];
     int status = service->judgeContact(
         user_id,
         session_token,
         secret_key,
         secret_key_gcm_tag,
-        risk_level,
+        result,
         result_mac,
+        signature,
         mock_file
     );
     if (status < 0) {
@@ -86,15 +89,15 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         return crow::response(500, res);
     }
     
-    res["risk_level"] = Base64encodeUint8(risk_level, E_RISKLEVEL_SIZE);
+    res["risk_level"] = Base64encodeUint8(result, total_result_size);
     res["gcm_tag"] = Base64encodeUint8(result_mac, GCMTAG_SIZE);
+    res["signature_x_and_y"] = Base64encodeUint8(signature, SGX_ECP256_DS_SIZE);
     return crow::response(200, res);
 }
 
 crow::response PsiController::dispatch_report_infection(const crow::request& req) {
     auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
-    Log("dispatch");
     
     if (!json_req || !json_req.has("user_id")
         ||!json_req.has("session_token") || !json_req.has("gcm_tag")
@@ -138,6 +141,10 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
         secret_key_gcm_tag,
         mock_file
     );
+    if (status < 0) {
+        res["error"] = "internal server error";
+        return crow::response(500, res);
+    }
 
     // モックのためにログを吐き出す
     // this->logs->push_back(getNow() + string("[Private Contact Judegment] Loading user's encrypted data from Blockchain"));
@@ -145,5 +152,38 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
     // this->logs->push_back(getNow() + string("[Private Contact Judegment] [INSIDE SGX] using Client session key and decrypt Client's secret key."));
     // this->logs->push_back(getNow() + string("[Private Contact Judegment] [INSIDE SGX] store DB inside enclave."));
     res["message"] = "ok";
+    return crow::response(200, res);
+}
+
+crow::response PsiController::dispatch_get_public_key(const crow::request& req) {
+    auto json_req = crow::json::load(req.body);
+    crow::json::wvalue res;
+    
+    if (!json_req ||!json_req.has("session_token")) {
+        res["error"] = "invalid json format";
+        return crow::response(400, res);
+    }
+
+    uint8_t *session_token = NULL;
+    auto session_token_str = json_req["session_token"].s();
+    if (SESSIONTOKEN_SIZE != HexStringToByteArray(session_token_str, &session_token)) {
+        res["error"] = "invalid format session token";
+        return crow::response(400, res);
+    };
+
+    uint8_t public_key[SGX_ECP256_KEY_SIZE*2];
+    uint8_t gcm_tag[GCMTAG_SIZE] = {0};
+    int status = service->getPublicKey(
+        session_token,
+        public_key,
+        gcm_tag
+    );
+    if (status < 0) {
+        res["error"] = "internal server error";
+        return crow::response(500, res);
+    }
+    
+    res["public_key"] = Base64encodeUint8(public_key, SGX_ECP256_KEY_SIZE*2);
+    res["gcm_tag"] = Base64encodeUint8(gcm_tag, GCMTAG_SIZE);
     return crow::response(200, res);
 }
