@@ -91,7 +91,7 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
     
     res["risk_level"] = Base64encodeUint8(result, total_result_size);
     res["gcm_tag"] = Base64encodeUint8(result_mac, GCMTAG_SIZE);
-    res["signature_x_and_y"] = Base64encodeUint8(signature, SGX_ECP256_DS_SIZE);
+    res["sgx_signature"] = Base64encodeUint8(signature, SGX_ECP256_DS_SIZE);
     return crow::response(200, res);
 }
 

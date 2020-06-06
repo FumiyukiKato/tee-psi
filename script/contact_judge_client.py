@@ -101,5 +101,5 @@ with urllib.request.urlopen(req) as res:
     print("user_id %s" % result[:16].hex())
     print("timestamp %s" % result[16:26].decode())
     print("risk_level %s" % result[26])
-    signature_x_and_y = b64decode(body['signature_x_and_y'])
-    print("signature_x_and_y: ===  x: %s, y: %s" % (signature_x_and_y.hex()[:64], signature_x_and_y.hex()[64:]))
+    signature_x_and_y = b64decode(body['sgx_signature'])
+    print("sgx_signature: %s" % signature_x_and_y.hex())
