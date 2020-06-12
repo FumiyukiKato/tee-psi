@@ -16,7 +16,7 @@ class QuickstartUser(HttpUser):
 
     def ra_mock(self):
         self.client.headers['Content-Type'] = "application/json"
-        with self.client.get("/remote_attestation_mock?auth_token=B0702B28101BFCAA36965C6338688530", catch_response = True, verify=False) as response:
+        with self.client.get("/remote_attestation_mock", catch_response = True, verify=False) as response:
             body = response.json()
             session_token = body["session_token"]
             shared_key = body["shared_key"]
@@ -38,7 +38,7 @@ class QuickstartUser(HttpUser):
             'session_token': session_token,
             'mock_file': '../data/client-data-4000.json'
         }
-        with self.client.get("/judge_contact?auth_token=B0702B28101BFCAA36965C6338688530", catch_response = True, verify=False, json=data) as response:
+        with self.client.get("/judge_contact", catch_response = True, verify=False, json=data) as response:
             if response.status_code != 200:
                 response.failure("failed")
             body = response.json()

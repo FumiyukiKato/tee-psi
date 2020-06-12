@@ -31,7 +31,8 @@ int Main(char *filepath) {
     DemoController *demo_controller = &demo_controller_instance;
 
     // application 初期化
-    crow::App<AuthMiddleware> app;
+    // 認証のミドルウェアはめんどいので通さない
+    crow::App<NopMiddleware> app;
 
     /* Routing */
 
@@ -90,7 +91,7 @@ int Main(char *filepath) {
     //         - before this, need to do mock-up remote attestation and get the shared key.
     //         - when this request
     CROW_ROUTE(app, "/report_infection")
-        .methods("GET"_method)
+        .methods("POST"_method)
         ([psi_controller, &logs](const crow::request& req){
         return psi_controller->dispatch_report_infection(req);
     });

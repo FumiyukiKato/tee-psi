@@ -35,7 +35,7 @@ for o, arg in opts:
         filedata = arg
 
 # ra_mock
-ra_mock_url = 'https://133.3.250.176/remote_attestation_mock?auth_token=B0702B28101BFCAA36965C6338688530'
+ra_mock_url = 'https://133.3.250.176/remote_attestation_mock'
 headers = {
     'Content-Type': 'application/json',
 }
@@ -68,7 +68,7 @@ print("base64 secret key gcm tag: ", b_secret_key_tag)
 
 # report_infection
 
-report_infection_url = 'https://133.3.250.176/report_infection?auth_token=B0702B28101BFCAA36965C6338688530'
+report_infection_url = 'https://133.3.250.176/report_infection'
 headers = {
     'Content-Type': 'application/json',
 }
@@ -79,7 +79,7 @@ data = {
     'session_token': session_token,
     'mock_file': filedata
 }
-req = urllib.request.Request(report_infection_url, json.dumps(data).encode(), headers, method='GET')
+req = urllib.request.Request(report_infection_url, json.dumps(data).encode(), headers, method='POST')
 with urllib.request.urlopen(req) as res:
     body = json.load(res)
     print(body)

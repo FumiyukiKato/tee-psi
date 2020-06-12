@@ -21,7 +21,7 @@ def aesgcmDecrypt(code, tag, key, nonce):
         print("Incorrect decryption")
 
 # ra_mock
-ra_mock_url = 'https://133.3.250.176/remote_attestation_mock?auth_token=B0702B28101BFCAA36965C6338688530'
+ra_mock_url = 'https://133.3.250.176/remote_attestation_mock'
 headers = {
     'Content-Type': 'application/json',
 }
@@ -40,7 +40,7 @@ nonce = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # initial vector
 session_key = bytes.fromhex(shared_key)
 
 # get_public_key
-get_public_key_url = 'https://133.3.250.176/get_public_key?auth_token=B0702B28101BFCAA36965C6338688530'
+get_public_key_url = 'https://133.3.250.176/get_public_key'
 headers = {
     'Content-Type': 'application/json',
 }

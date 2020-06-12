@@ -57,7 +57,7 @@
                 $("#result").empty();
                 
                 $.ajax({
-                    url:'https://133.3.250.176/mock_api/judge_user?auth_token=B0702B28101BFCAA36965C6338688530',
+                    url:'https://133.3.250.176/mock_api/judge_user',
                     type:'GET',
                     data:{
                         'user_id':$('#user_id').val()
@@ -84,7 +84,7 @@
             $('#ajax_ra').on('click',function(){
                 $(".loading").show();
                 $.ajax({
-                    url:'https://133.3.250.176/mock_api/remote_attestation?auth_token=B0702B28101BFCAA36965C6338688530',
+                    url:'https://133.3.250.176/mock_api/remote_attestation',
                     type:'GET',
                     data:{}
                 })
