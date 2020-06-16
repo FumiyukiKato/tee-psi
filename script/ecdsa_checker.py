@@ -22,6 +22,10 @@ public_key = input("public key: ")
 
 vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.NIST256p, hashfunc=sha256)
 
-result = vk.verify(bytes.fromhex(signature), message)
-if result:
-    print("verification success")
+try:
+    result = vk.verify(bytes.fromhex(signature), message)
+    if result:
+        print("[+] VERIFICATION SUCCES!!")
+except ecdsa.keys.BadSignatureError as e:
+    print("[-] VERIFICATION FAILED!!")
+

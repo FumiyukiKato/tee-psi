@@ -22,6 +22,7 @@
 #define GCMTAG_SIZE 16
 #define RECORD_SIZE 19
 #define UUID_SIZE 16
+#define LOAD_DATA_FROM_BC_ERROR 100
 
 using namespace std;
 using namespace util;
@@ -74,7 +75,7 @@ public:
     void start(string filepath);
     int remoteAttestationMock(uint8_t *token, uint8_t *sk);    
     int judgeContact(
-        string user_id,
+        string transaction_id,
         uint8_t *session_token,
         uint8_t *encrypted_secret_key,
         uint8_t *secret_key_gcm_tag,
@@ -83,9 +84,9 @@ public:
         uint8_t *signature,
         string mock_file
     );
-    int loadDataFromBlockChain(string user_id, HistoryData *encryptedGeoData, string mock_file);
+    int loadDataFromBlockChain(string transaction_id, HistoryData *encryptedGeoData, string mock_file);
     int loadAndStoreInfectedData(
-        string user_id,
+        string transaction_id,
         uint8_t *session_token,
         uint8_t *encrypted_secret_key,
         uint8_t *secret_key_gcm_tag,

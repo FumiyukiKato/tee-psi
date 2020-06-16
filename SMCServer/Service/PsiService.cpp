@@ -93,7 +93,7 @@ size_t _jsonParseCallback(
 //   data: 暗号化されたデータのリストを受け取る
 //   
 int PsiService::loadDataFromBlockChain(
-    string user_id,
+    string transaction_id,
     HistoryData *history,
     string mock_file
 ) {
@@ -106,7 +106,7 @@ int PsiService::loadDataFromBlockChain(
     std::ostringstream url;
     std::ostringstream params_stream;
     url << "http://13.71.146.191:10000/api/queryusergeodata/";
-    params_stream <<  "\{\"selector\":{\"userId\":\"" << user_id << "\"\}\}";
+    params_stream <<  "\{\"selector\":{\"id\":\"" << transaction_id << "\"\}\}";
     url << curl_easy_escape(curl, params_stream.str().c_str(), strlen(params_stream.str().c_str()));
     curl_easy_setopt( curl, CURLOPT_URL, url.str().c_str() );
 
@@ -114,7 +114,7 @@ int PsiService::loadDataFromBlockChain(
     struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Content-Type: application/json");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L); // 2秒しか待たない
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L); // 3秒しか待たない
     curl_easy_setopt(curl, CURLOPT_PROXY, "proxy.kuins.net:8080");
 
     // response data
@@ -142,9 +142,9 @@ int PsiService::loadDataFromBlockChain(
 
     // response例
     // {
-    // "response": // なぜかstringで入っている意味が分からない
+    // "response": // なぜかstringで入っているの意味が分からない
     //    "[
-    //       {"createTime":20200510054040,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089780627","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510054141,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089841402","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510110606,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109246280","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510114545,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109405481","objectType":"GEODATA","ownerId":"","price":0,"status":0,"userId":"EY100"}
+    //       {"createTime":20200510054040,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089780627","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510054141,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089841402","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510110606,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109246280","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510114545,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109405481","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"}
     //    ]"
     // }    
     // string responseMock = R"({"response":"[{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
@@ -180,9 +180,8 @@ int PsiService::loadDataFromBlockChain(
             history->gcm_tag_vec.push_back(gcm_tag_buffer);
             history->size_list_vec.push_back(geo_buffer_size);
         }
-        // uint8_t *user_id = HexStringToByteArray(jsonResponse[0]["user_id"]);
         uint8_t *user_id;
-        HexStringToByteArray(string("936DA01F9ABD4d9d80C702AF85C822A8"), &user_id); // 128bit
+        HexStringToByteArray(jsonResponse[0]["user_id"].asString(), &user_id);
         memcpy(history->user_id, user_id, UUID_SIZE);
     } else {
         Log("[loadDataFromBlockChain] zero size.");
@@ -209,7 +208,7 @@ int PsiService::judgeContact(
     int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
     if (l_ret < 0) {
         Log("[Service] loadDataFromBlockChain error, %s", l_ret);
-        return -1;
+        return LOAD_DATA_FROM_BC_ERROR;
     }
     clocker.stop();
 
@@ -248,7 +247,7 @@ int PsiService::judgeContact(
     
     if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
         Log("[Service] judge contact failed, %d, %d!", ret, status);
-        return -1;
+        return (int)status;
     }
     clocker.stop();
     return 0;
@@ -268,7 +267,7 @@ int PsiService::loadAndStoreInfectedData(
     int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
     if (l_ret < 0) {
         Log("[Service] loadDataFromBlockChain error, %s", l_ret);
-        return -1;
+        return LOAD_DATA_FROM_BC_ERROR;
     }
     clocker.stop();
 
@@ -303,7 +302,7 @@ int PsiService::loadAndStoreInfectedData(
     
     if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
         Log("[Service] loadAndStoreInfectedData failed, %d, %d!", ret, status);
-        return -1;
+        return (int)status;
     }
     clocker.stop();
 
@@ -330,7 +329,7 @@ int PsiService::getPublicKey(uint8_t *session_token, uint8_t *public_key, uint8_
     );    
     if (SGX_SUCCESS != ret || SGX_SUCCESS != status) {
         Log("[Service] getPublicKey failed, %d, %d!", ret, status);
-        return -1;
+        return int(status);
     }
 
     return 0;  

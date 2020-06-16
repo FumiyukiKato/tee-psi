@@ -49,6 +49,7 @@ print("session_token: ", session_token)
 print("shared_key: ", shared_key)
 
 input_secret_key = input("input Secret key as hex string (16bytes): ")
+transaction_id = input("input transaction_id: ")
 secret_key = bytes.fromhex(input_secret_key)
 print("iv is (12bytes) => 000000000000")
 nonce = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # initial vector
@@ -73,14 +74,21 @@ headers = {
     'Content-Type': 'application/json',
 }
 data = {
-    'user_id': 'katokato',
+    'transaction_id': transaction_id,
     'secret_key': b_secret_key,
     'gcm_tag': b_secret_key_tag,
     'session_token': session_token,
     'mock_file': filedata
 }
 req = urllib.request.Request(report_infection_url, json.dumps(data).encode(), headers, method='POST')
-with urllib.request.urlopen(req) as res:
-    body = json.load(res)
-    print(body)
+
+try:
+    with urllib.request.urlopen(req) as res:
+        body = json.load(res)
+        print(body)
+except urllib.error.HTTPError as e:
+    body = e.read().decode()
+    print("Request failed")
+    print("status: %s", e.code)
+    print("body: %s", body)
     

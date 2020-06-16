@@ -36,13 +36,13 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
     auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
     
-    if (!json_req || !json_req.has("user_id") || !json_req.has("secret_key") ||
+    if (!json_req || !json_req.has("transaction_id") || !json_req.has("secret_key") ||
         !json_req.has("gcm_tag") || !json_req.has("session_token")) {
         res["error"] = "invalid json format";
         return crow::response(400, res);
     }
     
-    std::string user_id = json_req["user_id"].s();
+    std::string transaction_id = json_req["transaction_id"].s();
 
     uint8_t *session_token = NULL;
     auto session_token_str = json_req["session_token"].s();
@@ -75,7 +75,7 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
     uint8_t signature[SGX_ECP256_DS_SIZE];
     uint8_t result_mac[GCMTAG_SIZE];
     int status = service->judgeContact(
-        user_id,
+        transaction_id,
         session_token,
         secret_key,
         secret_key_gcm_tag,
@@ -84,8 +84,16 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         signature,
         mock_file
     );
-    if (status < 0) {
-        res["error"] = "internal server error";
+    if (status == LOAD_DATA_FROM_BC_ERROR) {
+        res["error"] = "Error happened when loading from Block chain, your request id may be wrong.";
+        return crow::response(500, res);
+    }
+    if (status > 1) {
+        res["error"] = "Your secret key or gcm_tag is not correct.";
+        return crow::response(400, res);
+    }
+    if (status == 1) {
+        res["error"] = "Server Error.";
         return crow::response(500, res);
     }
     
@@ -99,14 +107,14 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
     auto json_req = crow::json::load(req.body);
     crow::json::wvalue res;
     
-    if (!json_req || !json_req.has("user_id")
+    if (!json_req || !json_req.has("transaction_id")
         ||!json_req.has("session_token") || !json_req.has("gcm_tag")
         ||!json_req.has("secret_key")) {
         res["error"] = "invalid json format";
         return crow::response(400, res);
     }
 
-    std::string user_id = json_req["user_id"].s();
+    std::string transaction_id = json_req["transaction_id"].s();
 
     uint8_t *session_token = NULL;
     auto session_token_str = json_req["session_token"].s();
@@ -135,14 +143,22 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
     }
     
     int status = service->loadAndStoreInfectedData(
-        user_id,
+        transaction_id,
         session_token,
         encrypted_secret_key,
         secret_key_gcm_tag,
         mock_file
     );
-    if (status < 0) {
-        res["error"] = "internal server error";
+    if (status == LOAD_DATA_FROM_BC_ERROR) {
+        res["error"] = "Error happened when loading from Block chain, your request id may be wrong.";
+        return crow::response(500, res);
+    }
+    if (status > 1) {
+        res["error"] = "Your secret key or gcm_tag is not correct.";
+        return crow::response(400, res);
+    }
+    if (status == 1) {
+        res["error"] = "Server Error.";
         return crow::response(500, res);
     }
 
@@ -178,7 +194,7 @@ crow::response PsiController::dispatch_get_public_key(const crow::request& req) 
         public_key,
         gcm_tag
     );
-    if (status < 0) {
+    if (status > 0) {
         res["error"] = "internal server error";
         return crow::response(500, res);
     }
