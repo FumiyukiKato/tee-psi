@@ -81,16 +81,14 @@ public:
         uint8_t *secret_key_gcm_tag,
         uint8_t *result,
         uint8_t *result_mac,
-        uint8_t *signature,
-        string mock_file
+        uint8_t *signature
     );
-    int loadDataFromBlockChain(string transaction_id, HistoryData *encryptedGeoData, string mock_file);
+    int loadDataFromBlockChain(string transaction_id, HistoryData *encryptedGeoData);
     int loadAndStoreInfectedData(
         string transaction_id,
         uint8_t *session_token,
         uint8_t *encrypted_secret_key,
-        uint8_t *secret_key_gcm_tag,
-        string mock_file
+        uint8_t *secret_key_gcm_tag
     );
     int getPublicKey(uint8_t *session_token, uint8_t *public_key, uint8_t *gcm_tag);
     

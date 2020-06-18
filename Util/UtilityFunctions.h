@@ -82,6 +82,8 @@ string getNow();
 
 void printf_array(string tag, const uint8_t * arr, int size);
 
+int ParseUUID(string uuid_str, uint8_t **byte_buf);
+
 
 // 時間分解能がけっこう低い
 class Clocker {

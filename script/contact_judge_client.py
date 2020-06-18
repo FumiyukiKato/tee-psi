@@ -108,5 +108,5 @@ try:
 except urllib.error.HTTPError as e:
     body = e.read().decode()
     print("Request failed")
-    print("status: %s", e.code)
-    print("body: %s", body)
+    print("status: %s" % e.code)
+    print("body: %s" % body)

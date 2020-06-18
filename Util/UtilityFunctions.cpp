@@ -337,3 +337,13 @@ string getNow() {
     ss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S(UTC): ");
     return ss.str();
 }
+
+
+// parse for this type of UUID {12345678-1234-5678-1234-567812345678}
+int ParseUUID(string uuid_str, uint8_t **byte_buf) {
+    uuid_str.erase(8, 1);
+    uuid_str.erase(12, 1);
+    uuid_str.erase(16, 1);
+    uuid_str.erase(20, 1);
+    return HexStringToByteArray(uuid_str, byte_buf);
+}

@@ -65,11 +65,6 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         return crow::response(400, res);
     };
 
-    string mock_file;
-    if (json_req.has("mock_file")) {
-        mock_file = json_req["mock_file"].s();
-    }
-
     const size_t total_result_size = E_RISKLEVEL_SIZE + UUID_SIZE + TIMESTAMP_SIZE;
     uint8_t result[total_result_size];
     uint8_t signature[SGX_ECP256_DS_SIZE];
@@ -81,8 +76,7 @@ crow::response PsiController::dispatch_judge_contact(const crow::request& req) {
         secret_key_gcm_tag,
         result,
         result_mac,
-        signature,
-        mock_file
+        signature
     );
     if (status == LOAD_DATA_FROM_BC_ERROR) {
         res["error"] = "Error happened when loading from Block chain, your request id may be wrong.";
@@ -137,18 +131,13 @@ crow::response PsiController::dispatch_report_infection(const crow::request& req
         return crow::response(400, res);
     };
 
-    string mock_file;
-    if (json_req.has("mock_file")) {
-        mock_file = json_req["mock_file"].s();
-    }
-    
     int status = service->loadAndStoreInfectedData(
         transaction_id,
         session_token,
         encrypted_secret_key,
-        secret_key_gcm_tag,
-        mock_file
+        secret_key_gcm_tag
     );
+
     if (status == LOAD_DATA_FROM_BC_ERROR) {
         res["error"] = "Error happened when loading from Block chain, your request id may be wrong.";
         return crow::response(500, res);

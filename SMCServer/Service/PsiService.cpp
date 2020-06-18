@@ -89,14 +89,13 @@ size_t _jsonParseCallback(
     return totalBytes;
 }
 
-// params:
-//   data: 暗号化されたデータのリストを受け取る
-//   
+// データのロードを担当するよ
 int PsiService::loadDataFromBlockChain(
     string transaction_id,
-    HistoryData *history,
-    string mock_file
+    HistoryData *history
 ) {
+    /* リクエストを送る処理 */
+
     CURLcode res = CURLE_OK;
     CURL *curl = curl_easy_init();
     curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L );
@@ -136,53 +135,78 @@ int PsiService::loadDataFromBlockChain(
     curl_easy_cleanup(curl);
 
     if (httpCode != 200) return -1;
+
+    /* レスポンスのパース処理 */
     
-    Json::Value jsonResponse;
-    Json::Reader jsonReader;
+    // データはなぜかstringでネストされているので注意しましょう
+    /* Response Example
+    $ curl  -H "Content-type: application/json" 'http://13.71.146.191:10000/api/queryusergeodata/%7B%22selector%22:%7B%22id%22:%221592376965083%22%7D%7D' -x proxy.kuins.net:8080
 
-    // response例
-    // {
-    // "response": // なぜかstringで入っているの意味が分からない
-    //    "[
-    //       {"createTime":20200510054040,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089780627","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510054141,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589089841402","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510110606,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109246280","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"},{"createTime":20200510114545,"gps":"X=100.01, Y=100.02, C=100.03","id":"1589109405481","objectType":"gps","ownerId":"","price":0,"status":0,"userId":"EY100"}
-    //    ]"
-    // }    
-    // string responseMock = R"({"response":"[{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR26wg1Zy4/EDLBwTTOoJ0/VASzdTDTx3TkPcBPn3VJqbsO6ZARrnkkT/XIc8VNWvIgc7bKZJxuwYnbADzMaSELtsiOhB83meUwsFiNTGAxxhU4/f+aKZt9CI0vgDa3SFeMYVlCDw5lBxoUw62DXShylxv9sUoO3e2TD+cc/4BF/ZAtp8V8GRZL4MAz3KjoUuTq7ty5BUlR9QFnaJY2BF6fYc8uweGZT/b7aYgwo/bLYZpJa6yDT3K2GXKvw==\",\"gcm_tag\":\"zBQhMcY0qWZRGd/MCc3MVw==\"},{\"gps\":\"qSuR1qon05m89AXFW0TNd4p471ASzdjASx/WkPBMPX3aNaesb7ZARrnnnzLQIcYfMmqBmcTKYpo3uwYnZwHzNqyEKY9gNwZ4kCyf08FiNT2PwRRc4vOuduo99yJr/gc=\",\"gcm_tag\":\"MGedlhB8i5eUy3J0CILBpw==\"}]"})";
-    // [b'15892711516881f7rhq', b'1584074006zmzxes79j', b'15846945186u3hmyrz1', b'158861399401cn2x98s', b'15846288412nt4q579t']
-
-    // TODO; mock up here
-    string responseData;
-    if (mock_file.empty()) {
-        responseData = *httpData.get();
-        // responseData = ClientDataMock("../data/client-ini.json");
-        Json::Value interJson;
-        Json::Reader interReader;
-        interReader.parse(responseData, interJson);
-        if (!jsonReader.parse(interJson["response"].asString(), jsonResponse)) return -1;
-        std::cout << jsonResponse << std::endl;
-    } else {
-        responseData = ClientDataMock(mock_file);
-        if (!jsonReader.parse(responseData, jsonResponse)) return -1;
-        jsonResponse = jsonResponse["response"];
+    {   値がstringになっているので注意
+        "response": "[
+            {
+                \"createTime\":20200617060505,
+                \"gps\":\"{ 値がstringになっているで注意2
+                    response:[
+                        {
+                            gps:DUROFAHYtKgdBQLpupzEMn91GKKrJrE7OQFPdatWA==,
+                            gcm_tag:WbpT8BIPZRlMyFgaM0u4lA==
+                        }
+                    ]
+                }\",
+                \"id\":\"1592376965083\",
+                \"objectType\":\"GEODATA\",
+                \"ownerId\":\"\",
+                \"price\":0,
+                \"status\":0,
+                \"userId\":\"waseda@android3\"
+            }
+        ]"
     }
-    if (jsonResponse.size() > 0) {
-        for( int i=0; i< jsonResponse.size(); i++) {
-            if (!jsonResponse[i].isMember("gps") || !jsonResponse[i].isMember("gcm_tag")) return -3;
+
+    */
+
+    // curlからの結果を読みとっている
+    Json::Value httpJsonValue;
+    Json::Reader httpJsonReader;    
+    httpJsonReader.parse(*httpData.get(), httpJsonValue);
+    std::cout << httpJsonValue << std::endl;
+    // 最初の"response"に対応する値を取り出す
+    Json::Value responseJsonValue;
+    Json::Reader responseJsonReader;
+    if (!responseJsonReader.parse(httpJsonValue["response"].asString(), responseJsonValue)) return -1;
+
+    // userIdはここで抜き出す
+    uint8_t *user_id;
+    int a = ParseUUID(responseJsonValue[0]["userId"].asString(), &user_id);
+
+    memcpy(history->user_id, user_id, UUID_SIZE);
+    std::cout << ByteArrayToString(user_id, UUID_SIZE) << std::endl;
+
+    // gpsの中身のstringをパースする
+    Json::Value gpsJsonValue;
+    Json::Reader gpsJsonReader;
+
+    if (!gpsJsonReader.parse(responseJsonValue[0]["gps"].asString(), gpsJsonValue)) return -1;
+
+    // gpsデータのリストを取り出す
+    Json::Value gpsData = gpsJsonValue["response"];
+
+    if (gpsData.size() > 0) {
+        for( int i=0; i< gpsData.size(); i++) {
+            if (!gpsData[i].isMember("gps") || !gpsData[i].isMember("gcm_tag")) return -3;
             
             uint8_t *geo_buffer;
-            int geo_buffer_size = StringToByteArray(Base64decode(jsonResponse[i]["gps"].asString()), &geo_buffer);
+            int geo_buffer_size = StringToByteArray(Base64decode(gpsData[i]["gps"].asString()), &geo_buffer);
             if (geo_buffer_size % RECORD_SIZE != 0) return -4; // RECORD_SIZEをサーバサイドで意識するのは避けたいが，，，
             
             uint8_t *gcm_tag_buffer;
-            StringToByteArray(Base64decode(jsonResponse[i]["gcm_tag"].asString()), &gcm_tag_buffer);
+            StringToByteArray(Base64decode(gpsData[i]["gcm_tag"].asString()), &gcm_tag_buffer);
 
             history->geo_data_vec.push_back(geo_buffer);
             history->gcm_tag_vec.push_back(gcm_tag_buffer);
             history->size_list_vec.push_back(geo_buffer_size);
         }
-        uint8_t *user_id;
-        HexStringToByteArray(jsonResponse[0]["user_id"].asString(), &user_id);
-        memcpy(history->user_id, user_id, UUID_SIZE);
     } else {
         Log("[loadDataFromBlockChain] zero size.");
         return -2;
@@ -197,15 +221,14 @@ int PsiService::judgeContact(
     uint8_t *secret_key_gcm_tag,
     uint8_t *result,
     uint8_t *result_mac,
-    uint8_t *signature,
-    string mock_file
+    uint8_t *signature
 ) {
     Log("[Service] judge contact start");
     
     HistoryData history;
     clocker = Clocker("Load data block chain");
     clocker.start();
-    int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
+    int l_ret = loadDataFromBlockChain(user_id, &history);
     if (l_ret < 0) {
         Log("[Service] loadDataFromBlockChain error, %s", l_ret);
         return LOAD_DATA_FROM_BC_ERROR;
@@ -257,14 +280,13 @@ int PsiService::loadAndStoreInfectedData(
     string user_id,
     uint8_t *session_token,
     uint8_t *encrypted_secret_key,
-    uint8_t *secret_key_gcm_tag,
-    string mock_file
+    uint8_t *secret_key_gcm_tag
 ){
     Log("[Service] loadAndStoreInfectedData start");
     HistoryData history;
     clocker = Clocker("Load data block chain");
     clocker.start();
-    int l_ret = loadDataFromBlockChain(user_id, &history, mock_file);
+    int l_ret = loadDataFromBlockChain(user_id, &history);
     if (l_ret < 0) {
         Log("[Service] loadDataFromBlockChain error, %s", l_ret);
         return LOAD_DATA_FROM_BC_ERROR;
