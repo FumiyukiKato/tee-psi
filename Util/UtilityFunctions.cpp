@@ -338,7 +338,6 @@ string getNow() {
     return ss.str();
 }
 
-
 // parse for this type of UUID {12345678-1234-5678-1234-567812345678}
 int ParseUUID(string uuid_str, uint8_t **byte_buf) {
     uuid_str.erase(8, 1);
@@ -346,4 +345,84 @@ int ParseUUID(string uuid_str, uint8_t **byte_buf) {
     uuid_str.erase(16, 1);
     uuid_str.erase(20, 1);
     return HexStringToByteArray(uuid_str, byte_buf);
+}
+
+// ブロックチェーンから送られてくるデータを適切なJsonに整形するための悲しき関数
+Json::Value SuperParse(string raw_json) {
+/* Response Example
+*   $ curl  -H "Content-type: application/json" 'http://13.71.146.191:10000/api/queryusergeodata/%7B%22selector%22:%7B%22id%22:%221592376965083%22%7D%7D' -x proxy.kuins.net:8080
+*   
+*   {   値がstringになっているので注意
+*       "response": "[
+*           {
+*               \"createTime\":20200617060505,
+*               \"gps\":\"{ ここもJson形式を満たしていない注意
+*                   response:[
+*                       {
+*                           gps:DUROFAHYtKgdBQLpupzEMn91GKKrJrE7OQFPdatWA==,
+*                           gcm_tag:WbpT8BIPZRlMyFgaM0u4lA==
+*                       }
+*                   ]
+*               }\",
+*               \"id\":\"1592376965083\",
+*               \"objectType\":\"GEODATA\",
+*               \"ownerId\":\"\",
+*               \"price\":0,
+*               \"status\":0,
+*               \"userId\":\"waseda@android3\"
+*           }
+*       ]"
+*   }
+*/
+
+    Json::Value httpJsonValue;
+    Json::Reader httpJsonReader;    
+    httpJsonReader.parse(raw_json, httpJsonValue);
+    Json::Value responseJsonValue;
+    Json::Reader responseJsonReader;
+    if (!responseJsonReader.parse(httpJsonValue["response"].asString(), responseJsonValue)) return -1;
+
+    // まずresponseがstringになっているのを戻す
+    httpJsonValue["response"] = responseJsonValue;
+    // gpsの中身を処理する
+    httpJsonValue["response"][0]["gps"] = ParseNoQuoteJson(httpJsonValue["response"][0]["gps"].asString());
+
+    return httpJsonValue;
+}
+
+/* 今回のケースだけに使う悲しみのパーサ
+*
+*   params: 
+*       {response:[{gps:DUROFwXevqsdAAL+menk1zDZzQ==,gcm_tag:iBjujlpS8vhefoVzVvLM8g==}]}
+*   return:
+*       {"response:[{"gps":"DUROFwXevqsdAAL+menk1zDZzQ==","gcm_tag":"iBjujlpS8vhefoVzVvLM8g=="}]}
+*/
+Json::Value ParseNoQuoteJson(string no_quote_json_string) {
+    std::stringstream ss;
+    for (int i=0; i<no_quote_json_string.length(); i++) {
+        auto ith = no_quote_json_string[i];
+        if (ith == '{') {
+            ss << "{\"";
+        }
+        else if (ith == ':' && (no_quote_json_string[i+1] == '[' || no_quote_json_string[i+1] == '{')) {
+            ss << "\":";
+        }
+        else if (ith == ':' && no_quote_json_string[i+1] != '[' && no_quote_json_string[i+1] != '{') {
+            ss << "\":\"";
+        }
+        else if (ith == ',') {
+            ss << "\",\"";
+        }
+        else if (ith == '}' && no_quote_json_string[i-1] != ']' && no_quote_json_string[i+1] != '}') {
+            ss << "\"}";
+        }
+        else {
+            ss << ith;
+        }
+    }
+    string json_string = ss.str();
+    Json::Value value;
+    Json::Reader reader;
+    reader.parse(json_string, value);
+    return value;
 }

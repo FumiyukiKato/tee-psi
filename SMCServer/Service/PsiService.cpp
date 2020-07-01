@@ -137,61 +137,18 @@ int PsiService::loadDataFromBlockChain(
     if (httpCode != 200) return -1;
 
     /* レスポンスのパース処理 */
-    
-    // データはなぜかstringでネストされているので注意しましょう
-    /* Response Example
-    $ curl  -H "Content-type: application/json" 'http://13.71.146.191:10000/api/queryusergeodata/%7B%22selector%22:%7B%22id%22:%221592376965083%22%7D%7D' -x proxy.kuins.net:8080
-
-    {   値がstringになっているので注意
-        "response": "[
-            {
-                \"createTime\":20200617060505,
-                \"gps\":\"{ 値がstringになっているで注意2
-                    response:[
-                        {
-                            gps:DUROFAHYtKgdBQLpupzEMn91GKKrJrE7OQFPdatWA==,
-                            gcm_tag:WbpT8BIPZRlMyFgaM0u4lA==
-                        }
-                    ]
-                }\",
-                \"id\":\"1592376965083\",
-                \"objectType\":\"GEODATA\",
-                \"ownerId\":\"\",
-                \"price\":0,
-                \"status\":0,
-                \"userId\":\"waseda@android3\"
-            }
-        ]"
-    }
-
-    */
 
     // curlからの結果を読みとっている
-    Json::Value httpJsonValue;
-    Json::Reader httpJsonReader;    
-    httpJsonReader.parse(*httpData.get(), httpJsonValue);
-    std::cout << httpJsonValue << std::endl;
-    // 最初の"response"に対応する値を取り出す
-    Json::Value responseJsonValue;
-    Json::Reader responseJsonReader;
-    if (!responseJsonReader.parse(httpJsonValue["response"].asString(), responseJsonValue)) return -1;
+    // jsonの中身がバグっているのでSuperParseで頑張るけど結局漏れ出している
+    Json::Value httpJsonValue = SuperParse(*httpData.get());
 
     // userIdはここで抜き出す
     uint8_t *user_id;
-    int a = ParseUUID(responseJsonValue[0]["userId"].asString(), &user_id);
-
+    ParseUUID(httpJsonValue["response"][0]["userId"].asString(), &user_id);
     memcpy(history->user_id, user_id, UUID_SIZE);
-    std::cout << ByteArrayToString(user_id, UUID_SIZE) << std::endl;
 
-    // gpsの中身のstringをパースする
-    Json::Value gpsJsonValue;
-    Json::Reader gpsJsonReader;
-
-    if (!gpsJsonReader.parse(responseJsonValue[0]["gps"].asString(), gpsJsonValue)) return -1;
-
-    // gpsデータのリストを取り出す
-    Json::Value gpsData = gpsJsonValue["response"];
-
+    // gpsデータのリストを取り出す
+    Json::Value gpsData = httpJsonValue["response"][0]["gps"]["response"];
     if (gpsData.size() > 0) {
         for( int i=0; i< gpsData.size(); i++) {
             if (!gpsData[i].isMember("gps") || !gpsData[i].isMember("gcm_tag")) return -3;

@@ -83,7 +83,8 @@ string getNow();
 void printf_array(string tag, const uint8_t * arr, int size);
 
 int ParseUUID(string uuid_str, uint8_t **byte_buf);
-
+Json::Value SuperParse(string raw_json);
+Json::Value ParseNoQuoteJson(string no_quote_json_string);
 
 // 時間分解能がけっこう低い
 class Clocker {
