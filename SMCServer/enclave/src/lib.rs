@@ -601,8 +601,8 @@ fn judge(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>) -> 
     result.is_empty()
 }
 
-// ナイーブなアルゴリズム
-// O(mlogn)
+// ナイーブなアルゴリズム　O(mlogn)
+// データ構造も含めて見直したくなったら https://github.com/ylab-public/PCT にヒントがあるはず
 fn naive_matching(central_data: &Vec<SpatialData>, target_history: &Vec<SpatialData>, matched_vec: &mut Vec<SpatialData>) {
     let n = target_history.len();
     for i in 0..n {
@@ -702,7 +702,11 @@ fn get_public_key(
     sgx_status_t::SGX_SUCCESS
 }
 
-/* oblivious functions */
+/* 
+* oblivious functions
+*   サイドチャネルを意識してコンタクトジャッジのアクセスパターンを隠蔽する時に使う
+*   基本的に使わない
+*/ 
 fn oget_intersection(a: &Vec<[u8; SGX_HASH_SIZE]>, b: &Vec<[u8; SGX_HASH_SIZE]>, v1: &mut Vec<u8>, v2: &mut Vec<u8>) {
 
     let n = a.len();
@@ -768,7 +772,12 @@ fn ge(a: &[u8; SGX_HASH_SIZE], b: &[u8; SGX_HASH_SIZE]) -> isize {
 }
 
 
-// oblivious primitives
+/* 
+* oblivious primitives
+*   サイドチャネルを意識してコンタクトジャッジのアクセスパターンを隠蔽する時に使う
+*   基本的に使わない
+*/ 
+
 fn oequal(x: usize, y: usize) -> bool {
 
     let ret: bool;
